@@ -24,7 +24,29 @@
     fcitx5-hangul                 # 한글 입력 엔진 직접 추가
     qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
+    anyrun                        # 런처 추가
   ];
+
+  # anyrun 설정 파일을 직접 생성 (RON 형식)
+  xdg.configFile."anyrun/config.ron".text = ''
+    Config(
+      x: Fraction(0.5),
+      y: Fraction(0.3),
+      width: Fraction(0.3),
+      height: Absolute(0),
+      hide_icons: false,
+      ignore_exclusive_zones: false,
+      layer: Overlay,
+      hide_plugin_info: false,
+      close_on_click: true,
+      show_results_immediately: false,
+      max_entries: None,
+      plugins: [
+        "/run/current-system/sw/lib/libapplications.so",
+        "/run/current-system/sw/lib/libshell.so",
+      ],
+    )
+  '';
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
@@ -69,6 +91,10 @@
         // 터미널 실행 (기본값인 alacritty 대신 ghostty 사용)
         Mod+T { spawn "ghostty"; }
         Mod+Return { spawn "ghostty"; }
+        
+        // 런처 실행 (anyrun)
+        Mod+D { spawn "anyrun"; }
+        Mod+Space { spawn "anyrun"; }
 
         // 창 닫기 및 niri 종료
         Mod+Shift+Q { close-window; }
