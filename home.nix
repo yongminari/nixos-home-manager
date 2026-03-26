@@ -25,7 +25,17 @@
     qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
     anyrun                        # 런처 추가
+    maple-mono.NF                 # 영문 폰트
+    d2coding                      # 한글 폰트
   ];
+
+  fonts.fontconfig.enable = true;
+
+  xdg.configFile."ghostty/config".text = ''
+    font-family = "Maple Mono NF"
+    font-family = "D2Coding"
+    font-size = 12
+  '';
 
   # anyrun 설정 파일을 직접 생성 (RON 형식)
   xdg.configFile."anyrun/config.ron".text = ''
