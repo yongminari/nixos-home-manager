@@ -18,11 +18,16 @@
     fnm
     alacritty 
     ghostty
-    niri # niri 패키지 추가 (niri-msg 확보)
+    niri
+    fcitx5-hangul                 # 한글 입력 엔진 직접 추가
+    qt6Packages.fcitx5-configtool # 설정 도구
   ];
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    GTK_IM_MODULE = "fcitx5";
+    QT_IM_MODULE = "fcitx5";
+    XMODIFIERS = "@im=fcitx5";
   };
 
   programs.git = {
@@ -51,6 +56,8 @@
             natural-scroll
         }
     }
+
+    spawn-at-startup "fcitx5" "-d"
 
     binds {
         // niri 기본 단축키 도움말 (Mod+Shift+Slash)
