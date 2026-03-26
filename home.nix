@@ -12,6 +12,8 @@
     '';
   };
 
+  nixpkgs.config.allowUnfree = true; # Chrome 등 독점 소프트웨어 허용
+
   home.packages = with pkgs; [
     git
     vim
@@ -21,6 +23,7 @@
     niri
     fcitx5-hangul                 # 한글 입력 엔진 직접 추가
     qt6Packages.fcitx5-configtool # 설정 도구
+    google-chrome                 # 크롬 브라우저 추가
   ];
 
   home.sessionVariables = {
