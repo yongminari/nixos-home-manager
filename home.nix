@@ -52,8 +52,10 @@
       show_results_immediately: false,
       max_entries: None,
       plugins: [
-        "/run/current-system/sw/lib/libapplications.so",
-        "/run/current-system/sw/lib/libshell.so",
+        "${pkgs.anyrun}/lib/libapplications.so",
+        "${pkgs.anyrun}/lib/libshell.so",
+        "${pkgs.anyrun}/lib/libnix_run.so",
+        "${pkgs.anyrun}/lib/libwebsearch.so",
       ],
     )
   '';
