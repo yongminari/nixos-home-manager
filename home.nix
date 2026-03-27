@@ -101,8 +101,8 @@
       },
 
       "niri/window": {
-        "format": "{title}",
-        "max-length": 30
+        "format": "󱂬 {title}",
+        "max-length": 40
       },
 
       "clock": {
