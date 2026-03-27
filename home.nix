@@ -24,20 +24,14 @@
     fcitx5-hangul                 # 한글 입력 엔진 직접 추가
     qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
-    anyrun                        # 런처 추가
+    anyrun                        # 다시 anyrun으로 복귀
+    waybar                        # 상태바 유지
+    swaybg                        # 배경화면 도구 유지
     maple-mono.NF                 # 영문 폰트
     d2coding                      # 한글 폰트
   ];
 
-  fonts.fontconfig.enable = true;
-
-  xdg.configFile."ghostty/config".text = ''
-    font-family = "Maple Mono NF"
-    font-family = "D2Coding"
-    font-size = 12
-  '';
-
-  # anyrun 설정 파일을 직접 생성 (RON 형식)
+  # anyrun 설정 (검증된 플러그인 경로 사용)
   xdg.configFile."anyrun/config.ron".text = ''
     Config(
       x: Fraction(0.5),
@@ -47,7 +41,7 @@
       hide_icons: false,
       ignore_exclusive_zones: false,
       layer: Overlay,
-      hide_plugin_info: false,
+      hide_plugin_info: true,
       close_on_click: true,
       show_results_immediately: false,
       max_entries: None,
@@ -58,6 +52,48 @@
         "${pkgs.anyrun}/lib/libwebsearch.so",
       ],
     )
+  '';
+
+  fonts.fontconfig.enable = true;
+
+  xdg.configFile."ghostty/config".text = ''
+    font-family = "Maple Mono NF"
+    font-family = "D2Coding"
+    font-size = 12
+  '';
+
+  # Waybar 기본 설정 (색감을 Rofi와 통일)
+  xdg.configFile."waybar/config".text = ''
+    {
+        "layer": "top",
+        "position": "top",
+        "height": 32,
+        "modules-left": ["niri/workspaces", "niri/window"],
+        "modules-center": ["clock"],
+        "modules-right": ["cpu", "memory", "tray"],
+        "clock": {
+            "format": "{:%H:%M}"
+        }
+    }
+  '';
+
+  xdg.configFile."waybar/style.css".text = ''
+    * {
+        font-family: "Maple Mono NF", "D2Coding";
+        font-size: 14px;
+    }
+    window#waybar {
+        background: rgba(30, 30, 46, 0.9);
+        color: #cdd6f4;
+        border-bottom: 2px solid #89b4fa;
+    }
+    #workspaces button {
+        padding: 0 5px;
+        color: #cdd6f4;
+    }
+    #workspaces button.active {
+        color: #89b4fa;
+    }
   '';
 
   home.sessionVariables = {
@@ -94,13 +130,22 @@
         }
     }
 
+    // 창 규칙
+    window-rule {
+        geometry-corner-radius 12
+        clip-to-geometry true
+    }
+
     spawn-at-startup "fcitx5" "-d"
+    spawn-at-startup "waybar"
+    // 배경화면 설정 (원하는 이미지 경로로 수정하세요)
+    // spawn-at-startup "swaybg" "-i" "/path/to/your/wallpaper.jpg" "-m" "fill"
 
     binds {
         // niri 기본 단축키 도움말 (Mod+Shift+Slash)
         Mod+Shift+Slash { show-hotkey-overlay; }
 
-        // 터미널 실행 (기본값인 alacritty 대신 ghostty 사용)
+        // 터미널 실행
         Mod+T { spawn "ghostty"; }
         Mod+Return { spawn "ghostty"; }
         
