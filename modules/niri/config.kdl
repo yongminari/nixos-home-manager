@@ -1,0 +1,24 @@
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            options "ctrl:nocaps" // Caps Lock을 Ctrl로 변경
+        }
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+}
+
+// 창 규칙
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+
+spawn-at-startup "fcitx5" "-d"
+spawn-at-startup "waybar"
+
+// 단축키 파일 포함
+include "binds.kdl"

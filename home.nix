@@ -30,9 +30,20 @@
     qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
     swaybg                        # 배경화면 도구 유지
+    xwayland-satellite            # X11 앱 지원 (niri용)
+    adwaita-icon-theme            # 기본 아이콘/커서 테마
     maple-mono.NF                 # 영문 폰트
     d2coding                      # 한글 폰트
   ];
+
+  # 마우스 커서 설정 (niri 커서 경고 해결 및 일관성)
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    package = pkgs.adwaita-icon-theme;
+    name = "Adwaita";
+    size = 24;
+  };
 
   fonts.fontconfig.enable = true;
 
