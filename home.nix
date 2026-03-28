@@ -26,8 +26,8 @@
     fnm
     alacritty 
     ghostty
-    fcitx5-hangul                 # 한글 입력 엔진 직접 추가
-    qt6Packages.fcitx5-configtool # 설정 도구
+    #fcitx5-hangul                 # 한글 입력 엔진 직접 추가
+    #qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
     swaybg                        # 배경화면 도구 유지
     xwayland-satellite            # X11 앱 지원 (niri용)
