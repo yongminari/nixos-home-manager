@@ -5,59 +5,55 @@
     ./modules/anyrun.nix
     ./modules/waybar.nix
     ./modules/niri.nix
+    ./modules/shell/utils.nix
+    ./modules/shell/welcome.nix
+    ./modules/shell/bash.nix
+    ./modules/shell/zsh.nix
+    ./modules/shell/nushell.nix
+    ./modules/shell/zellij.nix
   ];
 
   home.username = "yongminari";
   home.homeDirectory = "/home/yongminari";
   home.stateVersion = "25.11";
  
-  programs.bash = {
-    enable = true;
-    initExtra = ''
-      eval "$(fnm env --use-on-cd --shell bash)"
-    '';
-  };
-
-  nixpkgs.config.allowUnfree = true; # Chrome 등 독점 소프트웨어 허용
+  nixpkgs.config.allowUnfree = true;
 
   home.packages = with pkgs; [
-    git
-    vim
     fnm
     alacritty 
     ghostty
-    #fcitx5-hangul                 # 한글 입력 엔진 직접 추가
-    #qt6Packages.fcitx5-configtool # 설정 도구
     google-chrome                 # 크롬 브라우저 추가
-    swaybg                        # 배경화면 도구 유지
-    xwayland-satellite            # X11 앱 지원 (niri용)
-    adwaita-icon-theme            # 기본 아이콘/커서 테마
-    maple-mono.NF                 # 영문 폰트
-    d2coding                      # 한글 폰트
+    xwayland-satellite
+    adwaita-icon-theme
+    lolcat                        # 환영 메시지 무지개 색상용
+    wl-clipboard                  # Wayland 클립보드 도구 (wl-copy, wl-paste)
   ];
 
-  # 마우스 커서 설정 (niri 커서 경고 해결 및 일관성)
-  home.pointerCursor = {
+    # Starship SSH 설정 파일 연결
+    xdg.configFile."starship-ssh.toml".source = ./modules/shell/starship-ssh.toml;
+
+    # 마우스 커서 설정 (niri 커서 경고 해결 및 일관성)
+    home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
     package = pkgs.adwaita-icon-theme;
     name = "Adwaita";
     size = 24;
-  };
+    };
 
-  fonts.fontconfig.enable = true;
+    fonts.fontconfig.enable = true;
 
-  xdg.configFile."ghostty/config".text = ''
+    xdg.configFile."ghostty/config".text = ''
     font-family = "Maple Mono NF"
     font-family = "D2Coding"
     font-size = 12
-  '';
+    command = ${pkgs.zsh}/bin/zsh
+    '';
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    GTK_IM_MODULE = "fcitx5";
-    QT_IM_MODULE = "fcitx5";
-    XMODIFIERS = "@im=fcitx5";
+    EDITOR = "vim";
   };
 
   programs.git = {
