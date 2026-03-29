@@ -50,4 +50,22 @@
     enableNushellIntegration = true;
     nix-direnv.enable = true;
   };
+
+  # Yazi (Terminal File Manager)
+  programs.yazi = {
+    enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+    enableNushellIntegration = true;
+    shellWrapperName = "y";
+  };
+
+  # Atuin (Magical Shell History)
+  programs.atuin = {
+    enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+    enableNushellIntegration = true;
+    flags = [ "--disable-up-arrow" ];
+  };
 }

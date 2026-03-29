@@ -11,6 +11,9 @@
     ./modules/shell/zsh.nix
     ./modules/shell/nushell.nix
     ./modules/shell/zellij.nix
+    ./modules/git.nix
+    ./modules/dev-tools.nix
+    ./modules/neovim.nix
   ];
 
   home.username = "yongminari";
@@ -53,18 +56,6 @@
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
-    EDITOR = "vim";
-  };
-
-  programs.git = {
-    enable = true;
-    settings = {
-      user = {
-        name = "yongminari";
-        email = "easyid21c@gmail.com";
-      };
-      init.defaultBranch = "main";
-    };
   };
 
   programs.home-manager.enable = true;
