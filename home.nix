@@ -16,6 +16,7 @@
     ./modules/neovim.nix
     ./modules/system-utils.nix
     ./modules/notifications.nix
+    ./modules/theme.nix
   ];
 
   home.username = "yongminari";
@@ -30,21 +31,11 @@
     ghostty
     google-chrome
     xwayland-satellite
-    adwaita-icon-theme
     lolcat
   ];
 
     # Starship SSH 설정 파일 연결
     xdg.configFile."starship-ssh.toml".source = ./modules/shell/starship-ssh.toml;
-
-    # 마우스 커서 설정 (niri 커서 경고 해결 및 일관성)
-    home.pointerCursor = {
-    gtk.enable = true;
-    x11.enable = true;
-    package = pkgs.adwaita-icon-theme;
-    name = "Adwaita";
-    size = 24;
-    };
 
     fonts.fontconfig.enable = true;
 
