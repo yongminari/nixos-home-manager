@@ -15,12 +15,12 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#nixos)
-      nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+      # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
+      nixosConfigurations."galaxy-book" = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
-          ./hosts/nixos/configuration.nix
+          ./hosts/galaxy-book/configuration.nix
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager

@@ -10,7 +10,7 @@
   boot.kernelModules = [ "uinput" ];
 
   # --- [2. Network & Locale] ---
-  networking.hostName = "nixos";
+  networking.hostName = "galaxy-book";
   networking.networkmanager.enable = true;
   time.timeZone = "Asia/Seoul";
   i18n.defaultLocale = "en_US.UTF-8";
