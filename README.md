@@ -24,10 +24,10 @@
 nixos-home-manager/
 ├── flake.nix              # 통합 엔트리포인트 (System + User)
 ├── hosts/
-│   └── nixos/             # [시스템 영역]
-│       ├── configuration.nix           # OS 엔진 및 서비스 설정
-│       └── hardware-configuration.nix  # 하드웨어 종속 설정 (Git 무시)
-├── home.nix               # [사용자 영역] 메인 로더 & 패키지 관리
+│   └── <hostname>/        # [기기별 시스템 영역] (예: galaxy-book, desktop)
+│       ├── configuration.nix           # 해당 기기의 OS 엔진 및 서비스 설정
+│       └── hardware-configuration.nix  # 해당 기기의 하드웨어 종속 설정 (자동 생성)
+├── home.nix               # [사용자 공통 영역] 메인 로더 & 패키지 관리
 └── modules/               # 세부 모듈화된 설정들
     ├── shell/             # Zsh, Nushell, Bash, Starship 등
     ├── neovim/            # Neovim 전용 Lua 설정
@@ -37,28 +37,34 @@ nixos-home-manager/
 
 ---
 
-## 🚀 Installation (New OS Install)
+## 🚀 Installation & Adding New Host
 
-새로운 컴퓨터에 NixOS를 설치하고 이 환경을 그대로 복구하는 방법입니다.
+새로운 컴퓨터에 NixOS를 설치하거나, 기존 프로젝트에 새로운 기기를 추가하는 방법입니다.
 
-### 1. 기본 NixOS 설치 및 클론
-NixOS 설치 직후 생성된 하드웨어 정보를 보존하면서 저장소를 클론합니다.
+### 1. 저장소 클론 (새 기기 기준)
 ```bash
-# 저장소 클론
 git clone <YOUR_REPO_URL> ~/nixos-home-manager
 cd ~/nixos-home-manager
 ```
 
-### 2. 하드웨어 설정 복사 (핵심)
-설치 시 생성된 하드웨어 구성 파일을 프로젝트 폴더로 가져옵니다. (이 파일은 `.gitignore`에 의해 보호됩니다.)
-```bash
-cp /etc/nixos/hardware-configuration.nix ./hosts/nixos/
-```
+### 2. 새로운 호스트 추가 절차
+1.  **폴더 생성:** `hosts/` 폴더 아래에 원하는 호스트 이름으로 폴더를 만듭니다.
+    ```bash
+    mkdir -p hosts/<new-hostname>
+    ```
+2.  **하드웨어 설정 복사:** 해당 기기에서 생성된 파일을 복사해옵니다.
+    ```bash
+    cp /etc/nixos/hardware-configuration.nix ./hosts/<new-hostname>/
+    ```
+3.  **설정 파일 생성:** 기존 호스트의 `configuration.nix`를 복사한 뒤, `networking.hostName`을 새 이름으로 수정합니다.
+4.  **Flake 등록:** `flake.nix`의 `nixosConfigurations` 섹션에 새 호스트 정의를 추가합니다.
 
-### 3. 마법의 명령어 실행 (전체 복구)
+### 3. 시스템 적용 (첫 빌드 시)
 Flake를 사용하여 시스템 엔진과 모든 유저 설정을 한 번에 적용합니다.
 ```bash
-sudo nixos-rebuild switch --flake .#nixos
+# Git에 파일을 먼저 등록해야 Flake가 인식합니다.
+git add .
+sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 ---
@@ -69,24 +75,12 @@ sudo nixos-rebuild switch --flake .#nixos
 환경 설정 파일(`.nix`)을 수정했을 때 적용하는 명령입니다.
 | 대상 | 실행 명령어 | 설명 |
 | :--- | :--- | :--- |
-| **전체 (권장)** | `sudo nixos-rebuild switch --flake .#nixos` | **시스템 + 유저** 설정을 한꺼번에 동기화 |
+| **전체 (권장)** | `sudo nixos-rebuild switch --flake .#<hostname>` | **시스템 + 유저** 설정을 한꺼번에 동기화 |
 | **유저 전용** | `home-manager switch --flake .#yongminari` | 계정 관련 설정만 빠르게 적용할 때 |
 
 ### 2. 패키지 업데이트 (Update)
-설치된 패키지들을 최신 버전으로 업데이트하는 과정입니다. (Flake 방식)
-
-1. **입력 소스 업데이트:** `flake.lock` 파일을 최신 상태로 갱신합니다.
-   ```bash
-   nix flake update
-   ```
-2. **시스템 패키지 업데이트 적용:**
-   ```bash
-   sudo nixos-rebuild switch --flake .#nixos
-   ```
-3. **유저 패키지만 개별 업데이트 (필요 시):**
-   ```bash
-   home-manager switch --flake .#yongminari
-   ```
+1. **입력 소스 업데이트:** `nix flake update`
+2. **시스템 적용:** `sudo nixos-rebuild switch --flake .#<hostname>`
 
 ---
 
@@ -110,4 +104,4 @@ sudo nixos-rebuild switch --flake .#nixos
 
 ---
 
-**Note:** 이 저장소는 `yongminari`의 개인 선호도에 최적화되어 있습니다. 재사용 시 `hosts/nixos/configuration.nix`의 호스트 이름 및 계정명을 확인하세요.
+**Note:** 이 저장소는 `yongminari`의 개인 선호도에 최적화되어 있습니다. 재사용 시 `hosts/<hostname>/configuration.nix`의 호스트 이름 및 계정명을 확인하세요.
