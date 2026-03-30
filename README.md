@@ -65,11 +65,28 @@ sudo nixos-rebuild switch --flake .#nixos
 
 ## 🛠️ Management Guide
 
-| 상황 | 실행 명령어 | 설명 |
+### 1. 설정 변경 적용 (Rebuild)
+환경 설정 파일(`.nix`)을 수정했을 때 적용하는 명령입니다.
+| 대상 | 실행 명령어 | 설명 |
 | :--- | :--- | :--- |
-| **전체 업데이트 (권장)** | `sudo nixos-rebuild switch --flake .#nixos` | **시스템 + 유저** 설정을 한꺼번에 동기화 |
-| **유저 설정만 업데이트** | `home-manager switch --flake .#yongminari` | 계정 관련 설정만 빠르게 적용할 때 |
-| **NixOS 채널 업데이트** | `nix flake update` | `flake.lock`의 라이브러리 버전을 최신으로 갱신 |
+| **전체 (권장)** | `sudo nixos-rebuild switch --flake .#nixos` | **시스템 + 유저** 설정을 한꺼번에 동기화 |
+| **유저 전용** | `home-manager switch --flake .#yongminari` | 계정 관련 설정만 빠르게 적용할 때 |
+
+### 2. 패키지 업데이트 (Update)
+설치된 패키지들을 최신 버전으로 업데이트하는 과정입니다. (Flake 방식)
+
+1. **입력 소스 업데이트:** `flake.lock` 파일을 최신 상태로 갱신합니다.
+   ```bash
+   nix flake update
+   ```
+2. **시스템 패키지 업데이트 적용:**
+   ```bash
+   sudo nixos-rebuild switch --flake .#nixos
+   ```
+3. **유저 패키지만 개별 업데이트 (필요 시):**
+   ```bash
+   home-manager switch --flake .#yongminari
+   ```
 
 ---
 
