@@ -17,6 +17,9 @@
     };
 
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk4.theme = null;
+
+    # 2. 아이콘 설정 (Papirus-Dark)
 
     # 2. 아이콘 설정 (Papirus-Dark)
     iconTheme = {

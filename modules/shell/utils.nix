@@ -60,6 +60,14 @@
     shellWrapperName = "y";
   };
 
+  # Carapace (Multi-shell completion)
+  programs.carapace = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = true;
+    enableNushellIntegration = true;
+  };
+
   # Atuin (Magical Shell History)
   programs.atuin = {
     enable = true;

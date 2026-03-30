@@ -18,6 +18,7 @@ window-rule {
 }
 
 // 자동 실행
+spawn-at-startup "swaybg" "-i" "/home/yongminari/Pictures/Wallpapers/default_wallpaper.png" "-m" "fill"
 spawn-at-startup "fcitx5" "-d"
 spawn-at-startup "waybar"
 spawn-at-startup "swaync"

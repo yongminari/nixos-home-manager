@@ -1,5 +1,5 @@
 # Machine-specific hardware configuration
-hosts/**/hardware-configuration.nix
+#hosts/**/hardware-configuration.nix
 
 # Nix/Flake related
 result

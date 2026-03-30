@@ -17,14 +17,15 @@
     ./modules/system-utils.nix
     ./modules/notifications.nix
     ./modules/theme.nix
+    ./modules/rclone.nix
+    ./modules/hyprlock.nix
+    ./modules/hypridle.nix
   ];
 
   home.username = "yongminari";
   home.homeDirectory = "/home/yongminari";
   home.stateVersion = "25.11";
  
-  nixpkgs.config.allowUnfree = true;
-
   home.packages = with pkgs; [
     fnm
     alacritty 
@@ -32,6 +33,12 @@
     google-chrome
     xwayland-satellite
     lolcat
+    fastfetch
+    htop
+    lsb-release
+    swaybg
+    hyprlock
+    hypridle
   ];
 
     # Starship SSH 설정 파일 연결
