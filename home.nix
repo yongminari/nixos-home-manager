@@ -14,6 +14,8 @@
     ./modules/git.nix
     ./modules/dev-tools.nix
     ./modules/neovim.nix
+    ./modules/system-utils.nix
+    ./modules/notifications.nix
   ];
 
   home.username = "yongminari";
@@ -26,11 +28,10 @@
     fnm
     alacritty 
     ghostty
-    google-chrome                 # 크롬 브라우저 추가
+    google-chrome
     xwayland-satellite
     adwaita-icon-theme
-    lolcat                        # 환영 메시지 무지개 색상용
-    wl-clipboard                  # Wayland 클립보드 도구 (wl-copy, wl-paste)
+    lolcat
   ];
 
     # Starship SSH 설정 파일 연결

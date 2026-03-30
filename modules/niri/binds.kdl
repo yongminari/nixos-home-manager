@@ -79,4 +79,21 @@ binds {
     Mod+Equal { set-column-width "+10%"; }
     Mod+Shift+Minus { set-window-height "-10%"; }
     Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // --- [시스템 제어 및 유틸리티] ---
+    // 음량 조절 (pamixer)
+    XF86AudioRaiseVolume { spawn "pamixer" "-i" "5"; }
+    XF86AudioLowerVolume { spawn "pamixer" "-d" "5"; }
+    XF86AudioMute        { spawn "pamixer" "-t"; }
+
+    // 화면 밝기 조절 (brightnessctl)
+    XF86MonBrightnessUp   { spawn "brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+
+    // 스크린샷 (grim + slurp + swappy)
+    Print { spawn "sh" "-c" "grim - | swappy -f -"; }
+    Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
+
+    // 알림 센터 (SwayNC)
+    Mod+N { spawn "swaync-client" "-t" "-sw"; }
 }
