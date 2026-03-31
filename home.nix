@@ -27,6 +27,8 @@
   home.stateVersion = "25.11";
  
   home.packages = with pkgs; [
+    python3
+    libnotify # 알림용
     fnm
     alacritty 
     ghostty
