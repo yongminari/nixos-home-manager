@@ -13,7 +13,10 @@
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in {
       # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
       nixosConfigurations."galaxy-book" = nixpkgs.lib.nixosSystem {

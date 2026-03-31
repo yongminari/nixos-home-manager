@@ -47,6 +47,17 @@
     style.name = "adwaita-dark";
   };
 
+  # dconf 활성화
+  dconf.enable = true;
+
+  # dconf 설정으로 GNOME 환경의 커서 크기 강제 지정
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      cursor-size = 48;
+      cursor-theme = "Bibata-Modern-Ice";
+    };
+  };
+
   # 커서 테마를 시스템 전반에 적용
   home.pointerCursor = {
     gtk.enable = true;

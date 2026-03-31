@@ -55,6 +55,8 @@
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    XCURSOR_SIZE = "48";
+    GTK_CURSOR_SIZE = "48";
   };
 
   programs.home-manager.enable = true;
