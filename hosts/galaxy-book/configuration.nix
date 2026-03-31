@@ -99,4 +99,10 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   system.stateVersion = "25.11";
+
+  # --- [8. Power Management] ---
+  services.thermald.enable = true;
+  services.auto-cpufreq.enable = true;
+  # auto-cpufreq와 충돌하는 기본 전원 프로필 서비스 비활성화
+  services.power-profiles-daemon.enable = false;
 }
