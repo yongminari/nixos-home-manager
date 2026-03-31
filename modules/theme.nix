@@ -31,7 +31,7 @@
     cursorTheme = {
       name = "Bibata-Modern-Ice";
       package = pkgs.bibata-cursors;
-      size = 24; # niri 환경에 적절한 크기로 조정
+      size = 48; # niri 환경에 적절한 크기로 조정
     };
 
     font = {
@@ -53,6 +53,6 @@
     x11.enable = true;
     package = pkgs.bibata-cursors;
     name = "Bibata-Modern-Ice";
-    size = 24;
+    size = 48;
   };
 }

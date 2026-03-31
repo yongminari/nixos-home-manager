@@ -23,6 +23,7 @@ spawn-at-startup "fcitx5" "-d"
 spawn-at-startup "waybar"
 spawn-at-startup "swaync"
 spawn-at-startup "nm-applet"
+spawn-at-startup "hypridle"
 
 // 단축키 파일 포함
 include "binds.kdl"

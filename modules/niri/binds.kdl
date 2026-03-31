@@ -96,4 +96,10 @@ binds {
 
     // 알림 센터 (SwayNC)
     Mod+N { spawn "swaync-client" "-t" "-sw"; }
+
+    // --- [화면 잠금 및 전원 제어] ---
+    // 화면 잠금 (Mod + Alt + L)
+    Mod+Alt+L { spawn "loginctl" "lock-session"; }
+    // 화면 끄기 (Mod + Alt + P)
+    Mod+Alt+P { spawn "niri" "msg" "action" "power-off-monitors"; }
 }
