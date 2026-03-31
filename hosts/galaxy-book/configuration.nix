@@ -105,4 +105,30 @@
   services.auto-cpufreq.enable = true;
   # auto-cpufreq와 충돌하는 기본 전원 프로필 서비스 비활성화
   services.power-profiles-daemon.enable = false;
-}
+
+  # --- [9. Keyboard Remapping (Kanata)] ---
+  services.kanata = {
+    enable = true;
+    package = pkgs.kanata-with-cmd; # 쉘 명령 실행을 위해 cmd 버전 사용
+    keyboards.default = {
+      devices = [ ]; # 빈 칸으로 두면 모든 키보드에 적용됩니다.
+      extraDefCfg = "process-unmapped-keys yes";
+      config = ''
+        (defsrc
+          caps esc
+        )
+
+        (defalias
+          ;; Esc 키를 누르면 Esc 전송 + Ctrl+Shift+Alt+F12 조합을 보냄
+          ;; (이 키를 niri에서 가로채서 fcitx5-remote 실행)
+          esc-en (multi esc C-S-A-f12)
+        )
+
+        (deflayer default
+          lctl @esc-en
+        )
+      '';
+    };
+    };
+    }
+

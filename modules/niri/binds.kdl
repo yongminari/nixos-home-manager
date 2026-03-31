@@ -81,6 +81,9 @@ binds {
     Mod+Shift+Equal { set-window-height "+10%"; }
 
     // --- [시스템 제어 및 유틸리티] ---
+    // Kanata에서 보내는 Ctrl+Shift+Alt+F12를 가로채서 영문으로 전환 (Vim ESC용)
+    Ctrl+Shift+Alt+F12 { spawn "fcitx5-remote" "-c"; }
+
     // 음량 조절 (pamixer)
     XF86AudioRaiseVolume { spawn "pamixer" "-i" "5"; }
     XF86AudioLowerVolume { spawn "pamixer" "-d" "5"; }

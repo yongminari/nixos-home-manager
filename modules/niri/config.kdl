@@ -2,7 +2,7 @@ input {
     keyboard {
         xkb {
             layout "us"
-            options "ctrl:nocaps" // Caps Lock을 Ctrl로 변경
+            // options "ctrl:nocaps" // Kanata에서 관리하기 위해 주석 처리
         }
     }
     touchpad {
