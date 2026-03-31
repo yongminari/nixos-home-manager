@@ -20,8 +20,6 @@
     gtk4.theme = null;
 
     # 2. 아이콘 설정 (Papirus-Dark)
-
-    # 2. 아이콘 설정 (Papirus-Dark)
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -31,7 +29,7 @@
     cursorTheme = {
       name = "Bibata-Modern-Ice";
       package = pkgs.bibata-cursors;
-      size = 48; # niri 환경에 적절한 크기로 조정
+      size = 48;
     };
 
     font = {

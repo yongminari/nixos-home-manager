@@ -41,10 +41,16 @@
     hypridle
   ];
 
-    # Starship SSH 설정 파일 연결
-    xdg.configFile."starship-ssh.toml".source = ./modules/shell/starship-ssh.toml;
+  # Starship SSH 설정 파일 연결
+  xdg.configFile."starship-ssh.toml".source = ./modules/shell/starship-ssh.toml;
 
-    fonts.fontconfig.enable = true;
+  # 커서 테마 강제 연결 (Legacy 및 XWayland 호환성)
+  home.file.".icons/default/index.theme".text = ''
+    [icon theme]
+    Inherits=Bibata-Modern-Ice
+  '';
+
+  fonts.fontconfig.enable = true;
 
     xdg.configFile."ghostty/config".text = ''
     font-family = "Maple Mono NF"
@@ -55,6 +61,7 @@
 
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "48";
     GTK_CURSOR_SIZE = "48";
   };
