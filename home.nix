@@ -27,6 +27,7 @@
   home.stateVersion = "25.11";
  
   home.packages = with pkgs; [
+    home-manager
     python3
     libnotify # 알림용
     fnm
