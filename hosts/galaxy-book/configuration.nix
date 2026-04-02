@@ -98,6 +98,7 @@
   # --- [7. System Policy] ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.trusted-users = [ "root" "yongminari" ];
   system.stateVersion = "25.11";
 
   # --- [8. Power Management] ---
