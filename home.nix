@@ -37,7 +37,6 @@
     fastfetch
     htop
     lsb-release
-    swaybg
     hyprlock
     hypridle
   ];
