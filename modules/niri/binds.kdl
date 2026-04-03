@@ -4,7 +4,7 @@ binds {
 
     // 실행
     Mod+Return { spawn "ghostty"; }
-    Mod+Space { spawn "anyrun"; }
+    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
 
     // 창 관리
     Mod+Q { close-window; }
@@ -97,8 +97,8 @@ binds {
     Print { spawn "sh" "-c" "grim - | swappy -f -"; }
     Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
 
-    // 알림 센터 (SwayNC)
-    Mod+N { spawn "swaync-client" "-t" "-sw"; }
+    // 알림 센터 (Noctalia Shell)
+    Mod+N { spawn "noctalia-shell" "ipc" "call" "notifications" "toggleHistory"; }
 
     // --- [화면 잠금 및 전원 제어] ---
     // 화면 잠금 (Mod + Alt + L)

@@ -10,9 +10,7 @@
 - **🛠️ Modern Core Utils:** `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`.
 - **💻 Terminal:** **Ghostty** (성능 최적화), **Alacritty**.
 - **📝 Editor:** **Neovim** (Lua 기반 모듈형 설정).
-- **🚀 App Launcher:** **Anyrun** (Wayland-native).
-- **📊 Status Bar:** **Waybar** (Catppuccin Mocha 테마).
-- **🔔 Notification:** **SwayNC** (Notification Center).
+- **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
 - **🔒 Security:** **OpenSSH Server** 기본 탑재 (원격 관리 가능).
 - **🎨 Global Theme:** **Catppuccin Mocha** 기반의 통일된 미학.
 
@@ -102,7 +100,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | Shortcut | Action |
 | :--- | :--- |
 | **`Super + Enter`** | Ghostty 터미널 실행 |
-| **`Super + D`** | Anyrun 앱 런처 실행 |
+| **`Super + Space`** | Noctalia 앱 런처 실행 |
+| **`Super + N`** | Noctalia 알림 센터 토글 |
 | **`Super + Q`** | 현재 창 닫기 |
 | **`Super + Shift + R`** | 설정 리로드 |
 | **`Super + 1~9`** | 워크스페이스 이동 |

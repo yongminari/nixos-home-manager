@@ -1,9 +1,8 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
-    ./modules/anyrun.nix
-    ./modules/waybar.nix
+    ./modules/noctalia.nix
     ./modules/niri.nix
     ./modules/shell/utils.nix
     ./modules/shell/welcome.nix
@@ -15,7 +14,6 @@
     ./modules/dev-tools.nix
     ./modules/neovim.nix
     ./modules/system-utils.nix
-    ./modules/notifications.nix
     ./modules/theme.nix
     ./modules/rclone.nix
     ./modules/hyprlock.nix

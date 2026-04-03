@@ -66,6 +66,8 @@
   };
 
   # --- [6. System Services & Utilities] ---
+  services.upower.enable = true;
+  hardware.bluetooth.enable = true;
   services.printing.enable = true;
   security.rtkit.enable = true;
   services.pipewire = {
