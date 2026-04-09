@@ -9,6 +9,12 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "uinput" ];
 
+  # 갤럭시 북2 사운드 해결을 위한 핵심 파라미터 수정
+  boot.kernelParams = [ 
+    "snd_intel_dspcfg.dsp_driver=1" # Intel SST 대신 SOF 드라이버 강제 사용
+    "snd_hda_intel.model=alc298-samsung-amp-v2-4-amps" # 기존 앰프 패치 유지
+  ];
+
   # --- [2. Network & Locale] ---
   networking.hostName = "galaxy-book";
   networking.networkmanager.enable = true;
@@ -44,7 +50,7 @@
   users.users.yongminari = {
     isNormalUser = true;
     description = "yongminari";
-    extraGroups = [ "networkmanager" "wheel" "video" "input" "uinput" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "input" "uinput" "audio" ]; # audio 그룹 추가
     shell = pkgs.zsh; 
   };
 
@@ -68,22 +74,36 @@
   # --- [6. System Services & Utilities] ---
   services.upower.enable = true;
   hardware.bluetooth.enable = true;
+  
+  # 사운드 관련 펌웨어 설정 강화
+  hardware.enableAllFirmware = true; 
+  hardware.enableRedistributableFirmware = true; 
+
   services.printing.enable = true;
   security.rtkit.enable = true;
+
+  # 사운드 서버 (Pipewire)
   services.pipewire = {
-    enable = true; alsa.enable = true; alsa.support32Bit = true; pulse.enable = true;
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    wireplumber.enable = true;
   };
 
-  # OpenSSH server 추가
   services.openssh = {
     enable = true;
     settings = {
       PermitRootLogin = "no";
-      PasswordAuthentication = true; # 필요에 따라 SSH 키 인증만 허용하도록 바꿀 수 있습니다.
+      PasswordAuthentication = true;
     };
   };
 
-  environment.systemPackages = with pkgs; [ vim git curl wget ];
+  # 디버깅을 위한 pavucontrol 추가
+  environment.systemPackages = with pkgs; [ 
+    vim git curl wget 
+    sof-firmware alsa-utils pavucontrol 
+  ];
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -106,15 +126,14 @@
   # --- [8. Power Management] ---
   services.thermald.enable = true;
   services.auto-cpufreq.enable = true;
-  # auto-cpufreq와 충돌하는 기본 전원 프로필 서비스 비활성화
   services.power-profiles-daemon.enable = false;
 
   # --- [9. Keyboard Remapping (Kanata)] ---
   services.kanata = {
     enable = true;
-    package = pkgs.kanata-with-cmd; # 쉘 명령 실행을 위해 cmd 버전 사용
+    package = pkgs.kanata-with-cmd;
     keyboards.default = {
-      devices = [ ]; # 빈 칸으로 두면 모든 키보드에 적용됩니다.
+      devices = [ ]; 
       extraDefCfg = "process-unmapped-keys yes";
       config = ''
         (defsrc
@@ -122,8 +141,6 @@
         )
 
         (defalias
-          ;; Esc 키를 누르면 Esc 전송 + Ctrl+Shift+Alt+F12 조합을 보냄
-          ;; (이 키를 niri에서 가로채서 fcitx5-remote 실행)
           esc-en (multi esc C-S-A-f12)
         )
 
@@ -132,6 +149,5 @@
         )
       '';
     };
-    };
-    }
-
+  };
+}
