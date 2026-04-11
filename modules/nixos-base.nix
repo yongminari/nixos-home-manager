@@ -133,4 +133,8 @@
       '';
     };
   };
+  # --- [9. Systemd Timeout Optimization] ---
+  systemd.settings.Manager = {
+    DefaultTimeoutStopSec = "10s";
+  };
 }
