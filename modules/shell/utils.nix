@@ -76,4 +76,16 @@
     enableNushellIntegration = true;
     flags = [ "--disable-up-arrow" ];
   };
+
+  # 공통 CLI 패키지
+  home.packages = with pkgs; [
+    htop
+    fastfetch
+    lolcat
+    lsb-release
+    python3
+  ];
+
+  # Starship SSH 설정 파일 연결
+  xdg.configFile."starship-ssh.toml".source = ./starship-ssh.toml;
 }

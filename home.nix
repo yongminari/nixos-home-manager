@@ -2,69 +2,50 @@
 
 {
   imports = [
+    # [1. 시스템 관련]
     ./modules/noctalia.nix
+    ./modules/system-utils.nix
+    ./modules/theme.nix
+    ./modules/rclone.nix
+    
+    # [2. 데스크탑 & GUI]
     ./modules/niri.nix
+    ./modules/hyprlock.nix
+    ./modules/hypridle.nix
+    ./modules/gui-apps.nix
+    
+    # [3. 개발 도구]
+    ./modules/git.nix
+    ./modules/dev-tools.nix
+    ./modules/neovim.nix
+    
+    # [4. 쉘 & CLI 터미널]
     ./modules/shell/utils.nix
     ./modules/shell/welcome.nix
     ./modules/shell/bash.nix
     ./modules/shell/zsh.nix
     ./modules/shell/nushell.nix
     ./modules/shell/zellij.nix
-    ./modules/git.nix
-    ./modules/dev-tools.nix
-    ./modules/neovim.nix
-    ./modules/system-utils.nix
-    ./modules/theme.nix
-    ./modules/rclone.nix
-    ./modules/hyprlock.nix
-    ./modules/hypridle.nix
   ];
 
+  # --- [User Information] ---
   home.username = "yongminari";
   home.homeDirectory = "/home/yongminari";
   home.stateVersion = "25.11";
  
+  # --- [Global Packages] ---
   home.packages = with pkgs; [
     home-manager
-    python3
     libnotify # 알림용
-    fnm
-    alacritty 
-    ghostty
-    google-chrome
-    xwayland-satellite
-    lolcat
-    fastfetch
-    htop
-    lsb-release
-    hyprlock
-    hypridle
+    fnm       # Node.js 버전 매니저
   ];
 
-  # Starship SSH 설정 파일 연결
-  xdg.configFile."starship-ssh.toml".source = ./modules/shell/starship-ssh.toml;
-
-  # 커서 테마 강제 연결 (Legacy 및 XWayland 호환성)
-  home.file.".icons/default/index.theme".text = ''
-    [icon theme]
-    Inherits=Bibata-Modern-Ice
-  '';
-
-  fonts.fontconfig.enable = true;
-
-    xdg.configFile."ghostty/config".text = ''
-    font-family = "Maple Mono NF"
-    font-family = "D2Coding"
-    font-size = 12
-    command = ${pkgs.zsh}/bin/zsh
-    '';
-
+  # --- [Global Session Variables] ---
   home.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
-    XCURSOR_THEME = "Bibata-Modern-Ice";
-    XCURSOR_SIZE = "48";
-    GTK_CURSOR_SIZE = "48";
+    NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
   };
 
+  # --- [Settings] ---
+  fonts.fontconfig.enable = true;
   programs.home-manager.enable = true;
 }

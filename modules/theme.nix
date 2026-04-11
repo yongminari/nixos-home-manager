@@ -64,4 +64,17 @@
     name = "Bibata-Modern-Ice";
     size = 48;
   };
+
+  # 커서 테마 강제 연결 (Legacy 및 XWayland 호환성)
+  home.file.".icons/default/index.theme".text = ''
+    [icon theme]
+    Inherits=Bibata-Modern-Ice
+  '';
+
+  # 테마 관련 세션 변수
+  home.sessionVariables = {
+    XCURSOR_THEME = "Bibata-Modern-Ice";
+    XCURSOR_SIZE = "48";
+    GTK_CURSOR_SIZE = "48";
+  };
 }
