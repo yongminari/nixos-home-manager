@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./containers.nix # [New] Distrobox & Podman
+  ];
+
   # --- [1. Boot & System Engine] ---
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
