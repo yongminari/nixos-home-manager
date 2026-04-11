@@ -9,10 +9,11 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "uinput" ];
 
-  # 갤럭시 북2 사운드 해결을 위한 핵심 파라미터 수정
+  # 갤럭시 북2 사운드 및 백라이트 해결을 위한 커널 파라미터
   boot.kernelParams = [ 
-    "snd_intel_dspcfg.dsp_driver=1" # Intel SST 대신 SOF 드라이버 강제 사용
-    "snd_hda_intel.model=alc298-samsung-amp-v2-4-amps" # 기존 앰프 패치 유지
+    "snd_intel_dspcfg.dsp_driver=1" # Intel SST 대신 레거시 드라이버 사용 (사운드 해결)
+    "snd_hda_intel.model=alc298-samsung-amp-v2-4-amps" # 스피커 앰프 패치
+    "i915.enable_dpcd_backlight=3" # LCD 백라이트 제어 활성화 (숫자만 바뀌고 실제 조절 안되는 문제 해결)
   ];
 
   # --- [2. Network & Locale] ---
@@ -74,6 +75,7 @@
   # --- [6. System Services & Utilities] ---
   services.upower.enable = true;
   hardware.bluetooth.enable = true;
+  services.udev.packages = [ pkgs.brightnessctl ];
   
   # 사운드 관련 펌웨어 설정 강화
   hardware.enableAllFirmware = true; 
@@ -103,6 +105,7 @@
   environment.systemPackages = with pkgs; [ 
     vim git curl wget 
     sof-firmware alsa-utils pavucontrol 
+    brightnessctl
   ];
 
   programs.nix-ld.enable = true;
