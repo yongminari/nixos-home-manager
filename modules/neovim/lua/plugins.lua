@@ -60,7 +60,7 @@ safe_require("trouble", function(trouble)
 end)
 
 safe_require("lazygit", function(lazygit)
-  vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<cr>")
+  vim.keymap.set("n", "<leader>G", "<cmd>LazyGit<cr>", { desc = "LazyGit"})
 end)
 
 -- [Obsidian 설정]
