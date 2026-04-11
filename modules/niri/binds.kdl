@@ -20,6 +20,16 @@ binds {
     Mod+K     { focus-window-up; }
     Mod+L     { focus-column-right; }
 
+    // 모니터 간 포커스 이동 (Mod + Alt + HJKL / 방향키)
+    Mod+Alt+Left  { focus-monitor-left; }
+    Mod+Alt+Down  { focus-monitor-down; }
+    Mod+Alt+Up    { focus-monitor-up; }
+    Mod+Alt+Right { focus-monitor-right; }
+    Mod+Alt+H     { focus-monitor-left; }
+    Mod+Alt+J     { focus-monitor-down; }
+    Mod+Alt+K     { focus-monitor-up; }
+    Mod+Alt+L     { focus-monitor-right; }
+
     // 창 이동
     Mod+Shift+Left  { move-column-left; }
     Mod+Shift+Down  { move-window-down; }
@@ -29,6 +39,16 @@ binds {
     Mod+Shift+J     { move-window-down; }
     Mod+Shift+K     { move-window-up; }
     Mod+Shift+L     { move-column-right; }
+
+    // 창을 다른 모니터로 이동 (Mod + Alt + Shift + HJKL / 방향키)
+    Mod+Alt+Shift+Left  { move-column-to-monitor-left; }
+    Mod+Alt+Shift+Down  { move-column-to-monitor-down; }
+    Mod+Alt+Shift+Up    { move-column-to-monitor-up; }
+    Mod+Alt+Shift+Right { move-column-to-monitor-right; }
+    Mod+Alt+Shift+H     { move-column-to-monitor-left; }
+    Mod+Alt+Shift+J     { move-column-to-monitor-down; }
+    Mod+Alt+Shift+K     { move-column-to-monitor-up; }
+    Mod+Alt+Shift+L     { move-column-to-monitor-right; }
 
     // 워크스페이스 이동 (D/U Pair)
     Mod+U              { focus-workspace-up; }
@@ -101,8 +121,8 @@ binds {
     Mod+N { spawn "noctalia-shell" "ipc" "call" "notifications" "toggleHistory"; }
 
     // --- [화면 잠금 및 전원 제어] ---
-    // 화면 잠금 (Mod + Alt + L)
-    Mod+Alt+L { spawn "loginctl" "lock-session"; }
+    // 화면 잠금 (Mod + Alt + BackSpace)
+    Mod+Alt+BackSpace { spawn "loginctl" "lock-session"; }
     // 화면 끄기 (Mod + Alt + P)
     Mod+Alt+P { spawn "niri" "msg" "action" "power-off-monitors"; }
 }
