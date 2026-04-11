@@ -6,3 +6,4 @@ result
 .direnv/
 node_modules/
 *.log
+setup-wg-secrets.sh

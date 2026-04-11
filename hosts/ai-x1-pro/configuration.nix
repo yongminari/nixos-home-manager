@@ -12,6 +12,21 @@
   # --- [2. Network & Locale] ---
   networking.hostName = "ai-x1-pro";
   networking.networkmanager.enable = true;
+
+  # WireGuard VPN 설정
+  networking.wireguard.interfaces.wg0 = {
+    ips = [ "10.0.151.9/24" ];
+    privateKeyFile = "/etc/wireguard/wg0.key";
+    peers = [
+      {
+        publicKey = "xKId6dwAyUbnDlfgS6cx0/cshyq9H/uKLmE8uYAsCiI=";
+        presharedKeyFile = "/etc/wireguard/wg0.psk";
+        allowedIPs = [ "192.168.0.0/24" ];
+        endpoint = "58.121.116.136:55536";
+        persistentKeepalive = 25;
+      }
+    ];
+  };
   time.timeZone = "Asia/Seoul";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
@@ -93,8 +108,10 @@
   };
 
   environment.systemPackages = with pkgs; [ 
-    vim git curl wget 
+    vim git curl wget wireguard-tools
   ];
+
+  networking.firewall.allowedUDPPorts = [ ]; # L2TP 포트 제거
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
