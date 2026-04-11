@@ -90,7 +90,7 @@
   };
 
   environment.systemPackages = with pkgs; [ 
-    vim git curl wget 
+    vim git curl wget net-tools
   ];
 
   programs.nix-ld.enable = true;
