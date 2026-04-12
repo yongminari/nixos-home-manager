@@ -98,7 +98,26 @@ end
 -- Treesitter Config
 safe_require("nvim-treesitter.configs", function(configs) configs.setup { highlight = { enable = true }, indent = { enable = true } } end)
 
--- [LSP Config (Neovim 0.11+ Modern Way)]
+  -- [LSP Config (Neovim 0.11+ Modern Way)]
+  -- [컨테이너 파일 로더: 호스트에 없는 /opt, /usr 경로의 파일을 컨테이너에서 가져옵니다]
+  vim.api.nvim_create_autocmd("BufReadCmd", {
+    pattern = { "/opt/*", "/usr/include/*" },
+    callback = function(args)
+      local file = args.file
+      if vim.fn.filereadable(file) == 0 then
+        local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
+        local content = vim.fn.systemlist(cmd)
+        if vim.v.shell_error == 0 then
+          vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
+          vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
+          vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
+          local ft = vim.filetype.match({ filename = file })
+          if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
+        end
+      end
+    end,
+  })
+
 local capabilities = {}
 local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 if cmp_lsp_ok then capabilities = cmp_nvim_lsp.default_capabilities() end
@@ -112,7 +131,11 @@ if vim.lsp.config then
     vim.lsp.enable(lsp)
   end
   -- clangd 전용 안전 설정 (Distrobox 하이브리드 지원)
-  local is_ros_project = vim.env.ROS_DISTRO ~= nil
+  -- 호스트에서도 ROS 프로젝트를 감지할 수 있도록 package.xml 파일 존재 여부를 확인합니다.
+  -- 현재 버퍼의 경로를 기준으로 상위로 탐색합니다.
+  local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
+                         #vim.fs.find('package.xml', { upward = true }) > 0 or
+                         #vim.fs.find('compile_commands.json', { upward = true }) > 0
   local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
   
   if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
@@ -130,7 +153,9 @@ else
   if lspconfig_ok then
     for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
     
-    local is_ros_project = vim.env.ROS_DISTRO ~= nil
+    local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
+                           #vim.fs.find('package.xml', { upward = true }) > 0 or
+                           #vim.fs.find('compile_commands.json', { upward = true }) > 0
     local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
     
     if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
