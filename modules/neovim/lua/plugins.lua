@@ -104,16 +104,19 @@ safe_require("nvim-treesitter.configs", function(configs) configs.setup { highli
     pattern = { "/opt/*", "/usr/include/*" },
     callback = function(args)
       local file = args.file
-      if vim.fn.filereadable(file) == 0 then
-        local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
-        local content = vim.fn.systemlist(cmd)
-        if vim.v.shell_error == 0 then
-          vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
-          vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
-          vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
-          local ft = vim.filetype.match({ filename = file })
-          if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
-        end
+      -- 호스트에 파일이 실존한다면 (Nix가 링크했거나 등) Distrobox를 호출하지 않음
+      if vim.fn.filereadable(file) == 1 then
+        return
+      end
+
+      local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
+      local content = vim.fn.systemlist(cmd)
+      if vim.v.shell_error == 0 then
+        vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
+        vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
+        vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
+        local ft = vim.filetype.match({ filename = file })
+        if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
       end
     end,
   })
@@ -130,13 +133,18 @@ if vim.lsp.config then
     vim.lsp.config(lsp, { capabilities = capabilities })
     vim.lsp.enable(lsp)
   end
-  -- clangd 전용 안전 설정 (Distrobox 하이브리드 지원)
-  -- 호스트에서도 ROS 프로젝트를 감지할 수 있도록 package.xml 파일 존재 여부를 확인합니다.
-  -- 현재 버퍼의 경로를 기준으로 상위로 탐색합니다.
+
+  -- [ROS/Distrobox 하이브리드 지원 로직]
+  -- compile_commands.json은 일반 프로젝트에서도 쓰이므로 ROS 판별 기준에서 제외합니다.
   local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
-                         #vim.fs.find('package.xml', { upward = true }) > 0 or
-                         #vim.fs.find('compile_commands.json', { upward = true }) > 0
-  local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
+                         vim.env.AMENT_PREFIX_PATH ~= nil or
+                         #vim.fs.find('package.xml', { upward = true }) > 0
+  
+  local clangd_cmd = { 
+    "clangd", 
+    "--offset-encoding=utf-16",
+    "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
+  }
   
   if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
     clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
@@ -154,9 +162,14 @@ else
     for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
     
     local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
-                           #vim.fs.find('package.xml', { upward = true }) > 0 or
-                           #vim.fs.find('compile_commands.json', { upward = true }) > 0
-    local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
+                           vim.env.AMENT_PREFIX_PATH ~= nil or
+                           #vim.fs.find('package.xml', { upward = true }) > 0
+
+    local clangd_cmd = { 
+      "clangd", 
+      "--offset-encoding=utf-16",
+      "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
+    }
     
     if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
       clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
