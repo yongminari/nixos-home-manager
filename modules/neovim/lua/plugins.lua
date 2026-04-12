@@ -111,10 +111,17 @@ if vim.lsp.config then
     vim.lsp.config(lsp, { capabilities = capabilities })
     vim.lsp.enable(lsp)
   end
-  -- clangd 전용 안전 설정
+  -- clangd 전용 안전 설정 (Distrobox 하이브리드 지원)
+  local is_ros_project = vim.env.ROS_DISTRO ~= nil
+  local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
+  
+  if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
+    clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
+  end
+
   vim.lsp.config('clangd', {
     capabilities = capabilities,
-    cmd = { "clangd", "--offset-encoding=utf-16" }
+    cmd = clangd_cmd
   })
   vim.lsp.enable('clangd')
 else
@@ -122,6 +129,13 @@ else
   local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
   if lspconfig_ok then
     for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
-    lspconfig.clangd.setup { capabilities = capabilities, cmd = { "clangd", "--offset-encoding=utf-16" } }
+    
+    local is_ros_project = vim.env.ROS_DISTRO ~= nil
+    local clangd_cmd = { "clangd", "--offset-encoding=utf-16" }
+    
+    if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
+      clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
+    end
+    lspconfig.clangd.setup { capabilities = capabilities, cmd = clangd_cmd }
   end
 end

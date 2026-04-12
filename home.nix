@@ -18,6 +18,7 @@
     ./modules/git.nix
     ./modules/dev-tools.nix
     ./modules/neovim.nix
+    ./modules/ros.nix
     
     # [4. 쉘 & CLI 터미널]
     ./modules/shell/utils.nix
