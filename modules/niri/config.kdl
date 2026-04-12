@@ -23,11 +23,13 @@ cursor {
     xcursor-size 48
 }
 
-// 자동 실행
+// 자동 실행 (환경 변수 공유 및 Systemd 세션 연동)
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "NIRI_SOCKET"
+spawn-at-startup "systemctl" "--user" "start" "niri-session.target"
+
 spawn-at-startup "fcitx5" "-d"
 spawn-at-startup "noctalia-shell"
 spawn-at-startup "nm-applet"
-spawn-at-startup "hypridle"
 
 // 단축키 파일 포함
 include "binds.kdl"
