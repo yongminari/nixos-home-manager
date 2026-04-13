@@ -37,13 +37,20 @@
   # --- [Global Packages] ---
   home.packages = with pkgs; [
     home-manager
-    libnotify # 알림용
-    fnm       # Node.js 버전 매니저
+    libnotify        # 알림용
+    fnm              # Node.js 버전 매니저
+    google-cloud-sdk # Google Cloud SDK
   ];
 
   # --- [Global Session Variables] ---
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
+
+    # [Gemini CLI Settings]
+    GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
+    GOOGLE_CLOUD_LOCATION = "global"; # 서울 리전
+    GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json";
+    GOOGLE_GENAI_USE_VERTEXAI = "True";
   };
 
   # --- [Settings] ---
