@@ -23,8 +23,8 @@ if utils.is_remote or utils.is_multiplexer then
       ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
     },
     paste = {
-      ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-      ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+      ['+'] = function() return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') } end,
+      ['*'] = function() return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') } end,
     },
   }
 end

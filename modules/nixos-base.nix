@@ -72,6 +72,22 @@
   hardware.enableRedistributableFirmware = true; 
   services.printing.enable = true;
   security.rtkit.enable = true;
+  security.pki.certificates = [
+    ''
+    -----BEGIN CERTIFICATE-----
+    MIIBsDCCAVagAwIBAgIRAMHBbZWmymbmLKvyFpepQ6gwCgYIKoZIzj0EAwIwNjEV
+    MBMGA1UEChMMbnh0cC1jYS1zdGVwMR0wGwYDVQQDExRueHRwLWNhLXN0ZXAgUm9v
+    dCBDQTAeFw0yNTExMTMxMjMyNTBaFw0zNTExMTExMjMyNTBaMDYxFTATBgNVBAoT
+    DG54dHAtY2Etc3RlcDEdMBsGA1UEAxMUbnh0cC1jYS1zdGVwIFJvb3QgQ0EwWTAT
+    BgcqhkjOPQIBBggqhkjOPQMBBwNCAAStj0NKsFMfj+atQd41Wvdrsuc+vxCAT/bH
+    f9V0N2dR9b0z6BtjEqin0LDzRyHsqPf2cvBNDoLJI+13IpaL0qJ9o0UwQzAOBgNV
+    HQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBATAdBgNVHQ4EFgQUVsO9CbpS
+    JP1SLOVGEB6cqkqFqiEwCgYIKoZIzj0EAwIDSAAwRQIhAJC5a/pTRehwdINCaObt
+    pxedbxX6uj84Xk8uz5Pns2S1AiAmwIANAxCLpTyOnH921D55ZKPbfLD916YUL1um
+    lvGXTw==
+    -----END CERTIFICATE-----
+    ''
+  ];
 
   services.pipewire = {
     enable = true;
