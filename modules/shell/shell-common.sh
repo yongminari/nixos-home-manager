@@ -7,8 +7,11 @@ function is_docker() { [[ -e /.dockerenv ]] || grep -q "docker" /proc/1/cgroup 2
 function is_vscode() { [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]; }
 
 # [Theme & Prompt Settings]
+# 환경에 따른 Starship 테마 전환 (로컬: Blue, SSH: Pink, Docker: Green)
 if is_ssh; then
   export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
+elif is_docker; then
+  export STARSHIP_CONFIG="$HOME/.config/starship-docker.toml"
 fi
 
 # [Zellij Wrapper]
@@ -21,10 +24,6 @@ function zellij() {
 }
 
 # [Zellij Auto-start]
-# 1. 대화형 쉘일 것
-# 2. 이미 Zellij 안이 아닐 것 ($ZELLIJ 환경변수 체크)
-# 3. VSCode 터미널이 아닐 것
-# 4. 부모 프로세스가 Zellij가 아닐 것 (중첩 방지 핵심)
 if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
   parent_proc=$(ps -p $PPID -o comm= 2>/dev/null)
   if [[ "$parent_proc" != "zellij" ]]; then

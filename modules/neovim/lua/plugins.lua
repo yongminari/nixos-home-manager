@@ -2,21 +2,37 @@ local utils = require('utils')
 local options = require('options')
 local safe_require = utils.safe_require
 
--- [테마 설정]
-safe_require("tokyonight", function(tokyonight)
-  tokyonight.setup({
-    style = options.theme_style,
-    transparent = options.is_transparent,
-    styles = {
-      sidebars = utils.is_remote and "dark" or "transparent",
-      floats = utils.is_remote and "dark" or "transparent",
+-- [테마 설정: Gruvbox]
+safe_require("gruvbox", function(gruvbox)
+  gruvbox.setup({
+    terminal_colors = true,
+    undercurl = true,
+    underline = true,
+    bold = true,
+    italic = {
+      strings = true,
+      emphasis = true,
+      comments = true,
+      operators = false,
+      folds = true,
     },
+    strikethrough = true,
+    invert_selection = false,
+    invert_signs = false,
+    invert_tabline = false,
+    invert_intend_guides = false,
+    inverse = true,
+    contrast = "hard", -- 어두운 모드에서 Ghostty와 일치시키기 위해 hard 사용
+    palette_overrides = {},
+    overrides = {},
+    dim_inactive = false,
+    transparent_mode = not utils.is_remote, -- 로컬에서만 투명 배경 사용
   })
-  vim.cmd.colorscheme "tokyonight"
+  vim.cmd.colorscheme "gruvbox"
 end)
 
 -- [기본 UI 컴포넌트]
-safe_require("lualine", function(lualine) lualine.setup { options = { theme = 'tokyonight' } } end)
+safe_require("lualine", function(lualine) lualine.setup { options = { theme = 'gruvbox' } } end)
 safe_require("bufferline", function(bufferline) bufferline.setup{} end)
 safe_require("gitsigns", function(gitsigns) gitsigns.setup() end)
 safe_require("ibl", function(ibl) ibl.setup() end)
@@ -98,28 +114,28 @@ end
 -- Treesitter Config
 safe_require("nvim-treesitter.configs", function(configs) configs.setup { highlight = { enable = true }, indent = { enable = true } } end)
 
-  -- [LSP Config (Neovim 0.11+ Modern Way)]
-  -- [컨테이너 파일 로더: 호스트에 없는 /opt, /usr 경로의 파일을 컨테이너에서 가져옵니다]
-  vim.api.nvim_create_autocmd("BufReadCmd", {
-    pattern = { "/opt/*", "/usr/include/*" },
-    callback = function(args)
-      local file = args.file
-      -- 호스트에 파일이 실존한다면 (Nix가 링크했거나 등) Distrobox를 호출하지 않음
-      if vim.fn.filereadable(file) == 1 then
-        return
-      end
+-- [ROS/Distrobox 하이브리드 지원 로직]
+-- [컨테이너 파일 로더: 호스트에 없는 /opt, /usr 경로의 파일을 컨테이너에서 가져옵니다]
+vim.api.nvim_create_autocmd("BufReadCmd", {
+  pattern = { "/opt/*", "/usr/include/*" },
+  callback = function(args)
+    local file = args.file
+    -- 호스트에 파일이 실존한다면 (Nix가 링크했거나 등) Distrobox를 호출하지 않음
+    if vim.fn.filereadable(file) == 1 then
+      return
+    end
 
-      local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
-      local content = vim.fn.systemlist(cmd)
-      if vim.v.shell_error == 0 then
-        vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
-        vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
-        vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
-        local ft = vim.filetype.match({ filename = file })
-        if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
-      end
-    end,
-  })
+    local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
+    local content = vim.fn.systemlist(cmd)
+    if vim.v.shell_error == 0 then
+      vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
+      vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
+      vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
+      local ft = vim.filetype.match({ filename = file })
+      if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
+    end
+  end,
+})
 
 local capabilities = {}
 local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
@@ -134,8 +150,6 @@ if vim.lsp.config then
     vim.lsp.enable(lsp)
   end
 
-  -- [ROS/Distrobox 하이브리드 지원 로직]
-  -- compile_commands.json은 일반 프로젝트에서도 쓰이므로 ROS 판별 기준에서 제외합니다.
   local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
                          vim.env.AMENT_PREFIX_PATH ~= nil or
                          #vim.fs.find('package.xml', { upward = true }) > 0

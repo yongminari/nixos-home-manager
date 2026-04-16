@@ -42,7 +42,7 @@
   qt = {
     enable = true;
     platformTheme.name = "gtk";
-    style.name = "adwaita-dark";
+    style.name = "kvantum";
   };
 
   # dconf 활성화

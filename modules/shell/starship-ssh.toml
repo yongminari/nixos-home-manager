@@ -1,68 +1,37 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[░▒▓](#ee99a0)\
-[ 󱘖 ](bg:#ee99a0 fg:#1e1e2e)\
-$custom\
-[](bg:#f5a97f fg:#ee99a0)\
+[░▒▓](#e3a3d2)\
+[ 󰆍 ](bg:#e3a3d2 fg:#090c0c)\
+[](bg:#f076c0 fg:#e3a3d2)\
 $directory\
-[](fg:#f5a97f bg:#394260)\
+[](fg:#f076c0 bg:#60395d)\
 $git_branch\
 $git_status\
-[](fg:#394260 bg:#212736)\
+[](fg:#60395d bg:#362134)\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:#212736 bg:#1d2230)\
+[](fg:#362134 bg:#301d2d)\
 $time\
-[ ](fg:#1d2230)\
+[ ](fg:#301d2d)\
 \n$character"""
 
-[custom.address]
-command = "bash -c \"hostname -I | awk '{print $1}' || ipconfig getifaddr en0 || hostname\""
-when = "true"
-style = "bg:#ee99a0 fg:#1e1e2e"
-format = "[$output ]($style)"
-
 [directory]
-style = "fg:#1e1e2e bg:#f5a97f"
+style = "fg:#e3e5e5 bg:#f076c0"
 format = "[ $path ]($style)"
 truncation_length = 5
-truncate_to_repo = false
-truncation_symbol = "…/"
 
 [git_branch]
-symbol = ""
-style = "bg:#394260"
-format = '[[ $symbol $branch ](fg:#f5a97f bg:#394260)]($style)'
+style = "bg:#60395d"
+format = '[[ $symbol $branch ](fg:#f076c0 bg:#60395d)]($style)'
 
 [git_status]
-style = "bg:#394260"
-format = '[[($all_status$ahead_behind )](fg:#f5a97f bg:#394260)]($style)'
-
-[nodejs]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
-
-[rust]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
-
-[golang]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
-
-[php]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
+style = "bg:#60395d"
+format = '[[($all_status$ahead_behind )](fg:#f076c0 bg:#60395d)]($style)'
 
 [time]
 disabled = false
-time_format = "%R" 
-style = "bg:#1d2230"
-format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+style = "bg:#301d2d"
+format = '[[  $time ](fg:#cba0c5 bg:#301d2d)]($style)'

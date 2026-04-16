@@ -1,21 +1,40 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   home.packages = with pkgs; [
     google-chrome
-    alacritty 
     ghostty
-    xwayland-satellite # Wayland 상에서 X11 앱 보조용
+    xwayland-satellite
   ];
+
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      # Alacritty v0.13+ 최신 설정 사양 (general 섹션 사용)
+      general = {
+        import = [ "${inputs.alacritty-theme}/themes/gruvbox_dark.toml" ];
+      };
+
+      window = {
+        opacity = 0.95;
+        padding = { x = 12; y = 12; };
+        dynamic_title = true;
+      };
+
+      font = {
+        normal = { family = "Maple Mono NF"; style = "Regular"; };
+        bold = { family = "Maple Mono NF"; style = "Bold"; };
+        size = 12.0;
+      };
+    };
+  };
 
   # Ghostty 설정
   xdg.configFile."ghostty/config".text = ''
+    # Ghostty 내장 테마 이름 (에러 방지를 위해 Gruvbox Dark로 수정)
+    theme = Gruvbox Dark
     font-family = "Maple Mono NF"
-    font-family = "D2Coding"
     font-size = 12
     command = ${pkgs.zsh}/bin/zsh
-
-    # SSH 접속 시 터미널 정보(terminfo)를 자동으로 원격지에 복사하여 글자 중복 입력 현상 해결
-    shell-integration-features = ssh-terminfo
   '';
 }

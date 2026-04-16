@@ -1,9 +1,5 @@
 local utils = require('utils')
 
--- 테마 설정용
-local theme_style = utils.is_remote and "day" or "moon"
-local is_transparent = not utils.is_remote
-
 -- [기본 옵션]
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -13,6 +9,14 @@ vim.opt.expandtab = true
 vim.opt.ignorecase = true     -- Case insensitive searching
 vim.opt.smartcase = true      -- Smart case
 vim.g.mapleader = " "         
+
+-- [테마 배경색 설정]
+-- 원격지(SSH/Docker)에서 접속 시 배경을 light 모드로 전환
+if utils.is_remote then
+  vim.opt.background = "light"
+else
+  vim.opt.background = "dark"
+end
 
 -- [클립보드 설정]
 if utils.is_remote or utils.is_multiplexer then
