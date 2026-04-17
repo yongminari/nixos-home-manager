@@ -25,6 +25,7 @@
       theme = {
         # 기본적으로 Catppuccin 스타일이나 매끈한 다크 테마를 따릅니다.
         mode = "dark";
+        name = "ayu";
       };
     };
   };
