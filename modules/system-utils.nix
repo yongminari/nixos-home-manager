@@ -1,11 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
-  # 기본 배경화면 다운로드 (Catppuccin Mocha 저녁 하늘 테마)
-  defaultWallpaper = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/iruzo/wp/main/desktop-catppuccin-mocha-evening-sky.png";
-    sha256 = "sha256-fYMzoY3un4qGOSR4DMqVUAFmGGil+wUze31rLLrjcAc=";
-  };
+  # 프로젝트 내 로컬 이미지를 기본 배경화면으로 지정
+  defaultWallpaper = ./niri/niri_wallpaper.jpg;
 in
 {
   home.packages = with pkgs; [
@@ -43,7 +40,7 @@ in
   '';
 
   # 배경화면 이미지를 원하는 경로에 심볼릭 링크로 연결
-  home.file."Pictures/Wallpapers/default_wallpaper.png".source = defaultWallpaper;
+  home.file."Pictures/Wallpapers/niri_wallpaper.jpg".source = defaultWallpaper;
 
   # 스크린샷 폴더 자동 생성
   home.activation.createScreenshotDir = config.lib.dag.entryAfter ["writeBoundary"] ''

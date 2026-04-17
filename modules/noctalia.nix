@@ -24,6 +24,7 @@
 
       theme = {
         mode = "dark";
+        wallpaper = "/home/yongminari/Pictures/Wallpapers/niri_wallpaper.jpg";
       };
 
       colorSchemes.predefinedScheme = "Ayu";
