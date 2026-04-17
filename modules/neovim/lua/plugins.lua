@@ -79,6 +79,21 @@ safe_require("lazygit", function(lazygit)
   vim.keymap.set("n", "<leader>G", "<cmd>LazyGit<cr>", { desc = "LazyGit"})
 end)
 
+safe_require("neogit", function(neogit)
+  neogit.setup({
+    integrations = {
+      diffview = true, -- Neogit에서 Diffview를 바로 볼 수 있게 연동
+    },
+  })
+  vim.keymap.set("n", "<leader>ng", "<cmd>Neogit<cr>", { desc = "Neogit" })
+end)
+
+safe_require("diffview", function(diffview)
+  diffview.setup({})
+  vim.keymap.set("n", "<leader>dv", "<cmd>DiffviewOpen<cr>", { desc = "Diffview Open" })
+  vim.keymap.set("n", "<leader>dc", "<cmd>DiffviewClose<cr>", { desc = "Diffview Close" })
+end)
+
 -- [Obsidian 설정]
 safe_require("obsidian", function(obsidian)
   local vault_path = vim.fn.expand("~/Documents/obsidian_personal_note")

@@ -30,6 +30,8 @@
       nvim-autopairs
       trouble-nvim
       toggleterm-nvim
+      neogit
+      diffview-nvim
       lazygit-nvim
       obsidian-nvim
       nvim-lspconfig
