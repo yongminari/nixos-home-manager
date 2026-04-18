@@ -40,5 +40,14 @@
       g  = "git";
       v  = "nvim";
     };
+
+    extraConfig = ''
+      # [SSH Wrapper]
+      def --env ssh [...args] {
+        with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
+          ^ssh ...$args
+        }
+      }
+    '';
   };
 }
