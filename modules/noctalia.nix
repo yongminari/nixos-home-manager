@@ -23,16 +23,34 @@
       };
 
       theme = {
-        mode = "dark";
-        # 절대 경로 대신 Nix path를 사용하여 이미지를 확실하게 참조합니다.
-        wallpaper = ./niri/niri_wallpaper.jpg;
       };
 
-      # 오버뷰(Overview) 배경화면 설정
+      # 배경화면 설정 (Wallhaven 온라인 소스 사용)
       wallpaper = {
-        enableOverviewWallpaper = true;
-        blur = 20;
-        dim = 0.5;
+        enabled = true;
+        overviewEnabled = true;
+        automationEnabled = true;
+        wallpaperChangeMode = "random";
+        randomIntervalSec = 300; # 5분
+        
+        # 오버뷰 시 블러 및 명암 효과
+        overviewBlur = 0.5;
+        overviewTint = 0.5;
+        
+        # Wallhaven 설정
+        useWallhaven = true;
+        wallhavenQuery = "dark";   # 어두운 배경화면 검색
+        wallhavenCategories = "111"; # General, Anime, People 모두 포함
+        wallhavenPurity = "100";     # SFW(Safe For Work) 이미지 전용
+        wallhavenSorting = "random"; # 무작위 정렬
+        
+        # 전환 효과 설정
+        transitionType = [
+          "fade"
+          "pixelate"
+          "blur"
+        ];
+        transitionDuration = 1500;
       };
 
       colorSchemes.predefinedScheme = "Ayu";

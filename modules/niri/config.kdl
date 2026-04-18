@@ -13,7 +13,7 @@ input {
 
 // 창 규칙
 window-rule {
-    geometry-corner-radius 12
+    geometry-corner-radius 20
     clip-to-geometry true
 }
 
@@ -23,11 +23,18 @@ window-rule {
 }
 
 layer-rule {
-    match namespace="^noctalia-wallpaper*"
+    match namespace="^noctalia-overview"
+    place-within-backdrop true
 }
 
-layer-rule {
-    match namespace="^noctalia-overview*"
+layout {
+    background-color "transparent"
+}
+
+overview {
+    workspace-shadow {
+        off
+    }
 }
 
 // 커서 설정 (Niri 네이티브 설정)

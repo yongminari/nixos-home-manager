@@ -42,6 +42,11 @@ in
   # 배경화면 이미지를 원하는 경로에 심볼릭 링크로 연결
   home.file."Pictures/Wallpapers/niri_wallpaper.jpg".source = defaultWallpaper;
 
+  # 배경화면 폴더 자동 생성 (이미지가 없을 경우를 대비)
+  home.activation.createWallpaperDir = config.lib.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p ${config.home.homeDirectory}/Pictures/Wallpapers
+  '';
+
   # 스크린샷 폴더 자동 생성
   home.activation.createScreenshotDir = config.lib.dag.entryAfter ["writeBoundary"] ''
     mkdir -p ${config.home.homeDirectory}/Pictures/Screenshots
