@@ -41,6 +41,6 @@ in
     enableBashIntegration = false;
   };
   
-  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "Ctrl g" "gruvbox-dark";
-  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "Ctrl a" "catppuccin-latte";
+  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "Ctrl g" "ayu_dark";
+  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "Ctrl a" "ayu_mirage";
 }

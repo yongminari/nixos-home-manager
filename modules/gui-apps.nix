@@ -11,7 +11,7 @@
     settings = {
       # Alacritty v0.13+ 최신 설정 사양 (general 섹션 사용)
       general = {
-        import = [ "${inputs.alacritty-theme}/themes/gruvbox_dark.toml" ];
+        import = [ "${inputs.alacritty-theme}/themes/ayu_dark.toml" ];
       };
 
       window = {

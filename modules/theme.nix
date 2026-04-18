@@ -5,24 +5,19 @@
   gtk = {
     enable = true;
     
-    # 1. 테마 설정 (Catppuccin Mocha)
+    # 1. 테마 설정 (Ayu Dark)
     theme = {
-      name = "catppuccin-mocha-mauve-standard";
-      package = pkgs.catppuccin-gtk.override {
-        accents = [ "mauve" ];
-        size = "standard";
-        tweaks = [ "rimless" "black" ];
-        variant = "mocha";
-      };
+      name = "Ayu-Dark";
+      package = pkgs.ayu-theme-gtk;
     };
 
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
     gtk4.theme = null;
 
-    # 2. 아이콘 설정 (Papirus-Dark)
+    # 2. 아이콘 설정 (Ayu)
     iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name = "Ayu";
+      package = pkgs.ayu-theme-gtk; # Ayu GTK 패키지에 아이콘이 포함된 경우가 많음
     };
 
     # 3. 커서 설정

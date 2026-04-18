@@ -2,37 +2,25 @@ local utils = require('utils')
 local options = require('options')
 local safe_require = utils.safe_require
 
--- [테마 설정: Gruvbox]
-safe_require("gruvbox", function(gruvbox)
-  gruvbox.setup({
-    terminal_colors = true,
-    undercurl = true,
-    underline = true,
-    bold = true,
-    italic = {
-      strings = true,
-      emphasis = true,
-      comments = true,
-      operators = false,
-      folds = true,
-    },
-    strikethrough = true,
-    invert_selection = false,
-    invert_signs = false,
-    invert_tabline = false,
-    invert_intend_guides = false,
-    inverse = true,
-    contrast = "hard", -- 어두운 모드에서 Ghostty와 일치시키기 위해 hard 사용
-    palette_overrides = {},
-    overrides = {},
-    dim_inactive = false,
-    transparent_mode = not utils.is_remote, -- 로컬에서만 투명 배경 사용
-  })
-  vim.cmd.colorscheme "gruvbox"
+-- [테마 설정: Ayu]
+safe_require("ayu", function(ayu)
+  -- 로컬에서는 'dark', 원격 환경(SSH/Docker)에서는 'mirage' 사용
+  if utils.is_remote then
+    vim.g.ayucolor = "mirage"
+  else
+    vim.g.ayucolor = "dark"
+  end
+  
+  -- 배경 투명도 설정 (로컬에서만 사용)
+  vim.cmd.colorscheme "ayu"
 end)
 
 -- [기본 UI 컴포넌트]
-safe_require("lualine", function(lualine) lualine.setup { options = { theme = 'gruvbox' } } end)
+safe_require("lualine", function(lualine)
+  local lualine_theme = 'ayu_dark'
+  if utils.is_remote then lualine_theme = 'ayu_mirage' end
+  lualine.setup { options = { theme = lualine_theme } }
+end)
 safe_require("bufferline", function(bufferline) bufferline.setup{} end)
 safe_require("gitsigns", function(gitsigns) gitsigns.setup() end)
 safe_require("ibl", function(ibl) ibl.setup() end)

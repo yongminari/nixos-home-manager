@@ -22,7 +22,7 @@
       navigate = true;
       line-numbers = true;
       side-by-side = true;
-      syntax-theme = "Dracula";
+      syntax-theme = "ayu";
     };
   };
 
