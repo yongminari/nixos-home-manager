@@ -4,7 +4,24 @@
   programs.nushell = {
     enable = true;
     
+    # [Nushell Settings] - 퍼지 검색 및 고도화된 완성 설정
+    settings = {
+      show_banner = false;
+      edit_mode = "vi";
+      completions = {
+        case_sensitive = false;
+        quick = true;
+        partial = true;
+        algorithm = "fuzzy"; # 퍼지 검색 활성화
+        external = { 
+          enable = true; 
+          max_results = 100; 
+        };
+      };
+    };
+
     envFile.text = ''
+      # [Nix & Home Manager Path Setup]
       let nix_bin = ($env.HOME | path join ".nix-profile" "bin")
       let hm_bin = ($env.HOME | path join ".local" "state" "nix" "profiles" "home-manager" "profile" "bin")
       
@@ -25,8 +42,8 @@
       $env.GOOGLE_GENAI_USE_VERTEXAI = "True"
 
       # [Environment Detection]
-      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty)) or (not ($env | get -o SSH_CONNECTION | is-empty))
-      let is_docker = ("/.dockerenv" | path exists) or (if ("/proc/1/cgroup" | path exists) { (open /proc/1/cgroup | str contains "docker") } else { false })
+      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
+      let is_docker = ("/.dockerenv" | path exists)
 
       # [Starship 설정 연동]
       if ($is_ssh) {
@@ -36,18 +53,32 @@
       }
     '';
 
-    configFile.text = ''
-      $env.config = {
-        show_banner: false
-        edit_mode: vi
-      }
-      # welcome-msg 호출 (nushell 방식)
+    extraConfig = ''
+      # [Carapace Completion Helper]
+      # 모든 명령어에 대해 강력한 자동완성 지원
+      let carapace_completer = { |spans| carapace $spans.0 nushell ...$spans | from json }
+      $env.config.completions.external.completer = $carapace_completer
+
+      # [Welcome Message]
       ^welcome-msg
 
+      # [Environment Check for Aliases]
+      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
+      let is_docker = ("/.dockerenv" | path exists)
+
+      # [SSH Wrapper]
+      def --env ssh [...args] {
+        let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
+        if ($is_ghostty and ($args | length) > 0) {
+          ^ghostty +ssh ...$args
+        } else {
+          with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
+            ^ssh ...$args
+          }
+        }
+      }
+
       # [Zellij Wrapper]
-      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty)) or (not ($env | get -o SSH_CONNECTION | is-empty))
-      let is_docker = ("/.dockerenv" | path exists) or (if ("/proc/1/cgroup" | path exists) { (open /proc/1/cgroup | str contains "docker") } else { false })
-      
       if ($is_ssh or $is_docker) {
         alias zellij = zellij --config ($env.HOME | path join ".config" "zellij" "remote.kdl")
       }
@@ -56,23 +87,9 @@
     shellAliases = {
       la = "ls -a";
       ll = "ls -a";
+      lt = "eza --tree --level=2 --icons --git";
       g  = "git";
       v  = "nvim";
     };
-
-    extraConfig = ''
-      # [SSH Wrapper]
-      # Ghostty 사용 시 'ghostty +ssh'를 통해 terminfo 자동 주입 시도
-      def --env ssh [...args] {
-        let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
-        if $is_ghostty {
-          ^ghostty +ssh ...$args
-        } else {
-          with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
-            ^ssh ...$args
-          }
-        }
-      }
-    '';
   };
 }
