@@ -13,6 +13,7 @@
     ./modules/hyprlock.nix
     ./modules/hypridle.nix
     ./modules/gui-apps.nix
+    ./modules/ghostty.nix
     
     # [3. 개발 도구]
     ./modules/git.nix

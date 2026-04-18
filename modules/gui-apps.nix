@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     google-chrome
-    ghostty
     xwayland-satellite
   ];
 
@@ -28,13 +27,4 @@
       };
     };
   };
-
-  # Ghostty 설정
-  xdg.configFile."ghostty/config".text = ''
-    # Ghostty 내장 테마 이름 (에러 방지를 위해 Gruvbox Dark로 수정)
-    theme = Gruvbox Dark
-    font-family = "Maple Mono NF"
-    font-size = 12
-    command = ${pkgs.zsh}/bin/zsh
-  '';
 }
