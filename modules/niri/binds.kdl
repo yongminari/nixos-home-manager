@@ -3,7 +3,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // 실행
-    Mod+Return { spawn "alacritty"; }
+    Mod+Return { spawn "ghostty"; }
     Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
 
     // 창 관리

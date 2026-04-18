@@ -8,11 +8,11 @@
 - **🪟 Window Manager:** **Niri** (Scroll-based tiling compositor) - 현대적이고 매끄러운 사용자 경험.
 - **⚡ Shell:** **Zsh** (Main), **Nushell (Experimental)**, **Bash** - **Starship** 테마 적용.
 - **🛠️ Modern Core Utils:** `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`.
-- **💻 Terminal:** **Ghostty** (성능 최적화), **Alacritty**.
-- **📝 Editor:** **Neovim** (Lua 기반 모듈형 설정).
+- **💻 Terminal:** **Ghostty** (Primary / High Performance), **Alacritty**.
+- **📝 Editor:** **Neovim** (Lua-based modular config).
 - **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
-- **🔒 Security:** **OpenSSH Server** 기본 탑재 (원격 관리 가능).
-- **🎨 Global Theme:** **Catppuccin Mocha** 기반의 통일된 미학.
+- **🔒 Security:** **OpenSSH Server** included.
+- **🎨 Global Theme:** **Ayu Dark** (Local) / **Ayu Mirage** (Remote) - Unified aesthetics.
 
 ---
 
