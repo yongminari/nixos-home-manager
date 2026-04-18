@@ -14,10 +14,10 @@
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
     gtk4.theme = null;
 
-    # 2. 아이콘 설정 (Ayu)
+    # 2. 아이콘 설정 (Papirus-Dark)
     iconTheme = {
-      name = "Ayu";
-      package = pkgs.ayu-theme-gtk; # Ayu GTK 패키지에 아이콘이 포함된 경우가 많음
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
     };
 
     # 3. 커서 설정
@@ -33,6 +33,13 @@
     };
   };
 
+  # 아이콘 테마 및 필수 테마 관련 패키지 명시적 추가
+  home.packages = with pkgs; [
+    papirus-icon-theme
+    adwaita-icon-theme
+    hicolor-icon-theme
+  ];
+
   # Qt 앱들을 GTK 테마와 동기화
   qt = {
     enable = true;
@@ -43,11 +50,13 @@
   # dconf 활성화
   dconf.enable = true;
 
-  # dconf 설정으로 GNOME 환경의 커서 크기 강제 지정
+  # dconf 설정으로 GNOME 환경의 아이콘 및 커서 테마 지정
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       cursor-size = 48;
       cursor-theme = "Bibata-Modern-Ice";
+      icon-theme = "Papirus-Dark";
+      gtk-theme = "Ayu-Dark";
     };
   };
 
