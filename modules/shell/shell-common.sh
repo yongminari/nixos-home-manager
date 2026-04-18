@@ -14,6 +14,12 @@ elif is_docker; then
   export STARSHIP_CONFIG="$HOME/.config/starship-docker.toml"
 fi
 
+# [SSH Wrapper]
+# 다른 서버로 접속할 때 호환성을 위해 TERM 및 COLORTERM을 설정하여 전송
+ssh() {
+  TERM=xterm-256color COLORTERM=truecolor command ssh "$@"
+}
+
 # [Zellij Wrapper]
 function zellij() {
   if is_ssh || is_docker; then

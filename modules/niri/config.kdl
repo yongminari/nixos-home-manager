@@ -22,6 +22,14 @@ window-rule {
     opacity 0.85
 }
 
+layer-rule {
+    match namespace="^noctalia-wallpaper*"
+}
+
+layer-rule {
+    match namespace="^noctalia-overview*"
+}
+
 // 커서 설정 (Niri 네이티브 설정)
 cursor {
     xcursor-theme "Bibata-Modern-Ice"

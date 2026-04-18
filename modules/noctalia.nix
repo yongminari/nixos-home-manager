@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, config, lib, ... }:
 
 {
   imports = [
@@ -24,7 +24,15 @@
 
       theme = {
         mode = "dark";
-        wallpaper = "/home/yongminari/Pictures/Wallpapers/niri_wallpaper.jpg";
+        # 절대 경로 대신 Nix path를 사용하여 이미지를 확실하게 참조합니다.
+        wallpaper = ./niri/niri_wallpaper.jpg;
+      };
+
+      # 오버뷰(Overview) 배경화면 설정
+      wallpaper = {
+        enableOverviewWallpaper = true;
+        blur = 20;
+        dim = 0.5;
       };
 
       colorSchemes.predefinedScheme = "Ayu";
