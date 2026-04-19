@@ -3,9 +3,7 @@
 let
   hostname = osConfig.networking.hostName or "";
   # 호스트별 스케일 정의
-  scale = if hostname == "galaxy-book" then "0.9"
-          else if hostname == "ai-x1-pro" then "1.1"
-          else "1.0";
+  scale = "1.0";
   
   # 기존 설정 파일 내용 읽기
   baseConfig = builtins.readFile ./niri/config.kdl;

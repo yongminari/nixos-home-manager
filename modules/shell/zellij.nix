@@ -42,5 +42,5 @@ in
   };
   
   xdg.configFile."zellij/config.kdl".text = mkZellijConfig "Ctrl g" "ayu_dark";
-  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "Ctrl a" "ayu_mirage";
+  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "Ctrl a" "iceberg-light";
 }
