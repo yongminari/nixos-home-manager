@@ -58,12 +58,22 @@
   fonts.packages = with pkgs; [ maple-mono.NF d2coding ];
   fonts.fontconfig = {
     enable = true;
+    antialias = true;
+    hinting = {
+      enable = true;
+      style = "full"; # 힌팅 강도를 최대로 설정하여 번짐 방지
+    };
+    subpixel = {
+      rgba = "rgb";
+      lcdfilter = "default";
+    };
     defaultFonts = {
       monospace = [ "Maple Mono NF" "D2Coding" ];
       sansSerif = [ "Maple Mono NF" "D2Coding" ];
       serif = [ "Maple Mono NF" "D2Coding" ];
     };
   };
+
 
   # --- [6. System Services & Utilities] ---
   services.upower.enable = true;
