@@ -114,8 +114,22 @@ if cmp_ok then
   })
 end
 
--- Treesitter Config
-safe_require("nvim-treesitter.configs", function(configs) configs.setup { highlight = { enable = true }, indent = { enable = true } } end)
+-- Treesitter Config (Main branch migration)
+-- Neovim 0.11+ 및 새로운 nvim-treesitter 구조에 맞춰 설정합니다.
+safe_require("nvim-treesitter", function(ts)
+  ts.setup()
+end)
+
+-- 버퍼 진입 시 하이라이트 및 들여쓰기 활성화
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+    if lang then
+      pcall(vim.treesitter.start, args.buf, lang)
+      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
+})
 
 -- [ROS/Distrobox 하이브리드 지원 로직]
 -- [컨테이너 파일 로더: 호스트에 없는 /opt, /usr 경로의 파일을 컨테이너에서 가져옵니다]

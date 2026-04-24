@@ -20,7 +20,7 @@
       nui-nvim 
       plenary-nvim
       telescope-nvim
-      nvim-treesitter.withAllGrammars 
+      pkgs.vimPlugins.nvim-treesitter.withAllGrammars
       gitsigns-nvim
       indent-blankline-nvim
       bufferline-nvim
