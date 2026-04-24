@@ -58,6 +58,44 @@
     enableBashIntegration = true;
     enableNushellIntegration = true;
     shellWrapperName = "y";
+
+    settings = {
+      manager = {
+        show_hidden = false;
+        sort_by = "alphabetical";
+        linemode = "githead";
+      };
+      status = {
+        left = [
+          { name = "hovered"; collect = false; }
+          { name = "count"; collect = false; }
+          { name = "githead"; collect = false; }
+        ];
+        right = [
+          { name = "cursor"; collect = false; }
+          { name = "sort"; collect = false; }
+          { name = "permissions"; collect = false; }
+        ];
+      };
+      opener = {
+        edit = [
+          { run = ''${pkgs.neovim}/bin/nvim "$@"''; block = true; }
+        ];
+      };
+    };
+
+    initLua = ''
+      require("githead"):setup()
+    '';
+
+    plugins = {
+      githead = pkgs.fetchFromGitHub {
+        owner = "llanosrocas";
+        repo = "githead.yazi";
+        rev = "main";
+        sha256 = "sha256-o2EnQYOxp5bWn0eLn0sCUXcbtu6tbO9pdUdoquFCTVw=";
+      };
+    };
   };
 
   # Carapace (Multi-shell completion)
