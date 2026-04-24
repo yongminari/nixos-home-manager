@@ -10,6 +10,24 @@
   networking.hostName = "galaxy-book";
   networking.networkmanager.enable = true;
 
+  # WireGuard VPN 설정 (galaxy-book)
+  networking.wireguard.interfaces.wg0 = {
+    ips = [ "10.0.151.9/24" ];
+    privateKeyFile = "/etc/wireguard/wg0.key";
+    peers = [
+      {
+        publicKey = "xKId6dwAyUbnDlfgS6cx0/cshyq9H/uKLmE8uYAsCiI=";
+        presharedKeyFile = "/etc/wireguard/wg0.psk";
+        allowedIPs = [ "192.168.0.0/24" ];
+        endpoint = "58.121.116.136:55536";
+        persistentKeepalive = 25;
+      }
+    ];
+  };
+
+  # 부팅 시 WireGuard 자동 시작 방지
+  systemd.services.wireguard-wg0.wantedBy = pkgs.lib.mkForce [ ];
+
   # --- [2. Hardware Optimization] ---
   # 갤럭시 북2 사운드 및 백라이트 해결을 위한 커널 파라미터
   boot.kernelParams = [ 
@@ -29,5 +47,6 @@
   environment.systemPackages = with pkgs; [ 
     sof-firmware alsa-utils pavucontrol 
     brightnessctl
+    wireguard-tools
   ];
 }
