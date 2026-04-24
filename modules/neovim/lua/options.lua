@@ -39,6 +39,13 @@ vim.opt.conceallevel = 2
 vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
 
+-- [Diagnostic 하이라이트 설정]
+-- Error: 빨간색 가운데 줄 (strikethrough), Warn: 노란색 가운데 줄
+vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { underline = false, strikethrough = true, sp = "Red" })
+vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { underline = false, strikethrough = true, sp = "Yellow" })
+vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { underline = false, strikethrough = true, sp = "LightBlue" })
+vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { underline = false, strikethrough = true, sp = "LightGrey" })
+
 return {
   theme_style = theme_style,
   is_transparent = is_transparent,
