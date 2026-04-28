@@ -22,6 +22,7 @@ in
     
     # [클립보드 및 기타]
     wl-clipboard
+    cliphist           # 클립보드 히스토리 관리
     networkmanagerapplet
 
     # [Nix 관리]
@@ -72,4 +73,7 @@ in
   home.activation.createScreenshotDir = config.lib.dag.entryAfter ["writeBoundary"] ''
     mkdir -p ${config.home.homeDirectory}/Pictures/Screenshots
   '';
+
+  # 클립보드 히스토리 감시 서비스
+  services.cliphist.enable = true;
 }

@@ -5,6 +5,7 @@ binds {
     // 실행
     Mod+Return { spawn "ghostty"; }
     Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Mod+V { spawn "ghostty" "--class=floating_shell" "-e" "sh" "-c" "cliphist list | fzf --prompt='📋 Clipboard History: ' --height=40% --layout=reverse --border --margin=1 | cliphist decode | wl-copy"; }
 
     // 창 관리
     Mod+Q { close-window; }
