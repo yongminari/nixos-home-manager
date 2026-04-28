@@ -66,31 +66,29 @@ sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 ---
-
 ## 🛠️ Management Guide
 
-### 1. 설정 변경 적용 (Rebuild)
-환경 설정 파일(`.nix`)을 수정했을 때 적용하는 명령입니다.
-| 대상 | 실행 명령어 | 설명 |
+이 프로젝트는 더 나은 사용자 경험을 위해 **`nh` (Nix Helper)**를 사용합니다. 
+> ⚠️ **주의:** `nh`는 이 설정을 통해 처음으로 시스템을 빌드한 이후부터 사용 가능합니다. 최초 설치 시에는 아래의 **표준 명령어**를 사용하세요.
+
+### 1. 설정 변경 적용 (Switch)
+
+| 대상 | nh 명령어 (권장) | 표준 명령어 (Native) |
 | :--- | :--- | :--- |
-| **전체 (권장)** | `sudo nixos-rebuild switch --flake .#<hostname>` | **시스템 + 유저** 설정을 한꺼번에 동기화 |
-| **유저 전용** | `home-manager switch --flake .#yongminari` | 계정 관련 설정만 빠르게 적용할 때 |
+| **전체 (시스템+유저)** | `nh os switch` | `sudo nixos-rebuild switch --flake .#<hostname>` |
+| **유저 전용** | `nh home switch` | `home-manager switch --flake .` |
 
-### 2. 패키지 업데이트 (Update)
-설치된 패키지들을 최신 버전으로 업데이트하는 과정입니다. (Flake 방식)
+- `nh`는 빌드 시 `nix-output-monitor`를 통한 시각적 로그를 제공하며, 설정된 `flake` 경로를 자동으로 인식합니다.
 
-1. **입력 소스 업데이트:** `flake.lock` 파일을 최신 상태로 갱신합니다.
-   ```bash
-   nix flake update
-   ```
-2. **시스템 및 전체 업데이트 적용:**
-   ```bash
-   sudo nixos-rebuild switch --flake .#<hostname>
-   ```
-3. **유저 패키지만 개별 업데이트 (필요 시):**
-   ```bash
-   home-manager switch --flake .#yongminari
-   ```
+### 2. 패키지 업데이트 및 청소
+
+| 작업 | nh 명령어 | 표준 명령어 (Native) |
+| :--- | :--- | :--- |
+| **입력 소스 갱신** | - | `nix flake update` |
+| **시스템 업데이트** | `nh os switch` | `sudo nixos-rebuild switch --flake .#<hostname>` |
+| **오래된 세대 청소** | `nh clean all` | `nix-collect-garbage -d` |
+
+상세한 `nh` 사용법은 [docs/nh.md](docs/nh.md)를 참고하세요.
 
 ---
 

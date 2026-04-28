@@ -23,7 +23,18 @@ in
     # [클립보드 및 기타]
     wl-clipboard
     networkmanagerapplet
+
+    # [Nix 관리]
+    nix-output-monitor # nh가 빌드 로그를 시각화할 때 사용
+    nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
   ];
+
+  programs.nh = {
+    enable = true;
+    clean.enable = true;
+    clean.extraArgs = "--keep-since 4d --keep 3";
+    flake = "/home/yongminari/nixos-home-manager";
+  };
 
   # Swappy 설정 (캡처 후 즉시 편집기)
   xdg.configFile."swappy/config".text = ''
