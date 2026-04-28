@@ -29,6 +29,16 @@ in
     nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
   ];
 
+  programs.btop = {
+    enable = true;
+    settings = {
+      color_theme = "ayu";
+      theme_background = false; # 투명 배경 사용
+      vim_keys = true;
+      update_ms = 500; # 업데이트 간격 (0.5초)
+    };
+  };
+
   programs.nh = {
     enable = true;
     clean.enable = true;
