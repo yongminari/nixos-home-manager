@@ -9,7 +9,7 @@ binds {
 
     // 창 관리
     Mod+Q { close-window; }
-    Mod+Shift+E { quit; }
+    Mod+Shift+E { spawn "wlogout"; }
 
     // 포커스 이동 (HJKL / 방향키)
     Mod+Left  { focus-column-left; }

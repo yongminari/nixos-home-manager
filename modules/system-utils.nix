@@ -1,9 +1,5 @@
 { config, pkgs, lib, ... }:
 
-let
-  # 프로젝트 내 로컬 이미지를 기본 배경화면으로 지정
-  defaultWallpaper = ./niri/niri_wallpaper.jpg;
-in
 {
   home.packages = with pkgs; [
     # [화면 캡처]
@@ -28,7 +24,48 @@ in
     # [Nix 관리]
     nix-output-monitor # nh가 빌드 로그를 시각화할 때 사용
     nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
+
+    # [추가 유틸리티]
+    dust               # 시각적 디스크 용량 분석
+    tealdeer           # tldr (명령어 예제 사전)
   ];
+
+  # wlogout 설정 (세련된 종료 메뉴)
+  programs.wlogout = {
+    enable = true;
+    layout = [
+      {
+        label = "lock";
+        action = "loginctl lock-session";
+        text = "Lock";
+        keybind = "l";
+      }
+      {
+        label = "logout";
+        action = "niri msg action quit";
+        text = "Logout";
+        keybind = "e";
+      }
+      {
+        label = "suspend";
+        action = "systemctl suspend";
+        text = "Suspend";
+        keybind = "u";
+      }
+      {
+        label = "reboot";
+        action = "systemctl reboot";
+        text = "Reboot";
+        keybind = "r";
+      }
+      {
+        label = "shutdown";
+        action = "systemctl poweroff";
+        text = "Shutdown";
+        keybind = "s";
+      }
+    ];
+  };
 
   programs.btop = {
     enable = true;
@@ -59,14 +96,6 @@ in
     paint_mode=brush
     early_exit=false
     fill_shape=false
-  '';
-
-  # 배경화면 이미지를 원하는 경로에 심볼릭 링크로 연결
-  home.file."Pictures/Wallpapers/niri_wallpaper.jpg".source = defaultWallpaper;
-
-  # 배경화면 폴더 자동 생성 (이미지가 없을 경우를 대비)
-  home.activation.createWallpaperDir = config.lib.dag.entryAfter ["writeBoundary"] ''
-    mkdir -p ${config.home.homeDirectory}/Pictures/Wallpapers
   '';
 
   # 스크린샷 폴더 자동 생성
