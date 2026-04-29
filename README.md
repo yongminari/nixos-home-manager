@@ -7,9 +7,11 @@
 
 - **🪟 Window Manager:** **Niri** (Scroll-based tiling compositor) - 현대적이고 매끄러운 사용자 경험.
 - **⚡ Shell:** **Zsh** (Main), **Nushell (Experimental)**, **Bash** - **Starship** 테마 적용.
-- **🛠️ Modern Core Utils:** `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`.
+- **🛠️ Modern Core Utils:** `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`, `ps` → `procs`.
+- **🚀 Advanced CLI Tools:** `gh` (GitHub), `lazydocker`, `xh` (HTTP), `sd` (sed replacement), `gping` (Visual Ping), `comma` (Run without install), `nix-tree`.
 - **💻 Terminal:** **Ghostty** (Primary / High Performance), **Alacritty**.
 - **📝 Editor:** **Neovim** (Lua-based modular config).
+  - **Enhanced:** Neovim 0.11 support, ROS/Distrobox integration, `git-conflict-nvim`, and refined LSP visuals.
 - **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
 - **🔒 Security:** **OpenSSH Server** included.
 - **🎨 Global Theme:** **Ayu Dark** (Local) / **Ayu Mirage** (Remote) - Unified aesthetics.
@@ -104,6 +106,11 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | **`Super + Shift + R`** | 설정 리로드 |
 | **`Super + 1~9`** | 워크스페이스 이동 |
 | **`Super + Shift + S`** | 화면 캡처 및 편집 (**Swappy**) |
+
+### 🛠️ Git TUI (GitUI)
+- **`Ctrl + h / l`**: 메인 탭 전환 (Home_env style)
+- **`Shift + U`**: 스테이징 해제 (Reset item)
+- **`?`**: 도움말 열기
 
 ### 🇰🇷 한글 입력 (Fcitx5)
 1. `fcitx5-configtool` 실행.

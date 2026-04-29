@@ -24,10 +24,14 @@
     # [Nix 관리]
     nix-output-monitor # nh가 빌드 로그를 시각화할 때 사용
     nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
+    comma              # 임시 패키지 실행 ( , 명령어 )
+    nix-tree           # Nix 의존성 트리 탐색
 
     # [추가 유틸리티]
     dust               # 시각적 디스크 용량 분석
     tealdeer           # tldr (명령어 예제 사전)
+    procs              # ps 대체
+    gping              # 비주얼 핑
   ];
 
   # wlogout 설정 (세련된 종료 메뉴)
