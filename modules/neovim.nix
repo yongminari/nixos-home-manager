@@ -33,6 +33,7 @@
       neogit
       diffview-nvim
       lazygit-nvim
+      git-conflict-nvim
       obsidian-nvim
       nvim-lspconfig
       nvim-cmp
