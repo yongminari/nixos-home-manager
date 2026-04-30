@@ -8,6 +8,7 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.ignorecase = true     -- Case insensitive searching
 vim.opt.smartcase = true      -- Smart case
+vim.opt.updatetime = 300      -- Faster completion and highlight
 vim.g.mapleader = " "         
 
 -- [테마 배경색 설정]

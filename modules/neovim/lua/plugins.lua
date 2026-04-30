@@ -3,17 +3,18 @@ local options = require('options')
 local safe_require = utils.safe_require
 
 -- [테마 설정: Ayu]
-safe_require("ayu", function(ayu)
-  -- 로컬에서는 'dark', 원격 환경(SSH/Docker)에서는 'mirage' 사용
-  if utils.is_remote then
-    vim.g.ayucolor = "mirage"
-  else
-    vim.g.ayucolor = "dark"
-  end
-  
-  -- 배경 투명도 설정 (로컬에서만 사용)
-  vim.cmd.colorscheme "ayu"
-end)
+-- 로컬에서는 'dark', 원격 환경(SSH/Docker)에서는 'mirage' 사용
+if utils.is_remote then
+  vim.g.ayucolor = "mirage"
+else
+  vim.g.ayucolor = "dark"
+end
+
+-- ayu-vim은 주로 Vimscript이므로 pcall로 직접 호출
+local ok, _ = pcall(vim.cmd.colorscheme, "ayu")
+if not ok then
+  -- ayu가 없을 경우 기본 colorscheme 유지 혹은 다른 처리
+end
 
 -- [기본 UI 컴포넌트]
 safe_require("lualine", function(lualine)
@@ -234,11 +235,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
--- 하이라이트 스타일: 배경색을 채우지 않고 언더라인만 사용하여 터미널에서 깔끔하게 보이도록 함
-local hl_color = "#ffcc66" -- ayu 테마와 어울리는 골드 계열 색상
-vim.api.nvim_set_hl(0, "LspReferenceText", { underline = true, sp = hl_color })
-vim.api.nvim_set_hl(0, "LspReferenceRead", { underline = true, sp = hl_color })
-vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true, bold = true, sp = hl_color })
+-- 하이라이트 스타일: 심볼이 강조되도록 배경색과 언더라인을 함께 사용
+local function set_lsp_highlights()
+  vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3d424d", underline = true, sp = "#ffcc66" })
+  vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3d424d", underline = true, sp = "#ffcc66" })
+  vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#3d424d", underline = true, bold = true, sp = "#ffcc66" })
+end
+
+-- 초기 설정 및 테마 변경 시 재설정
+set_lsp_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = set_lsp_highlights,
+})
 
 -- [Diagnostic 하이라이트 설정]
 -- Error: 빨간색 가운데 줄 (strikethrough), Warn: 노란색 가운데 줄
