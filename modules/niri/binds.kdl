@@ -11,6 +11,11 @@ binds {
     Mod+Q { close-window; }
     Mod+Shift+E { spawn "wlogout"; }
 
+    // 플로팅 관리
+    Mod+W { toggle-window-floating; }
+    Mod+Alt+Space { focus-floating; }
+    Mod+Alt+Shift+Space { focus-tiling; }
+
     // 포커스 이동 (HJKL / 방향키)
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
