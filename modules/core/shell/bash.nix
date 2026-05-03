@@ -19,8 +19,8 @@
 
       # [Final Cleanup for Containers]
       if is_container; then
-        unalias ls ll lt cat v vi vim g z 2>/dev/null
-        unset -f z zi 2>/dev/null
+        unalias ls ll lt cat v vi vim g z cd 2>/dev/null
+        unset -f z zi cd 2>/dev/null
       fi
     '';
   };

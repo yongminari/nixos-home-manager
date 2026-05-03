@@ -20,6 +20,8 @@
       export ZSH_DISABLE_COMPFIX="true" 
     '';
 
+    # [Zsh Initialization]
+    # NOTE: 'initContent' is used as it is the modern/preferred option in this setup.
     initContent = ''
       source ${./shell-common.sh}
 
@@ -41,10 +43,19 @@
 
       # [Final Cleanup for Containers]
       # 모든 자동 통합(zoxide, atuin 등)이 끝난 후 컨테이너라면 한 번 더 청소합니다.
+      # zoxide가 'cd'를 함수나 별칭으로 가로채는 것을 방지하기 위해 cd도 목록에 추가합니다.
       if is_container; then
-        unalias ls ll lt cat v vi vim g z 2>/dev/null
-        # zoxide 등이 주입한 함수나 별칭도 제거 시도
-        unset -f z zi 2>/dev/null
+        # 1. Zsh 훅 제거 (디렉토리 이동 시 에러 방지)
+        if [[ -n "$chpwd_functions" ]]; then
+          chpwd_functions=(''${chpwd_functions:#__zoxide_hook})
+        fi
+        if [[ -n "$precmd_functions" ]]; then
+          precmd_functions=(''${precmd_functions:#_atuin_precmd})
+        fi
+
+        # 2. 별칭 및 함수 제거
+        unalias ls ll lt cat v vi vim g z cd 2>/dev/null
+        unset -f z zi cd __zoxide_hook _atuin_precmd 2>/dev/null
       fi
     '';
 
