@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ./containers.nix # [New] Distrobox & Podman
   ];
 
   # --- [1. Boot & System Engine] ---
@@ -146,15 +145,42 @@
       extraDefCfg = "process-unmapped-keys yes";
       config = ''
         (defsrc
-          caps esc
+          caps esc spc ralt
+          h j k l
+          a s d f
+          e c
         )
 
         (defalias
-          esc-en (multi esc C-S-A-f12)
+          ;; CapsLock -> Ctrl, Tap -> Esc (with EN switch signal)
+          esc-en (tap-hold-press 200 200 (multi esc C-S-A-f12) lctl)
+          
+          ;; RAlt -> RAlt, Hold -> Mouse Layer
+          ralt-ms (tap-hold 200 200 ralt (layer-toggle mouse))
+
+          ;; Mouse movement (speed, acceleration)
+          m-l (movemouse-left 4 1)
+          m-d (movemouse-down 4 1)
+          m-u (movemouse-up 4 1)
+          m-r (movemouse-right 4 1)
+
+          ;; Mouse scroll
+          sc-u (mwheel-up 50 120)
+          sc-d (mwheel-down 50 120)
         )
 
         (deflayer default
-          lctl @esc-en
+          @esc-en @esc-en spc @ralt-ms
+          h j k l
+          a s d f
+          e c
+        )
+
+        (deflayer mouse
+          _ _ _ _
+          @m-l @m-d @m-u @m-r
+          mlft mmid mrgt mlft ;; a:L, s:M, d:R, f:L
+          @sc-u @sc-d
         )
       '';
     };

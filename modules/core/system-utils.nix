@@ -109,4 +109,50 @@
 
   # 클립보드 히스토리 감시 서비스
   services.cliphist.enable = true;
+
+  # warpd 설정 (키보드 마우스 제어)
+  xdg.configFile."warpd/config".text = ''
+    # 기본 이동을 HJKL로 설정
+    up: k
+    down: j
+    left: h
+    right: l
+
+    # 속도 및 가속도 조절 (더 정밀하게)
+    speed: 500
+    max_speed: 1200
+    acceleration: 700
+    decelerator_speed: 50
+    decelerator: d
+
+    # 힌트 모드 설정
+    hint_chars: abcdefghijklmnopqrstuvwxyz
+    hint_size: 20
+    hint_bgcolor: #282c34
+    hint_fgcolor: #abb2bf
+    hint_border_radius: 4
+
+    # 드래그/클릭 설정 (m:좌, ,:우, .:휠)
+    buttons: m , .
+    drag: v
+  '';
+
+  # warpd를 안정적으로 실행하기 위한 systemd 서비스
+  systemd.user.services.warpd = {
+    Unit = {
+      Description = "warpd - Keyboard mouse emulation";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      ExecStart = "${pkgs.warpd}/bin/warpd -f";
+      Restart = "on-failure";
+      RestartSec = "3s"; # 너무 빨리 재시작해서 start-limit-hit 걸리는 것 방지
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 }
