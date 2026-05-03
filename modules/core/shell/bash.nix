@@ -5,20 +5,23 @@
     enable = true;
     
     shellAliases = {
-      ls = "eza";
-      ll = "eza -l --icons --git -a";
-      lt = "eza --tree --level=2 --long --icons --git";
-      cat = "bat";
+      # 컨테이너 환경에서 안전한 기본 별칭들만 남깁니다.
     };
 
     initExtra = ''
       source ${./shell-common.sh}
 
       # [Welcome Message]
-      if [[ $- == *i* ]]; then welcome-msg; fi
+      if [[ $- == *i* ]] && command -v welcome-msg &>/dev/null; then welcome-msg; fi
 
       # [External Tools (fnm)]
       if command -v fnm &>/dev/null; then eval "$(fnm env --use-on-cd --shell bash)"; fi
+
+      # [Final Cleanup for Containers]
+      if is_container; then
+        unalias ls ll lt cat v vi vim g z 2>/dev/null
+        unset -f z zi 2>/dev/null
+      fi
     '';
   };
 }

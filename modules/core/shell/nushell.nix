@@ -82,12 +82,24 @@
       if ($is_ssh or $is_docker) {
         alias zellij = zellij --config ($env.HOME | path join ".config" "zellij" "remote.kdl")
       }
+
+      # [Dynamic Aliases for Nushell]
+      let has_eza = (which eza | is-empty | not $in)
+      
+      if $has_eza {
+        alias ls = eza --icons
+        alias ll = eza -l --icons --git -a
+        alias lt = eza --tree --level=2 --icons --git
+      } else {
+        alias ll = ls -a
+      }
+
+      if (which bat | is-empty | not $in) {
+        alias cat = bat
+      }
     '';
 
     shellAliases = {
-      la = "ls -a";
-      ll = "ls -a";
-      lt = "eza --tree --level=2 --icons --git";
       g  = "git";
       v  = "nvim";
     };

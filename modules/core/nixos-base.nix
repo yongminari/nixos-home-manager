@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./containers.nix
   ];
 
   # --- [1. Boot & System Engine] ---

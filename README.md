@@ -107,6 +107,16 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | **`Super + 1~9`** | 워크스페이스 이동 |
 | **`Super + Shift + S`** | 화면 캡처 및 편집 (**Swappy**) |
 
+### 🖱️ Keyboard Mouse Control (Kanata)
+마우스를 잡지 않고 키보드만으로 정밀하게 커서를 제어할 수 있습니다.
+- **Trigger:** **`Right Alt` (꾹 누르기)** - 마우스 모드 활성화.
+- **Movement:** **`H J K L`** - 커서 이동 (가속도 적용).
+- **Click:**
+  - **`f`** or **`a`**: 왼쪽 클릭 (드래그 시 `f`를 누른 채 이동).
+  - **`d`**: 오른쪽 클릭.
+  - **`s`**: 휠(가운데) 클릭.
+- **Scroll:** **`e`**(Up), **`c`**(Down).
+
 ### 🛠️ Git TUI (GitUI)
 - **`Ctrl + h / l`**: 메인 탭 전환 (Home_env style)
 - **`Shift + U`**: 스테이징 해제 (Reset item)
