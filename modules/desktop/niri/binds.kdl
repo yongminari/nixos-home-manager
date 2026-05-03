@@ -17,14 +17,14 @@ binds {
     Mod+Alt+Shift+Space { focus-tiling; }
 
     // 포커스 이동 (HJKL / 방향키)
-    Mod+Left  { focus-column-left; }
-    Mod+Down  { focus-window-down; }
-    Mod+Up    { focus-window-up; }
-    Mod+Right { focus-column-right; }
-    Mod+H     { focus-column-left; }
-    Mod+J     { focus-window-down; }
-    Mod+K     { focus-window-up; }
-    Mod+L     { focus-column-right; }
+    Mod+Left  { focus-column-left-or-last; }
+    Mod+Down  { focus-window-down-or-top; }
+    Mod+Up    { focus-window-up-or-bottom; }
+    Mod+Right { focus-column-right-or-first; }
+    Mod+H     { focus-column-left-or-last; }
+    Mod+J     { focus-window-down-or-top; }
+    Mod+K     { focus-window-up-or-bottom; }
+    Mod+L     { focus-column-right-or-first; }
 
     // 모니터 간 포커스 이동 (Mod + Alt + HJKL / 방향키)
     Mod+Alt+Left  { focus-monitor-left; }
