@@ -24,7 +24,55 @@ safe_require("lualine", function(lualine)
 end)
 safe_require("bufferline", function(bufferline) bufferline.setup{} end)
 safe_require("gitsigns", function(gitsigns) gitsigns.setup() end)
-safe_require("ibl", function(ibl) ibl.setup() end)
+safe_require("ibl", function(ibl)
+  local highlight = {
+    "RainbowRed",
+    "RainbowYellow",
+    "RainbowBlue",
+    "RainbowOrange",
+    "RainbowGreen",
+    "RainbowViolet",
+    "RainbowCyan",
+  }
+
+  local hooks = require("ibl.hooks")
+  hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+    vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#F07178" })
+    vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#FFCC66" })
+    vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#59C2FF" })
+    vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#FFB454" })
+    vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#C2D94C" })
+    vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#D4BFFF" })
+    vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#95E6CB" })
+  end)
+
+  ibl.setup({
+    indent = { char = "│", highlight = highlight },
+    scope = { enabled = false }, -- hlchunk와 겹치지 않게 scope는 끕니다.
+  })
+end)
+
+safe_require("rainbow-delimiters", function(rd)
+  -- rainbow-delimiters는 기본적으로 위에서 설정한 RainbowRed 등의 하이라이트 그룹을 사용하도록 연동될 수 있습니다.
+  -- 별도의 복잡한 설정 없이도 Treesitter와 연동되어 작동합니다.
+end)
+
+safe_require("hlchunk", function(hlchunk)
+  hlchunk.setup({
+    chunk = {
+      enable = true,
+      use_treesitter = true,
+      style = {
+        { fg = "#ffcc66" }, -- 현재 블록의 강조 색상 (Ayu 테마와 어울리는 노란색 계열)
+        { fg = "#c34043" }, -- 오류 등이 있을 때의 색상
+      },
+    },
+    indent = {
+      enable = true,
+      use_treesitter = true,
+    },
+  })
+end)
 safe_require("Comment", function(comment) comment.setup() end)
 safe_require("nvim-autopairs", function(autopairs) autopairs.setup() end)
 safe_require("mini.icons", function(icons) icons.setup(); icons.mock_nvim_web_devicons() end)
