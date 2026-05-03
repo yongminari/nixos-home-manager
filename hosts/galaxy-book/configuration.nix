@@ -3,7 +3,7 @@
 {
   imports = [ 
     ./hardware-configuration.nix 
-    ../../modules/nixos-base.nix
+    ../../modules/core/nixos-base.nix
   ];
 
   # --- [1. Network & Identity] ---

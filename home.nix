@@ -2,32 +2,33 @@
 
 {
   imports = [
-    # [1. 시스템 관련]
-    ./modules/noctalia.nix
-    ./modules/system-utils.nix
-    ./modules/theme.nix
-    ./modules/rclone.nix
+    # [1. core] 필수 설정 및 CLI
+    ./modules/core/system-utils.nix
+    ./modules/core/theme.nix
+    ./modules/core/shell/utils.nix
+    ./modules/core/shell/welcome.nix
+    ./modules/core/shell/bash.nix
+    ./modules/core/shell/zsh.nix
+    ./modules/core/shell/nushell.nix
+    ./modules/core/shell/zellij.nix
     
-    # [2. 데스크탑 & GUI]
-    ./modules/niri.nix
-    ./modules/hyprlock.nix
-    ./modules/hypridle.nix
-    ./modules/gui-apps.nix
-    ./modules/ghostty.nix
-    
-    # [3. 개발 도구]
-    ./modules/git.nix
-    ./modules/dev-tools.nix
-    ./modules/neovim.nix
-    ./modules/ros.nix
-    
-    # [4. 쉘 & CLI 터미널]
-    ./modules/shell/utils.nix
-    ./modules/shell/welcome.nix
-    ./modules/shell/bash.nix
-    ./modules/shell/zsh.nix
-    ./modules/shell/nushell.nix
-    ./modules/shell/zellij.nix
+    # [2. dev] 개발 환경
+    ./modules/dev/git.nix
+    ./modules/dev/dev-tools.nix
+    ./modules/dev/neovim.nix
+    ./modules/dev/ros.nix
+    ./modules/dev/containers.nix
+
+    # [3. desktop] UI 및 데스크탑 앱
+    ./modules/desktop/niri.nix
+    ./modules/desktop/hyprlock.nix
+    ./modules/desktop/hypridle.nix
+    ./modules/desktop/gui-apps.nix
+    ./modules/desktop/ghostty.nix
+
+    # [4. services] 백그라운드 서비스
+    ./modules/services/noctalia.nix
+    ./modules/services/rclone.nix
   ];
 
   # --- [User Information] ---
@@ -37,7 +38,6 @@
  
   # --- [Global Packages] ---
   home.packages = with pkgs; [
-    home-manager
     libnotify        # 알림용
     fnm              # Node.js 버전 매니저
     google-cloud-sdk # Google Cloud SDK

@@ -212,7 +212,7 @@ local capabilities = {}
 local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 if cmp_lsp_ok then capabilities = cmp_nvim_lsp.default_capabilities() end
 
-local servers = { 'gopls', 'nil_ls' }
+local servers = { 'gopls', 'nil_ls', 'pyright', 'bashls', 'yamlls', 'taplo', 'jsonls', 'cmake', 'autotools_ls' }
 
 -- Neovim 0.11에서 새로 도입된 vim.lsp.config API를 우선 사용합니다.
 if vim.lsp.config then

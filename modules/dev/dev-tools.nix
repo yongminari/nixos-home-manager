@@ -16,6 +16,13 @@
     lua51Packages.jsregexp # Luasnip dependency
     gopls         # Go LSP
     clang-tools   # clangd 등 (헤더 검색 등 에디터용)
+    pyright       # Python LSP
+    bash-language-server # Bash/Shell LSP
+    yaml-language-server # YAML LSP
+    taplo         # TOML LSP
+    vscode-langservers-extracted # JSON, HTML, CSS LSP
+    cmake-language-server # CMake LSP
+    autotools-language-server # Makefile, autotools LSP
 
     # [현대적 대체 도구]
     sd              # sed 대체 (find & replace)
