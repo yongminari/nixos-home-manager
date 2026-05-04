@@ -9,7 +9,6 @@
   networking.hostName = "ai-x1-pro";
   networking.networkmanager.enable = true;
 
-  # WireGuard VPN 설정
   networking.wireguard.interfaces.wg0 = {
     ips = [ "10.0.151.9/24" ];
     privateKeyFile = "/etc/wireguard/wg0.key";
@@ -24,6 +23,7 @@
     ];
   };
 
+  # 부팅 시 자동 시작 방지 (수동 시작: sudo systemctl start wireguard-wg0)
   systemd.services.wireguard-wg0.wantedBy = pkgs.lib.mkForce [ ];
 
   environment.systemPackages = with pkgs; [ wireguard-tools ];

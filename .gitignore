@@ -7,3 +7,5 @@ result
 node_modules/
 *.log
 setup-wg-secrets.sh
+setup-vpn.sh
+vpn-wg0.conf
