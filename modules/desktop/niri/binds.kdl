@@ -119,6 +119,13 @@ binds {
     XF86MonBrightnessUp   { spawn "brightnessctl" "set" "5%+"; }
     XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
 
+    // 터치패드 토글 (Fn+F5)
+    // wev 확인 결과 Ctrl + Mod + XF86TouchpadToggle 조합으로 들어옴
+    XF86TouchpadToggle { spawn "sh" "-c" "/home/yongminari/.config/niri/toggle-touchpad.sh"; }
+    Mod+XF86TouchpadToggle { spawn "sh" "-c" "/home/yongminari/.config/niri/toggle-touchpad.sh"; }
+    Ctrl+Mod+XF86TouchpadToggle { spawn "sh" "-c" "/home/yongminari/.config/niri/toggle-touchpad.sh"; }
+    Mod+F5 { spawn "sh" "-c" "/home/yongminari/.config/niri/toggle-touchpad.sh"; }
+
     // 스크린샷 (grim + slurp + swappy)
     Print { spawn "sh" "-c" "grim - | swappy -f -"; }
     Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
