@@ -40,12 +40,12 @@ in
     "d %h/.config/niri 0755 - - -"
   ];
 
-  # 터치패드 토글 스크립트
-  xdg.configFile."niri/toggle-touchpad.sh" = {
+  # 터치패드 토글 스크립트 (갤럭시 북 전용)
+  xdg.configFile."niri/toggle-touchpad.sh" = pkgs.lib.mkIf (hostname == "galaxy-book") {
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      INPUT_CONFIG="$HOME/.config/niri/input.kdl"
+      INPUT_CONFIG="$HOME/.config/niri/touchpad-control.kdl"
       KEYBOARD_CONFIG="$HOME/.config/niri/keyboard.kdl"
       
       # 키보드 설정 읽기 (파일이 없으면 기본값 사용)
@@ -69,7 +69,7 @@ in
     '';
   };
 
-  # 설정을 text로 생성하여 스케일 값을 주입
+  # 설정을 text로 생성하여 스케일 값을 유입
   xdg.configFile."niri/config.kdl".text = ''
     // 호스트별 자동 생성된 출력 설정
     output "eDP-1" {
@@ -78,8 +78,10 @@ in
 
     ${baseConfig}
     
-    // 통합 입력 설정 포함
-    include "input.kdl"
+    ${pkgs.lib.optionalString (hostname == "galaxy-book") ''
+    // 통합 입력 설정 포함 (갤럭시 북 전용)
+    include "touchpad-control.kdl"
+    ''}
   '';
 
   xdg.configFile."niri/binds.kdl".source = ./niri/binds.kdl;
