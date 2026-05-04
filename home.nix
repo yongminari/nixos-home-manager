@@ -20,7 +20,7 @@
     ./modules/dev/containers.nix
 
     # [3. desktop] UI 및 데스크탑 앱
-    ./modules/desktop/niri.nix
+    ./modules/desktop/niri
     ./modules/desktop/hyprlock.nix
     ./modules/desktop/hypridle.nix
     ./modules/desktop/gui-apps.nix

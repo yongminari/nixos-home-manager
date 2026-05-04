@@ -3,6 +3,7 @@
 {
   imports = [
     ./containers.nix
+    ./hardware-optimizations.nix
   ];
 
   # --- [1. Boot & System Engine] ---
