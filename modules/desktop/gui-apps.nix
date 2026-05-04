@@ -4,7 +4,17 @@
   home.packages = with pkgs; [
     google-chrome
     xwayland-satellite
+    obsidian
+    termpdfpy
   ];
+
+  programs.zathura = {
+    enable = true;
+    options = {
+      selection-clipboard = "clipboard";
+      recolor = "false"; # 기본 색상 유지 (필요시 true로 변경하여 다크모드 가능)
+    };
+  };
 
   programs.alacritty = {
     enable = true;
