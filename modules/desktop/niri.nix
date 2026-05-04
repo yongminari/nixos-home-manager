@@ -24,17 +24,6 @@ in
     };
   };
 
-  # 키보드 고정 설정 (Nix 관리)
-  xdg.configFile."niri/keyboard.kdl".text = ''
-    keyboard {
-        xkb {
-            layout "us"
-        }
-        repeat-delay 400
-        repeat-rate 40
-    }
-  '';
-
   # 터치패드 설정 디렉토리 보장
   systemd.user.tmpfiles.rules = [
     "d %h/.config/niri 0755 - - -"
@@ -46,25 +35,17 @@ in
     text = ''
       #!/usr/bin/env bash
       INPUT_CONFIG="$HOME/.config/niri/touchpad-control.kdl"
-      KEYBOARD_CONFIG="$HOME/.config/niri/keyboard.kdl"
-      
-      # 키보드 설정 읽기 (파일이 없으면 기본값 사용)
-      if [ -f "$KEYBOARD_CONFIG" ]; then
-          KBD_SETTINGS=$(cat "$KEYBOARD_CONFIG")
-      else
-          KBD_SETTINGS="    keyboard { xkb { layout \"us\" }; repeat-delay 400; repeat-rate 40; }"
-      fi
 
-      if grep -q "off" "$INPUT_CONFIG"; then
+      if grep -q "off" "$INPUT_CONFIG" 2>/dev/null; then
           # 활성화 상태로 생성
-          printf "input {\n%s\n    touchpad {\n        tap\n        natural-scroll\n    }\n}\n" "$KBD_SETTINGS" > "$INPUT_CONFIG"
+          printf "input {\n    touchpad {\n        tap\n        natural-scroll\n    }\n}\n" > "$INPUT_CONFIG"
           notify-send -t 1500 -i input-touchpad "Touchpad" "Enabled"
       else
           # 비활성화 상태로 생성
-          printf "input {\n%s\n    touchpad {\n        off\n    }\n}\n" "$KBD_SETTINGS" > "$INPUT_CONFIG"
+          printf "input {\n    touchpad {\n        off\n    }\n}\n" > "$INPUT_CONFIG"
           notify-send -t 1500 -i input-touchpad "Touchpad" "Disabled"
       fi
-      
+
       niri msg action load-config-file
     '';
   };
@@ -77,12 +58,25 @@ in
     }
 
     ${baseConfig}
-    
+
+    // 기본 입력 설정 (모든 기기 공통)
+    input {
+        keyboard {
+            xkb {
+                layout "us"
+            }
+            repeat-delay 400
+            repeat-rate 40
+        }
+    }
+
     ${pkgs.lib.optionalString (hostname == "galaxy-book") ''
-    // 통합 입력 설정 포함 (갤럭시 북 전용)
+    // 갤럭시 북 전용 입력 설정 (터치패드)
+    // 주의: include는 최상위 레벨에서만 작동하므로 input 블록 밖에 위치해야 함
     include "touchpad-control.kdl"
     ''}
   '';
+
 
   xdg.configFile."niri/binds.kdl".source = ./niri/binds.kdl;
 }

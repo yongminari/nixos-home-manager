@@ -25,6 +25,9 @@
     ];
   };
 
+  # 부팅 시 WireGuard 자동 시작 방지 (수동 시작 권장)
+  systemd.services.wireguard-wg0.wantedBy = pkgs.lib.mkForce [ ];
+
   # 기기 전용 패키지
   environment.systemPackages = with pkgs; [ 
     wireguard-tools 
