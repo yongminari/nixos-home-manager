@@ -5,7 +5,6 @@
     google-chrome
     xwayland-satellite
     obsidian
-    termpdfpy
   ];
 
   programs.zathura = {
