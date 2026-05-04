@@ -9,8 +9,8 @@
   networking.hostName = "galaxy-book";
   networking.networkmanager.enable = true;
 
-  # 하드웨어 최적화 활성화
-  hardware.optimizations.galaxy-book.enable = true;
+  # 삼성 갤럭시 북 전용 하드웨어 최적화 활성화
+  hardware.samsung-galaxy-book.enable = true;
 
   # WireGuard VPN 설정
   networking.wireguard.interfaces.wg0 = {

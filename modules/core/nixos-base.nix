@@ -3,7 +3,7 @@
 {
   imports = [
     ./containers.nix
-    ./hardware-optimizations.nix
+    ../hardware/samsung-galaxy-book.nix
   ];
 
   # --- [1. Boot & System Engine] ---

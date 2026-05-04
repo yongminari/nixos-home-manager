@@ -2,20 +2,23 @@
 
 let
   hostname = osConfig.networking.hostName or "";
-  # 호스트별 설정 정의 (필요 시 더 확장 가능)
-  hostSettings = {
+  
+  # 호스트별 메타데이터 및 설정
+  hostRegistry = {
     galaxy-book = {
       scale = "1.0";
-      hasTouchpad = true;
+      deviceType = "laptop"; # laptop, desktop 등
     };
     ai-x1-pro = {
       scale = "1.0";
-      hasTouchpad = false;
+      deviceType = "desktop";
     };
   };
 
-  currentHost = hostSettings.${hostname} or { scale = "1.0"; hasTouchpad = false; };
+  currentHost = hostRegistry.${hostname} or { scale = "1.0"; deviceType = "desktop"; };
   baseConfig = builtins.readFile ./config.kdl;
+  
+  isLaptop = currentHost.deviceType == "laptop";
 in
 {
   home.packages = with pkgs; [
@@ -23,8 +26,8 @@ in
     xwayland-satellite
   ];
 
-  # 터치패드 토글 스크립트 (조건부 생성)
-  xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf currentHost.hasTouchpad {
+  # 터치패드 토글 스크립트 (랩탑일 경우에만 생성)
+  xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf isLaptop {
     executable = true;
     text = ''
       #!/usr/bin/env bash
@@ -56,7 +59,8 @@ in
         }
     }
 
-    ${lib.optionalString currentHost.hasTouchpad ''
+    ${lib.optionalString isLaptop ''
+    // 랩탑 전용 입력 설정 (터치패드)
     include "touchpad-control.kdl"
     ''}
   '';
