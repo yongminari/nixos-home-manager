@@ -1,9 +1,13 @@
 # [Environment Detection]
 function is_ssh() { [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]; }
-function is_container() { [[ -e /.dockerenv ]] || [[ -e /run/.containerenv ]] || [[ -n "$DISTROBOX_ENTER_PATH" ]] || grep -qE "docker|podman|containerd" /proc/1/cgroup 2>/dev/null; }
-function is_vscode() { [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]; }
+function is_container() {
+    # Distrobox, Docker, Podman 등 컨테이너 환경 감지
+    [[ -n "$DISTROBOX_ENTER_PATH" ]] || [[ -e /run/.containerenv ]] || [[ -e /.dockerenv ]] || grep -qE "docker|podman|containerd" /proc/1/cgroup 2>/dev/null
+}
+function is_vscode() { [[ "$TERM_PROGRAM" == "vscode" || -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" ]]; }
 
 # [Container Error Shield]
+# 컨테이너 환경에서 호스트 전용 도구들이 실행되어 에러가 발생하는 것을 방지
 if is_container; then
     # 1. 'alias' 명령어를 가로채서 안전한 기본값으로 교체
     function alias() {
@@ -22,7 +26,7 @@ if is_container; then
     builtin alias ll='ls -al --color=auto'
     builtin alias lt='ls -R --color=auto'
 
-    # 3. 누락된 명령어들에 대한 더미(Dummy) 정의
+    # 3. 호스트 도구가 없을 경우를 대비한 더미(Dummy) 정의
     for cmd in atuin starship welcome-msg eza bat zoxide nvim; do
         if ! command -v "$cmd" &>/dev/null; then
             eval "$cmd() { :; }" 
@@ -66,7 +70,7 @@ function ssh() {
 
 # [Zellij Wrapper]
 function zellij() {
-  if is_ssh || is_docker; then
+  if is_ssh || is_container; then
     command zellij --config "$HOME/.config/zellij/remote.kdl" "$@"
   else
     command zellij "$@"
