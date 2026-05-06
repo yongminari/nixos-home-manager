@@ -253,10 +253,21 @@ else
   end
 end
 
--- [LSP 단어 하이라이트 설정]
+-- [LSP 단어 하이라이트 및 키매핑 설정]
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(event)
     local client = vim.lsp.get_client_by_id(event.data.client_id)
+    local opts = { buffer = event.buf }
+
+    -- [LSP 키매핑]
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = event.buf, desc = "Go to Definition" })
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, { buffer = event.buf, desc = "Go to References" })
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = event.buf, desc = "Hover Documentation" })
+    vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, { buffer = event.buf, desc = "Go to Definition (Tags style)" })
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = event.buf, desc = "Rename Symbol" })
+    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = event.buf, desc = "Code Action" })
+
+    -- [단어 하이라이트 설정]
     if client and client:supports_method('textDocument/documentHighlight') then
       local group = vim.api.nvim_create_augroup('lsp_document_highlight', { clear = false })
       vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
