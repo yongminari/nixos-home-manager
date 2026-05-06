@@ -64,9 +64,6 @@
       plugins = [ "git" "history-substring-search" ];
     };
 
-    shellAliases = {
-      g  = "git";
-      v  = "nvim";
-    };
+    shellAliases = { };
   };
 }

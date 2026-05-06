@@ -2,6 +2,21 @@
 
 {
   home.packages = with pkgs; [
+    # [시스템 모니터링 및 정보]
+    htop
+    fastfetch
+    lsb-release
+    jq
+
+    # [파일 및 네트워크 유틸리티]
+    ripgrep
+    fd
+    unzip
+    lolcat
+    rclone
+    dust               # 시각적 디스크 용량 분석
+    tealdeer           # tldr (명령어 예제 사전)
+
     # [화면 캡처]
     grim
     slurp
@@ -28,8 +43,6 @@
     nix-tree           # Nix 의존성 트리 탐색
 
     # [추가 유틸리티]
-    dust               # 시각적 디스크 용량 분석
-    tealdeer           # tldr (명령어 예제 사전)
     procs              # ps 대체
     gping              # 비주얼 핑
   ];
@@ -85,27 +98,8 @@
     enable = true;
     clean.enable = true;
     clean.extraArgs = "--keep-since 4d --keep 3";
-    flake = "/home/yongminari/nixos-home-manager";
+    # flake 경로는 home.sessionVariables.FLAKE에서 전역으로 관리하므로 여기서 생략하거나 변수화 가능
   };
-
-  # Swappy 설정 (캡처 후 즉시 편집기)
-  xdg.configFile."swappy/config".text = ''
-    [Default]
-    save_dir=${config.home.homeDirectory}/Pictures/Screenshots
-    save_filename_format=swappy-%Y%m%d-%H%M%S.png
-    show_panel=false
-    line_size=5
-    text_size=20
-    text_font=sans-serif
-    paint_mode=brush
-    early_exit=false
-    fill_shape=false
-  '';
-
-  # 스크린샷 폴더 자동 생성
-  home.activation.createScreenshotDir = config.lib.dag.entryAfter ["writeBoundary"] ''
-    mkdir -p ${config.home.homeDirectory}/Pictures/Screenshots
-  '';
 
   # 클립보드 히스토리 감시 서비스
   services.cliphist.enable = true;

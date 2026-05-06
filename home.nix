@@ -2,9 +2,12 @@
 
 {
   imports = [
+    (if builtins.pathExists ./local.nix then ./local.nix else {})
+
     # [1. core] 필수 설정 및 CLI
     ./modules/core/system-utils.nix
     ./modules/core/theme.nix
+    ./modules/core/fonts.nix
     ./modules/core/shell/utils.nix
     ./modules/core/shell/welcome.nix
     ./modules/core/shell/bash.nix
@@ -25,6 +28,7 @@
     ./modules/desktop/hypridle.nix
     ./modules/desktop/gui-apps.nix
     ./modules/desktop/ghostty.nix
+    ./modules/desktop/swappy.nix
 
     # [4. services] 백그라운드 서비스
     ./modules/services/noctalia.nix
@@ -58,4 +62,9 @@
   # --- [Settings] ---
   fonts.fontconfig.enable = true;
   programs.home-manager.enable = true;
+
+  home.shellAliases = {
+    hms = "nh home switch"; 
+    ns  = "nh os switch";  
+  };
 }

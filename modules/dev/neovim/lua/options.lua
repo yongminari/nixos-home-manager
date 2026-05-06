@@ -1,5 +1,9 @@
 local utils = require('utils')
 
+-- 테마 설정용
+local theme_style = utils.is_remote and "day" or "moon"
+local is_transparent = not utils.is_remote
+
 -- [기본 옵션]
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -12,7 +16,7 @@ vim.opt.updatetime = 300      -- Faster completion and highlight
 vim.g.mapleader = " "         
 
 -- [테마 배경색 설정]
--- 원격지(SSH/Docker)에서 접속 시 배경을 light 모드로 전환
+-- 원격지(SSH/Container)에서 접속 시 배경을 light 모드로 전환
 if utils.is_remote then
   vim.opt.background = "light"
 else
@@ -39,13 +43,6 @@ vim.opt.termguicolors = true
 vim.opt.conceallevel = 2
 vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
-
--- [Diagnostic 하이라이트 설정]
--- Error: 빨간색 가운데 줄 (strikethrough), Warn: 노란색 가운데 줄
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { underline = false, strikethrough = true, sp = "Red" })
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { underline = false, strikethrough = true, sp = "Yellow" })
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { underline = false, strikethrough = true, sp = "LightBlue" })
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", { underline = false, strikethrough = true, sp = "LightGrey" })
 
 return {
   theme_style = theme_style,

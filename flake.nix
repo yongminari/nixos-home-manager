@@ -14,6 +14,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hyprlock-themes = {
+      url = "github:catppuccin/hyprlock";
+      flake = false;
+    };
+
     alacritty-theme = {
       url = "github:alacritty/alacritty-theme";
       flake = false;

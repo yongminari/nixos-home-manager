@@ -1,5 +1,8 @@
 # [Environment Detection]
-function is_ssh() { [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]; }
+function is_ssh() { 
+  [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] && return 0
+  [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
+}
 function is_container() {
     # Distrobox, Docker, Podman 등 컨테이너 환경 감지
     [[ -n "$DISTROBOX_ENTER_PATH" ]] || [[ -e /run/.containerenv ]] || [[ -e /.dockerenv ]] || grep -qE "docker|podman|containerd" /proc/1/cgroup 2>/dev/null
@@ -34,6 +37,22 @@ if is_container; then
     done
 fi
 
+# [SSH Terminfo Fallback]
+# SSH 접속 시 xterm-ghostty 정보를 모를 경우 xterm-256color로 fallback
+if is_ssh; then
+  # ~/.terminfo 경로를 우선 확인하도록 설정
+  export TERMINFO_DIRS="$HOME/.terminfo:/usr/share/terminfo"
+  
+  if [[ "$TERM" == "xterm-ghostty" ]]; then
+    # 시스템이 xterm-ghostty를 모르면 xterm-256color로 fallback
+    if ! infocmp xterm-ghostty >/dev/null 2>&1; then
+      export TERM=xterm-256color
+    fi
+    # SSH가 전달하지 않았을 COLORTERM을 명시적으로 선언 (256/Truecolor 활성화의 핵심)
+    export COLORTERM=truecolor
+  fi
+fi
+
 # [Theme & Prompt Settings]
 if is_ssh; then
   export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
@@ -59,9 +78,9 @@ if ! is_container; then
 fi
 
 # [SSH Wrapper]
-# Ghostty 사용 시 'ghostty +ssh'를 통해 terminfo 자동 주입 시도
+# Ghostty 사용 시 'ghostty +ssh'를 통해 terminfo 자동 주입 시도 (중첩 SSH는 제외)
 function ssh() {
-  if [[ ($TERM == "xterm-ghostty" || $TERM_PROGRAM == "Ghostty") && $# -gt 0 ]]; then
+  if ! is_ssh && [[ "$TERM" == "xterm-ghostty" || "$TERM_PROGRAM" == "Ghostty" ]]; then
     ghostty +ssh "$@"
   else
     TERM=xterm-256color COLORTERM=truecolor command ssh "$@"

@@ -1,6 +1,26 @@
 { config, pkgs, lib, ... }:
 
 {
+  home.shellAliases = {
+    ls = "eza";
+    ll = "eza -l --icons --git -a";
+    lt = "eza --tree --level=2 --long --icons --git";
+    cat = "bat";
+    # Ghostty를 유지하면서 SSH 호환성을 챙기는 가장 현대적인 방법
+    gssh = "ghostty +ssh";
+    # ROS 2 & Qt Wayland compatibility fixes
+    rviz2 = "env QT_QPA_PLATFORM=xcb rviz2";
+    wireshark = "env QT_QPA_PLATFORM=xcb wireshark";
+
+    # Common
+    g = "git";
+    v = "nvim";
+    vi = "nvim";
+    vim = "nvim";
+    zj = "zellij";
+    tocb = "wl-copy";
+  };
+
   # Starship 프롬프트 (모든 쉘 통합)
   programs.starship = {
     enable = true;

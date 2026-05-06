@@ -3,7 +3,7 @@ local options = require('options')
 local safe_require = utils.safe_require
 
 -- [테마 설정: Ayu]
--- 로컬에서는 'dark', 원격 환경(SSH/Docker)에서는 'mirage' 사용
+-- 로컬에서는 'dark', 원격 환경(SSH/Container)에서는 'mirage' 사용
 if utils.is_remote then
   vim.g.ayucolor = "mirage"
 else
@@ -54,7 +54,6 @@ end)
 
 safe_require("rainbow-delimiters", function(rd)
   -- rainbow-delimiters는 기본적으로 위에서 설정한 RainbowRed 등의 하이라이트 그룹을 사용하도록 연동될 수 있습니다.
-  -- 별도의 복잡한 설정 없이도 Treesitter와 연동되어 작동합니다.
 end)
 
 safe_require("hlchunk", function(hlchunk)
@@ -63,7 +62,7 @@ safe_require("hlchunk", function(hlchunk)
       enable = true,
       use_treesitter = true,
       style = {
-        { fg = "#ffcc66" }, -- 현재 블록의 강조 색상 (Ayu 테마와 어울리는 노란색 계열)
+        { fg = "#ffcc66" }, -- 현재 블록의 강조 색상
         { fg = "#c34043" }, -- 오류 등이 있을 때의 색상
       },
     },
@@ -119,7 +118,7 @@ end)
 safe_require("neogit", function(neogit)
   neogit.setup({
     integrations = {
-      diffview = true, -- Neogit에서 Diffview를 바로 볼 수 있게 연동
+      diffview = true,
     },
   })
   vim.keymap.set("n", "<leader>ng", "<cmd>Neogit<cr>", { desc = "Neogit" })
@@ -129,6 +128,9 @@ safe_require("diffview", function(diffview)
   diffview.setup({})
   vim.keymap.set("n", "<leader>dv", "<cmd>DiffviewOpen<cr>", { desc = "Diffview Open" })
   vim.keymap.set("n", "<leader>dc", "<cmd>DiffviewClose<cr>", { desc = "Diffview Close" })
+  -- Compatibility Keymaps
+  vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview Open (Legacy)" })
+  vim.keymap.set("n", "<leader>gq", "<cmd>DiffviewClose<cr>", { desc = "Diffview Close (Legacy)" })
 end)
 
 safe_require("git-conflict", function(git_conflict)
@@ -147,7 +149,7 @@ safe_require("obsidian", function(obsidian)
         ["x"] = { char = "", hl_group = "ObsidianDone" },
         ["v"] = { char = "", hl_group = "ObsidianCheck" },
       },
-      legacy_commands = false, -- 경고 제거
+      legacy_commands = false,
     })
   end
   vim.keymap.set("n", "<leader>on", "<cmd>Obsidian new<cr>")
@@ -167,13 +169,11 @@ if cmp_ok then
   })
 end
 
--- Treesitter Config (Main branch migration)
--- Neovim 0.11+ 및 새로운 nvim-treesitter 구조에 맞춰 설정합니다.
+-- Treesitter Config
 safe_require("nvim-treesitter", function(ts)
   ts.setup()
 end)
 
--- 버퍼 진입 시 하이라이트 및 들여쓰기 활성화
 vim.api.nvim_create_autocmd("FileType", {
   callback = function(args)
     local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
@@ -184,16 +184,12 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- [ROS/Distrobox 하이브리드 지원 로직]
--- [컨테이너 파일 로더: 호스트에 없는 /opt, /usr 경로의 파일을 컨테이너에서 가져옵니다]
+-- [Container/Distrobox 하이브리드 지원 로직]
 vim.api.nvim_create_autocmd("BufReadCmd", {
   pattern = { "/opt/*", "/usr/include/*" },
   callback = function(args)
     local file = args.file
-    -- 호스트에 파일이 실존한다면 (Nix가 링크했거나 등) Distrobox를 호출하지 않음
-    if vim.fn.filereadable(file) == 1 then
-      return
-    end
+    if vim.fn.filereadable(file) == 1 then return end
 
     local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
     local content = vim.fn.systemlist(cmd)
@@ -214,7 +210,6 @@ if cmp_lsp_ok then capabilities = cmp_nvim_lsp.default_capabilities() end
 
 local servers = { 'gopls', 'nil_ls', 'pyright', 'bashls', 'yamlls', 'taplo', 'jsonls', 'cmake', 'autotools_ls' }
 
--- Neovim 0.11에서 새로 도입된 vim.lsp.config API를 우선 사용합니다.
 if vim.lsp.config then
   for _, lsp in ipairs(servers) do
     vim.lsp.config(lsp, { capabilities = capabilities })
@@ -235,17 +230,12 @@ if vim.lsp.config then
     clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
   end
 
-  vim.lsp.config('clangd', {
-    capabilities = capabilities,
-    cmd = clangd_cmd
-  })
+  vim.lsp.config('clangd', { capabilities = capabilities, cmd = clangd_cmd })
   vim.lsp.enable('clangd')
 else
-  -- 구 버전(0.10 이하) 호환성을 위한 nvim-lspconfig Fallback
   local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
   if lspconfig_ok then
     for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
-    
     local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
                            vim.env.AMENT_PREFIX_PATH ~= nil or
                            #vim.fs.find('package.xml', { upward = true }) > 0
@@ -283,21 +273,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
--- 하이라이트 스타일: 심볼이 강조되도록 배경색과 언더라인을 함께 사용
 local function set_lsp_highlights()
   vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3d424d", underline = true, sp = "#ffcc66" })
   vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3d424d", underline = true, sp = "#ffcc66" })
   vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#3d424d", underline = true, bold = true, sp = "#ffcc66" })
 end
 
--- 초기 설정 및 테마 변경 시 재설정
 set_lsp_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = set_lsp_highlights,
-})
+vim.api.nvim_create_autocmd("ColorScheme", { callback = set_lsp_highlights })
 
 -- [Diagnostic 하이라이트 설정]
--- Error: 빨간색 가운데 줄 (strikethrough), Warn: 노란색 가운데 줄
 vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { underline = false, strikethrough = true, sp = "Red" })
 vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", { underline = false, strikethrough = true, sp = "Yellow" })
 vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", { underline = false, strikethrough = true, sp = "LightBlue" })
