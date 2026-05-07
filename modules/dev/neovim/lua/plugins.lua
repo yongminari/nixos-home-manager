@@ -12,8 +12,25 @@ end
 
 -- ayu-vim은 주로 Vimscript이므로 pcall로 직접 호출
 local ok, _ = pcall(vim.cmd.colorscheme, "ayu")
-if not ok then
-  -- ayu가 없을 경우 기본 colorscheme 유지 혹은 다른 처리
+
+-- [투명 배경 및 렌더링 최적화]
+-- 로컬 환경(is_transparent = true)일 때 배경색을 완전히 제거하여 
+-- GPU 터미널(Ghostty)에서의 렌더링 잔상(검은 블록)을 방지합니다.
+if options.is_transparent then
+  local function clear_bg()
+    local groups = {
+      "Normal", "NormalNC", "NormalFloat", "SignColumn", "EndOfBuffer",
+      "MsgArea", "ModeMsg", "MsgSeparator", "SpellBad", "SpellCap",
+      "SpellLocal", "SpellRare", "Folded", "FoldColumn", "Conceal"
+    }
+    for _, group in ipairs(groups) do
+      vim.api.nvim_set_hl(0, group, { bg = "NONE", ctermbg = "NONE" })
+    end
+  end
+  
+  clear_bg()
+  -- 테마가 바뀔 때마다 다시 적용
+  vim.api.nvim_create_autocmd("ColorScheme", { callback = clear_bg })
 end
 
 -- [기본 UI 컴포넌트]
