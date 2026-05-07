@@ -45,7 +45,8 @@ in
 
   # 메인 설정 파일
   xdg.configFile."niri/config.kdl".text = ''
-    output "eDP-1" {
+    // 모든 출력 장치에 대해 스케일 적용 (듀얼 모니터 및 다양한 이름 대응)
+    output "^.*$" {
         scale ${currentHost.scale}
     }
 

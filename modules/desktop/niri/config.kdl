@@ -16,6 +16,25 @@ layer-rule {
 
 layout {
     background-color "transparent"
+    gaps 10
+    center-focused-column "never"
+
+    // 새 창이 열릴 때의 기본 너비 (0.5 = 50%)
+    default-column-width { proportion 0.5; }
+
+    // Mod+R로 전환할 수 있는 너비 프리셋
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    focus-ring {
+        width 4
+        active-color "#7fc1ca"
+        inactive-color "#45475a"
+    }
 }
 
 overview {

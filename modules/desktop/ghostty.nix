@@ -21,8 +21,6 @@
       font-size = 12;
 
       # [Window & Visuals]
-      window-width = 150;
-      window-height = 60;
       window-decoration = "auto";
       background-opacity = 1.0;
       theme = "Ayu";
