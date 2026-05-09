@@ -64,6 +64,11 @@
       plugins = [ "git" "history-substring-search" ];
     };
 
-    shellAliases = { };
+    shellAliases = {
+      # WireGuard Aliases
+      vpn-on = "sudo systemctl start wg-quick-wg0";
+      vpn-off = "sudo systemctl stop wg-quick-wg0";
+      vpn-stat = "sudo wg";
+    };
   };
 }

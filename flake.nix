@@ -23,9 +23,14 @@
       url = "github:alacritty/alacritty-theme";
       flake = false;
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, noctalia, alacritty-theme, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, noctalia, sops-nix, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -39,6 +44,7 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./hosts/galaxy-book/configuration.nix
+          sops-nix.nixosModules.sops
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager
@@ -57,6 +63,7 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./hosts/ai-x1-pro/configuration.nix
+          sops-nix.nixosModules.sops
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager

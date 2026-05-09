@@ -13,8 +13,22 @@
 - **📝 Editor:** **Neovim** (Lua-based modular config).
   - **Enhanced:** Neovim 0.11 support, ROS/Distrobox integration, `git-conflict-nvim`, and refined LSP visuals.
 - **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
-- **🔒 Security:** **OpenSSH Server** included.
+- **🔒 Security:** **sops-nix** (Secret management) & **OpenSSH Server** included.
+- **🌐 Network:** **WireGuard** (wg-quick with manual toggle).
 - **🎨 Global Theme:** **Ayu Dark** (Local) / **Ayu Mirage** (Remote) - Unified aesthetics.
+
+---
+
+## 🔐 Secret Management & VPN
+
+민감한 정보는 `sops-nix`로 안전하게 관리하며, VPN은 필요할 때만 수동으로 켭니다.
+
+- **비밀 관리 가이드**: [docs/secrets-guide.md](docs/secrets-guide.md) 를 참고하세요.
+- **WireGuard 제어**:
+  - `vpn-on`: VPN 연결
+  - `vpn-off`: VPN 해제
+  - `vpn-stat`: 상태 확인
+- **자동 키 배치**: Google Cloud (Vertex AI) 키 등은 빌드 시 `~/.config/gcloud/`에 자동으로 배치됩니다.
 
 ---
 
