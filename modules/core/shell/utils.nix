@@ -112,6 +112,7 @@
         prepend_previewers = [
           { name = "*.md"; run = "glow"; }
           { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }
+          { mime = "{image,audio,video}/*"; run = "mediainfo"; }
         ];
       };
     };
@@ -159,6 +160,12 @@
         rev = "a83710153ab5625a64ef98d55e6ddad480a3756f";
         hash = "sha256-CPRVJVunBLwFLCoj+XfoIIwrrwHxqoElbskCXZgFraw=";
       };
+      mediainfo = pkgs.fetchFromGitHub {
+        owner = "boydaihungst";
+        repo = "mediainfo.yazi";
+        rev = "49f5ab722d617a64b3bea87944e3e4e17ba3a46b";
+        hash = "sha256-PcGrFG06XiJYgBWq+c7fYsx1kjkCvIYRaBiWaJT+xkw=";
+      };
     };
   };
 
@@ -188,6 +195,7 @@
     python3
     glow
     ouch
+    mediainfo
   ];
 
   # Starship SSH 설정 파일 연결
