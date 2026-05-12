@@ -119,6 +119,7 @@
     initLua = ''
       require("githead"):setup()
       require("full-border"):setup()
+      require("starship"):setup()
     '';
 
     plugins = {
@@ -151,6 +152,12 @@
         repo = "ouch.yazi";
         rev = "406ce6c13ec3a18d4872b8f64b62f4a530759b2c";
         hash = "sha256-14x/bD0aD9hXONaqQD8Dt7rLBCMq7bkVLH6uCPOQ0C8=";
+      };
+      starship = pkgs.fetchFromGitHub {
+        owner = "Rolv-Apneseth";
+        repo = "starship.yazi";
+        rev = "a83710153ab5625a64ef98d55e6ddad480a3756f";
+        hash = "sha256-CPRVJVunBLwFLCoj+XfoIIwrrwHxqoElbskCXZgFraw=";
       };
     };
   };
