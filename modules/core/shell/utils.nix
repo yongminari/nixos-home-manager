@@ -79,6 +79,12 @@
     enableNushellIntegration = true;
     shellWrapperName = "y";
 
+    keymap = {
+      manager.prepend_keymap = [
+        { on = [ "z" ]; exec = "plugin zoxide"; desc = "Jump to a directory using zoxide"; }
+      ];
+    };
+
     settings = {
       manager = {
         show_hidden = false;
@@ -122,6 +128,12 @@
         rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
         hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
       }}/full-border.yazi";
+      zoxide = "${pkgs.fetchFromGitHub {
+        owner = "yazi-rs";
+        repo = "plugins";
+        rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
+        hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
+      }}/zoxide.yazi";
     };
   };
 
