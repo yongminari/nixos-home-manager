@@ -9,8 +9,8 @@
     ./modules/core/theme.nix
     ./modules/core/fonts.nix
     ./modules/core/shell/utils.nix
-    ./modules/core/shell/welcome.nix
-    ./modules/core/shell/bash.nix
+    ./modules/core/shell/yazi.nix
+    ./modules/core/shell/welcome.nix    ./modules/core/shell/bash.nix
     ./modules/core/shell/zsh.nix
     ./modules/core/shell/nushell.nix
     ./modules/core/shell/zellij.nix
