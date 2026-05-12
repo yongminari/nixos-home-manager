@@ -111,6 +111,7 @@
       plugin = {
         prepend_previewers = [
           { name = "*.md"; run = "glow"; }
+          { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }
         ];
       };
     };
@@ -145,6 +146,12 @@
         rev = "bd3eaa58c065eaf216a8d22d64c62d8e0e9277e9";
         hash = "sha256-mzW/ut/LTEriZiWF8YMRXG9hZ70OOC0irl5xObTNO40=";
       };
+      ouch = pkgs.fetchFromGitHub {
+        owner = "ndtoan96";
+        repo = "ouch.yazi";
+        rev = "406ce6c13ec3a18d4872b8f64b62f4a530759b2c";
+        hash = "sha256-14x/bD0aD9hXONaqQD8Dt7rLBCMq7bkVLH6uCPOQ0C8=";
+      };
     };
   };
 
@@ -173,6 +180,7 @@
     lsb-release
     python3
     glow
+    ouch
   ];
 
   # Starship SSH 설정 파일 연결
