@@ -108,6 +108,11 @@
           { run = ''${pkgs.neovim}/bin/nvim "$@"''; block = true; }
         ];
       };
+      plugin = {
+        prepend_previewers = [
+          { name = "*.md"; run = "glow"; }
+        ];
+      };
     };
 
     initLua = ''
@@ -122,18 +127,24 @@
         rev = "main";
         sha256 = "sha256-o2EnQYOxp5bWn0eLn0sCUXcbtu6tbO9pdUdoquFCTVw=";
       };
-      full-border = "${pkgs.fetchFromGitHub {
+      full-border = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
         rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
         hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
-      }}/full-border.yazi";
-      zoxide = "${pkgs.fetchFromGitHub {
+      }) + "/full-border.yazi";
+      zoxide = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
         rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
         hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
-      }}/zoxide.yazi";
+      }) + "/zoxide.yazi";
+      glow = pkgs.fetchFromGitHub {
+        owner = "Reledia";
+        repo = "glow.yazi";
+        rev = "bd3eaa58c065eaf216a8d22d64c62d8e0e9277e9";
+        hash = "sha256-mzW/ut/LTEriZiWF8YMRXG9hZ70OOC0irl5xObTNO40=";
+      };
     };
   };
 
@@ -161,6 +172,7 @@
     lolcat
     lsb-release
     python3
+    glow
   ];
 
   # Starship SSH 설정 파일 연결
