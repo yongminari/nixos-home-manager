@@ -106,6 +106,7 @@
 
     initLua = ''
       require("githead"):setup()
+      require("full-border"):setup()
     '';
 
     plugins = {
@@ -115,6 +116,12 @@
         rev = "main";
         sha256 = "sha256-o2EnQYOxp5bWn0eLn0sCUXcbtu6tbO9pdUdoquFCTVw=";
       };
+      full-border = "${pkgs.fetchFromGitHub {
+        owner = "yazi-rs";
+        repo = "plugins";
+        rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
+        hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
+      }}/full-border.yazi";
     };
   };
 
