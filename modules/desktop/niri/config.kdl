@@ -47,6 +47,12 @@ overview {
 cursor {
     xcursor-theme "Bibata-Modern-Ice"
     xcursor-size 48
+
+    // 키보드 타이핑을 시작하면 즉시 마우스 커서를 숨깁니다.
+    hide-when-typing
+
+    // 마우스를 조작하지 않은 지 3000ms(3초)가 지나면 커서를 숨깁니다.
+    hide-after-inactive-ms 3000
 }
 
 // 자동 실행 (환경 변수 공유 및 Systemd 세션 연동)
