@@ -36,6 +36,12 @@
       # [Clipboard]
       clipboard-read = "allow";
       clipboard-write = "allow";
+
+      # [Keybinds] - 특정 단축키 비활성화
+      keybind = [
+        "ctrl+shift+e=unbind"
+        "ctrl+shift+o=unbind"
+      ];
     };
   };
 
