@@ -7,15 +7,30 @@ let
   hostRegistry = {
     galaxy-book = {
       scale = "1.0";
-      deviceType = "laptop"; # laptop, desktop 등
+      deviceType = "laptop";
+      extraConfig = "";
     };
     ai-x1-pro = {
       scale = "1.0";
       deviceType = "desktop";
+      extraConfig = "";
+    };
+    nxtp-office-desktop = {
+      scale = "1.0";
+      deviceType = "desktop";
+      # 모니터 좌우 배치 변경: DP-2(왼쪽), DP-3(오른쪽)
+      extraConfig = ''
+        output "DP-2" {
+            position x=0 y=0
+        }
+        output "DP-3" {
+            position x=2560 y=0
+        }
+      '';
     };
   };
 
-  currentHost = hostRegistry.${hostname} or { scale = "1.0"; deviceType = "desktop"; };
+  currentHost = hostRegistry.${hostname} or { scale = "1.0"; deviceType = "desktop"; extraConfig = ""; };
   baseConfig = builtins.readFile ./config.kdl;
   
   isLaptop = currentHost.deviceType == "laptop";
@@ -45,10 +60,13 @@ in
 
   # 메인 설정 파일
   xdg.configFile."niri/config.kdl".text = ''
-    // 모든 출력 장치에 대해 스케일 적용 (듀얼 모니터 및 다양한 이름 대응)
+    // 기본 출력 설정 (스케일 등)
     output "^.*$" {
         scale ${currentHost.scale}
     }
+
+    // 호스트별 추가 출력 설정 (배치 등)
+    ${currentHost.extraConfig}
 
     ${baseConfig}
     
