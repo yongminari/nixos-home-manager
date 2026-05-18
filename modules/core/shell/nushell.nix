@@ -92,7 +92,8 @@
       let has_eza = (which eza | is-empty | not $in)
       
       if $has_eza {
-        alias ls = eza --icons
+        # 'ls'는 Nushell의 기본 명령(Table 반환)을 유지하고, 
+        # eza 기능은 ll, lt 등을 통해 제공합니다.
         alias ll = eza -l --icons --git -a
         alias lt = eza --tree --level=2 --icons --git
       } else {

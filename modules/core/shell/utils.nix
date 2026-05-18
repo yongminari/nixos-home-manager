@@ -2,7 +2,7 @@
 
 {
   home.shellAliases = {
-    ls = "eza";
+    # ls는 각 쉘의 기본 기능을 존중하기 위해 별칭에서 제외합니다. (특히 Nushell의 Table 반환 기능)
     ll = "eza -l --icons --git -a";
     lt = "eza --tree --level=2 --long --icons --git";
     cat = "bat";
@@ -35,7 +35,7 @@
     enable = true;
     enableBashIntegration = true;
     enableZshIntegration = true;
-    enableNushellIntegration = true;
+    enableNushellIntegration = false; # 자동 별칭 생성을 막기 위해 비활성화
     icons = "auto";
     git = true;
   };
