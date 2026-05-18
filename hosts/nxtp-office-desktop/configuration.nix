@@ -27,6 +27,9 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
+  # NVIDIA Container Toolkit (Podman/Docker GPU 지원)
+  hardware.nvidia-container-toolkit.enable = true;
+
   # --- [2. 호스트 고유 패키지 설치] ---
   environment.systemPackages = with pkgs; [ 
     nvtopPackages.nvidia 
