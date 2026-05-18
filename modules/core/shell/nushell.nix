@@ -22,19 +22,16 @@
 
     envFile.text = ''
       # [Nix & Home Manager Path Setup]
-      let nix_bin = ($env.HOME | path join ".nix-profile" "bin")
       let hm_bin = ($env.HOME | path join ".local" "state" "nix" "profiles" "home-manager" "profile" "bin")
-      
+
       $env.PATH = (
-        $env.PATH 
-        | split row (char esep) 
+        $env.PATH
+        | split row (char esep)
         | prepend "/nix/var/nix/profiles/default/bin"
         | prepend "/run/current-system/sw/bin"
-        | prepend $nix_bin
         | prepend $hm_bin
         | uniq
       )
-
       # [Gemini CLI Settings]
       $env.GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207"
       $env.GOOGLE_CLOUD_LOCATION = "global"
