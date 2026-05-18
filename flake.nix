@@ -77,6 +77,25 @@
         ];
       };
 
+      nixosConfigurations."nxtp-office-desktop" = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/nxtp-office-desktop/configuration.nix
+          sops-nix.nixosModules.sops
+          
+          # Home Manager를 NixOS 모듈로 통합
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.users.yongminari = import ./home.nix;
+          }
+        ];
+      };
+
       # 독립 실행형 Home Manager 설정 (기존 방식 유지용: home-manager switch --flake .#yongminari)
       homeConfigurations."yongminari" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
