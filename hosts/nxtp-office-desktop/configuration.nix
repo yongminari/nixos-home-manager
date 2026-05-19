@@ -9,7 +9,10 @@
 
   networking = {
     hostName = "nxtp-office-desktop";
-    useDHCP = false;
+    networkmanager.enable = true;
+    
+    # DNS 서버 추가
+    nameservers = [ "8.8.8.8" "1.1.1.1" ];
     
     interfaces = {
       enp13s0 = {
