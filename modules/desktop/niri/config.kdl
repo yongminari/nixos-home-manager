@@ -60,7 +60,7 @@ spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPL
 spawn-at-startup "systemctl" "--user" "start" "niri-session.target"
 
 spawn-at-startup "fcitx5" "-d"
-spawn-at-startup "noctalia-shell"
+// spawn-at-startup "noctalia-shell" // systemd가 관리하도록 제거
 spawn-at-startup "nm-applet"
 
 // 단축키 파일 포함
