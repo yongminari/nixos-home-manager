@@ -38,12 +38,15 @@
     papirus-icon-theme
     adwaita-icon-theme
     hicolor-icon-theme
+    # Qt6 및 Wayland 테마 통합 패키지
+    qt6Packages.qt6ct
+    kdePackages.qqc2-desktop-style
   ];
 
-  # Qt 앱들을 GTK 테마와 동기화
+  # Qt 앱들을 설정 도구(qt6ct)와 동기화
   qt = {
     enable = true;
-    platformTheme.name = "gtk";
+    platformTheme.name = "qtct";
     style.name = "kvantum";
   };
 
