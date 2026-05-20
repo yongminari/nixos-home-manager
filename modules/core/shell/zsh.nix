@@ -65,6 +65,9 @@
     };
 
     shellAliases = {
+      # Custom Keyboard Guide
+      keymap = "bat ~/nixos-home-manager/docs/keyboard-layout.md";
+
       # WireGuard Aliases
       vpn-on = "sudo systemctl start wg-quick-wg0";
       vpn-off = "sudo systemctl stop wg-quick-wg0";

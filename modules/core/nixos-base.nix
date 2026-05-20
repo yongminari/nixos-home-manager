@@ -147,42 +147,94 @@
       extraDefCfg = "process-unmapped-keys yes";
       config = ''
         (defsrc
-          caps esc spc ralt
-          h j k l
-          a s d f
-          e c
+          caps
+          q w e r t y u i o p
+          a s d f g h j k l ; '
+          z x c v b n m , . /
+          spc lalt ralt
         )
 
         (defalias
-          ;; CapsLock -> Ctrl, Tap -> Esc (with EN switch signal)
+          ;; --- [Layer Toggles] ---
+          spc-l (tap-hold-press 200 200 spc (layer-toggle nav))
+          z-l (tap-hold 200 200 z (layer-toggle num))
+          x-l (tap-hold 200 200 x (layer-toggle func))
+          /-l (tap-hold-press 200 200 / (layer-toggle sym))
+
+          ;; --- [Home Row Mods (GACS)] ---
+          a-m (tap-hold 200 200 a lmet)
+          s-a (tap-hold 200 200 s lalt)
+          d-c (tap-hold 200 200 d lctl)
+          f-s (tap-hold 200 200 f lsft)
+
+          j-s (tap-hold 200 200 j rsft)
+          k-c (tap-hold 200 200 k rctl)
+          l-a (tap-hold 200 200 l ralt)
+          ;-m (tap-hold 200 200 ; rmet)
+
+          ;; --- [Special Aliases] ---
+          ;; CapsLock position -> Ctrl / Esc.
           esc-en (tap-hold-press 200 200 (multi esc C-S-A-f12) lctl)
           
-          ;; RAlt -> RAlt, Hold -> Mouse Layer
-          ralt-ms (tap-hold 200 200 ralt (layer-toggle mouse))
+          ;; Layer Switches for Toggle
+          tog-raw (layer-switch raw)
+          tog-def (layer-switch default)
 
-          ;; Mouse movement (speed, acceleration)
+          ;; Mouse Movements & Scroll
+          m-u (movemouse-up 4 1)
           m-l (movemouse-left 4 1)
           m-d (movemouse-down 4 1)
-          m-u (movemouse-up 4 1)
           m-r (movemouse-right 4 1)
-
-          ;; Mouse scroll
           sc-u (mwheel-up 50 120)
           sc-d (mwheel-down 50 120)
         )
 
         (deflayer default
-          @esc-en @esc-en spc @ralt-ms
-          h j k l
-          a s d f
-          e c
+          @esc-en
+          q w e r t y u i o p
+          @a-m @s-a @d-c @f-s g h @j-s @k-c @l-a @;-m '
+          @z-l @x-l c v b n m , . @/-l
+          @spc-l lalt ralt
         )
 
-        (deflayer mouse
-          _ _ _ _
-          @m-l @m-d @m-u @m-r
-          mlft mmid mrgt mlft ;; a:L, s:M, d:R, f:L
-          @sc-u @sc-d
+        (deflayer nav
+          @tog-raw ;; Space + Caps position = Toggle RAW
+          _ mlft m-u mrgt mmid home pgup pgdn end _
+          _ m-l m-d m-r sc-u _ left down up rght _ _
+          _ _ sc-d _ _ _ bspc del _ _ _
+          _ _ _
+        )
+
+        (deflayer num
+          _
+          _ _ _ _ _ / 7 8 9 -
+          _ _ _ _ _ * 4 5 6 +
+          _ _ _ _ _ 0 1 2 3 .
+          _ _ _
+        )
+
+        (deflayer func
+          _
+          _ _ _ _ _ f12 f7 f8 f9 _
+          _ _ _ _ _ f11 f4 f5 f6 _ _
+          _ _ _ _ _ f10 f1 f2 f3 _
+          _ _ _
+        )
+
+        (deflayer sym
+          _
+          ! @ # $ % ^ & * ( )
+          _ + { } | ~ : " < > ?
+          - = [ ] \ ` ; ' . _
+          _ _ _
+        )
+
+        (deflayer raw
+          @tog-def ;; In RAW, same key toggles back to Default
+          q w e r t y u i o p
+          a s d f g h j k l ; '
+          z x c v b n m , . /
+          spc lalt ralt
         )
       '';
     };
