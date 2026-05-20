@@ -21,7 +21,7 @@
 
 *   **진입 키:** `v` 또는 `n` 키를 길게 누름 (Hold)
 *   **오른손 (Nav):** `h j k l` (← ↓ ↑ →), `u/i` (PgUp/Dn), `y/o` (Home/End)
-*   **기능키:** `m` (Backspace), `,` (Delete)
+*   **기능키:** `m` (Backspace), `,` (Delete), **`Space` (Tab)**
 *   **왼손 (Mouse):** `w a s d` (↑ ← ↓ →), `q` (L-Click), `e` (R-Click), `r` (M-Click)
 *   **휠:** `s-u` (Wheel Up), `s-d` (Wheel Down)
 

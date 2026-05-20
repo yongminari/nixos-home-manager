@@ -206,7 +206,7 @@
           mlft @m-u mrgt mmid _ home pgup pgdn end _
           @m-l @m-d @m-r _ @sc-u left down up rght _ _
           _ _ @sc-d _ _ _ bspc del _ _
-          _ _ _
+          tab _ _
         )
 
         (deflayer num
