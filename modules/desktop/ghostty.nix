@@ -37,10 +37,54 @@
       clipboard-read = "allow";
       clipboard-write = "allow";
 
-      # [Keybinds] - 특정 단축키 비활성화
+      # [Keybinds] - 요청하신 특정 단축키 비활성화
       keybind = [
-        "ctrl+shift+e=unbind"
+        # [텍스트 선택 및 조정]
+        "ctrl+shift+a=unbind"
+        "shift+arrow_left=unbind"
+        "shift+arrow_right=unbind"
+        "shift+arrow_up=unbind"
+        "shift+arrow_down=unbind"
+
+        # [탭 관리]
+        "ctrl+shift+t=unbind"
+        "ctrl+shift+w=unbind"
+        "ctrl+tab=unbind"
+        "ctrl+shift+tab=unbind"
+        "ctrl+shift+arrow_left=unbind"
+        "ctrl+shift+arrow_right=unbind"
+        "ctrl+page_up=unbind"
+        "ctrl+page_down=unbind"
+
+        # [특정 번호 탭 이동]
+        "alt+1=unbind"
+        "alt+2=unbind"
+        "alt+3=unbind"
+        "alt+4=unbind"
+        "alt+5=unbind"
+        "alt+6=unbind"
+        "alt+7=unbind"
+        "alt+8=unbind"
+        "alt+9=unbind"
+        "alt+digit_1=unbind"
+        "alt+digit_2=unbind"
+        "alt+digit_3=unbind"
+        "alt+digit_4=unbind"
+        "alt+digit_5=unbind"
+        "alt+digit_6=unbind"
+        "alt+digit_7=unbind"
+        "alt+digit_8=unbind"
+
+        # [화면 분할 및 이동]
         "ctrl+shift+o=unbind"
+        "ctrl+shift+e=unbind"
+        "ctrl+alt+arrow_up=unbind"
+        "ctrl+alt+arrow_down=unbind"
+        "ctrl+alt+arrow_left=unbind"
+        "ctrl+alt+arrow_right=unbind"
+
+        # [검색]
+        "ctrl+shift+f=unbind"
       ];
     };
   };
