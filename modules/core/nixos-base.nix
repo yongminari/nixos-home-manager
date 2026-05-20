@@ -156,26 +156,27 @@
 
         (defalias
           ;; --- [Layer Toggles] ---
-          v-l (tap-hold 300 300 v (layer-toggle nav))
-          n-l (tap-hold 300 300 n (layer-toggle nav))
-          z-l (tap-hold 300 300 z (layer-toggle num))
-          la-l (tap-hold 300 300 lalt (layer-toggle func))
-          /-l (tap-hold-press 300 300 / (layer-toggle sym))
+          v-l (tap-hold 240 240 v (layer-toggle nav))
+          n-l (tap-hold 240 240 n (layer-toggle nav))
+          z-l (tap-hold 240 240 z (layer-toggle num))
+          la-l (tap-hold 240 240 lalt (layer-toggle func))
+          g-l (tap-hold 240 240 g (layer-toggle sym))
+          /-l (tap-hold-press 240 240 / (layer-toggle sym))
 
           ;; --- [Home Row Mods (GACS)] ---
-          a-m (tap-hold 300 300 a lmet)
-          s-a (tap-hold 300 300 s lalt)
-          d-c (tap-hold 300 300 d lctl)
-          f-s (tap-hold 300 300 f lsft)
+          a-m (tap-hold 240 240 a lmet)
+          s-a (tap-hold 240 240 s lalt)
+          d-c (tap-hold 240 240 d lctl)
+          f-s (tap-hold 240 240 f lsft)
 
-          j-s (tap-hold 300 300 j rsft)
-          k-c (tap-hold 300 300 k rctl)
-          l-a (tap-hold 300 300 l ralt)
-          ;-m (tap-hold 300 300 ; rmet)
+          j-s (tap-hold 240 240 j rsft)
+          k-c (tap-hold 240 240 k rctl)
+          l-a (tap-hold 240 240 l ralt)
+          ;-m (tap-hold 240 240 ; rmet)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc.
-          esc-en (tap-hold-press 300 300 (multi esc C-S-A-f12) lctl)
+          esc-en (tap-hold-press 240 240 (multi esc C-S-A-f12) lctl)
           
           ;; Layer Switches for Toggle
           tog-raw (layer-switch raw)
@@ -196,7 +197,7 @@
         (deflayer default
           @esc-en
           q w e r t y u i o p
-          @a-m @s-a @d-c @f-s g h @j-s @k-c @l-a @;-m '
+          @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
           @z-l x c @v-l b @n-l m , . @/-l
           spc @la-l ralt
         )
@@ -227,8 +228,8 @@
 
         (deflayer sym
           _
-          S-1 S-2 S-3 S-4 S-5 _ _ _ _ _
-          S-6 S-7 S-8 - = _ _ _ _ _ _
+          S-1 S-2 S-3 S-4 S-5 [ ] S-[ S-] `
+          S-6 S-7 S-8 - = S-9 S-0 ' S-' S-; _
           S-` S-- S-= S-\ \ _ _ _ _ _
           _ _ _
         )
