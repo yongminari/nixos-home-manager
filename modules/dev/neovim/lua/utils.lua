@@ -13,6 +13,7 @@ local is_container = vim.fn.filereadable("/.dockerenv") == 1
 
 local is_remote = is_ssh or is_container  -- 진짜 원격/격리 세션 여부
 local is_multiplexer = os.getenv("ZELLIJ") ~= nil or os.getenv("TMUX") ~= nil
+local is_ghostty = os.getenv("TERM_PROGRAM") == "Ghostty" or os.getenv("TERM") == "xterm-ghostty"
 
 return {
   safe_require = safe_require,
@@ -20,4 +21,5 @@ return {
   is_container = is_container,
   is_remote = is_remote,
   is_multiplexer = is_multiplexer,
+  is_ghostty = is_ghostty,
 }

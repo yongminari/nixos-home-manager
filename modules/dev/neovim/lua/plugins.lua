@@ -3,12 +3,8 @@ local options = require('options')
 local safe_require = utils.safe_require
 
 -- [테마 설정: Ayu]
--- 로컬에서는 'dark', 원격 환경(SSH/Container)에서는 'mirage' 사용
-if utils.is_remote then
-  vim.g.ayucolor = "mirage"
-else
-  vim.g.ayucolor = "dark"
-end
+-- 일관된 경험을 위해 모든 환경에서 'dark' 사용
+vim.g.ayucolor = "dark"
 
 -- ayu-vim은 주로 Vimscript이므로 pcall로 직접 호출
 local ok, _ = pcall(vim.cmd.colorscheme, "ayu")
@@ -24,7 +20,7 @@ if options.is_transparent then
       "SpellLocal", "SpellRare", "Folded", "FoldColumn", "Conceal"
     }
     for _, group in ipairs(groups) do
-      vim.api.nvim_set_hl(0, group, { bg = "NONE", ctermbg = "NONE" })
+      pcall(vim.api.nvim_set_hl, 0, group, { bg = "NONE", ctermbg = "NONE" })
     end
   end
   
