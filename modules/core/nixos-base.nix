@@ -156,25 +156,26 @@
 
         (defalias
           ;; --- [Layer Toggles] ---
-          spc-l (tap-hold-press 200 200 spc (layer-toggle nav))
-          z-l (tap-hold 200 200 z (layer-toggle num))
-          x-l (tap-hold 200 200 x (layer-toggle func))
-          /-l (tap-hold-press 200 200 / (layer-toggle sym))
+          v-l (tap-hold 250 250 v (layer-toggle nav))
+          n-l (tap-hold 250 250 n (layer-toggle nav))
+          z-l (tap-hold 250 250 z (layer-toggle num))
+          x-l (tap-hold 250 250 x (layer-toggle func))
+          /-l (tap-hold-press 250 250 / (layer-toggle sym))
 
           ;; --- [Home Row Mods (GACS)] ---
-          a-m (tap-hold 200 200 a lmet)
-          s-a (tap-hold 200 200 s lalt)
-          d-c (tap-hold 200 200 d lctl)
-          f-s (tap-hold 200 200 f lsft)
+          a-m (tap-hold 250 250 a lmet)
+          s-a (tap-hold 250 250 s lalt)
+          d-c (tap-hold 250 250 d lctl)
+          f-s (tap-hold 250 250 f lsft)
 
-          j-s (tap-hold 200 200 j rsft)
-          k-c (tap-hold 200 200 k rctl)
-          l-a (tap-hold 200 200 l ralt)
-          ;-m (tap-hold 200 200 ; rmet)
+          j-s (tap-hold 250 250 j rsft)
+          k-c (tap-hold 250 250 k rctl)
+          l-a (tap-hold 250 250 l ralt)
+          ;-m (tap-hold 250 250 ; rmet)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc.
-          esc-en (tap-hold-press 200 200 (multi esc C-S-A-f12) lctl)
+          esc-en (tap-hold-press 250 250 (multi esc C-S-A-f12) lctl)
           
           ;; Layer Switches for Toggle
           tog-raw (layer-switch raw)
@@ -187,28 +188,31 @@
           m-r (movemouse-right 4 1)
           sc-u (mwheel-up 50 120)
           sc-d (mwheel-down 50 120)
+
+          ;; Essential Alias for problem characters
+          dqt S-'
         )
 
         (deflayer default
           @esc-en
           q w e r t y u i o p
           @a-m @s-a @d-c @f-s g h @j-s @k-c @l-a @;-m '
-          @z-l @x-l c v b n m , . @/-l
-          @spc-l lalt ralt
+          @z-l @x-l c @v-l b @n-l m , . @/-l
+          spc lalt ralt
         )
 
         (deflayer nav
-          @tog-raw ;; Space + Caps position = Toggle RAW
-          _ mlft m-u mrgt mmid home pgup pgdn end _
-          _ m-l m-d m-r sc-u _ left down up rght _ _
-          _ _ sc-d _ _ _ bspc del _ _ _
+          @tog-raw
+          mlft @m-u mrgt mmid _ home pgup pgdn end _
+          @m-l @m-d @m-r _ @sc-u left down up rght _ _
+          _ _ @sc-d _ _ _ bspc del _ _
           _ _ _
         )
 
         (deflayer num
           _
           _ _ _ _ _ / 7 8 9 -
-          _ _ _ _ _ * 4 5 6 +
+          _ _ _ _ _ S-8 4 5 6 S-= _
           _ _ _ _ _ 0 1 2 3 .
           _ _ _
         )
@@ -223,9 +227,9 @@
 
         (deflayer sym
           _
-          ! @ # $ % ^ & * ( )
-          _ + { } | ~ : " < > ?
-          - = [ ] \ ` ; ' . _
+          S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0
+          S-- S-= S-[ S-] S-\ S-` S-; @dqt S-, S-. S-/
+          - = [ ] \ ` ; ' . S--
           _ _ _
         )
 
