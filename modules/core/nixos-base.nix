@@ -156,26 +156,26 @@
 
         (defalias
           ;; --- [Layer Toggles] ---
-          v-l (tap-hold 250 250 v (layer-toggle nav))
-          n-l (tap-hold 250 250 n (layer-toggle nav))
-          z-l (tap-hold 250 250 z (layer-toggle num))
-          x-l (tap-hold 250 250 x (layer-toggle func))
-          /-l (tap-hold-press 250 250 / (layer-toggle sym))
+          v-l (tap-hold 300 300 v (layer-toggle nav))
+          n-l (tap-hold 300 300 n (layer-toggle nav))
+          z-l (tap-hold 300 300 z (layer-toggle num))
+          la-l (tap-hold 300 300 lalt (layer-toggle func))
+          /-l (tap-hold-press 300 300 / (layer-toggle sym))
 
           ;; --- [Home Row Mods (GACS)] ---
-          a-m (tap-hold 250 250 a lmet)
-          s-a (tap-hold 250 250 s lalt)
-          d-c (tap-hold 250 250 d lctl)
-          f-s (tap-hold 250 250 f lsft)
+          a-m (tap-hold 300 300 a lmet)
+          s-a (tap-hold 300 300 s lalt)
+          d-c (tap-hold 300 300 d lctl)
+          f-s (tap-hold 300 300 f lsft)
 
-          j-s (tap-hold 250 250 j rsft)
-          k-c (tap-hold 250 250 k rctl)
-          l-a (tap-hold 250 250 l ralt)
-          ;-m (tap-hold 250 250 ; rmet)
+          j-s (tap-hold 300 300 j rsft)
+          k-c (tap-hold 300 300 k rctl)
+          l-a (tap-hold 300 300 l ralt)
+          ;-m (tap-hold 300 300 ; rmet)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc.
-          esc-en (tap-hold-press 250 250 (multi esc C-S-A-f12) lctl)
+          esc-en (tap-hold-press 300 300 (multi esc C-S-A-f12) lctl)
           
           ;; Layer Switches for Toggle
           tog-raw (layer-switch raw)
@@ -197,8 +197,8 @@
           @esc-en
           q w e r t y u i o p
           @a-m @s-a @d-c @f-s g h @j-s @k-c @l-a @;-m '
-          @z-l @x-l c @v-l b @n-l m , . @/-l
-          spc lalt ralt
+          @z-l x c @v-l b @n-l m , . @/-l
+          spc @la-l ralt
         )
 
         (deflayer nav
