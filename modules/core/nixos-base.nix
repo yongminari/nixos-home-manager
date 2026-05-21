@@ -156,23 +156,23 @@
 
         (defalias
           ;; --- [Layer Toggles] ---
-          v-l (tap-hold 240 240 v (layer-toggle nav))
-          n-l (tap-hold 240 240 n (layer-toggle nav))
-          z-l (tap-hold 240 240 z (layer-toggle num))
-          la-l (tap-hold 240 240 lalt (layer-toggle func))
-          g-l (tap-hold 240 240 g (layer-toggle sym))
+          v-l (tap-hold-release 240 240 v (layer-toggle nav))
+          n-l (tap-hold-release 240 240 n (layer-toggle nav))
+          z-l (tap-hold-release 240 240 z (layer-toggle num))
+          la-l (tap-hold-release 240 240 lalt (layer-toggle func))
+          g-l (tap-hold-release 240 240 g (layer-toggle sym))
           /-l (tap-hold-press 240 240 / (layer-toggle sym))
 
           ;; --- [Home Row Mods (GACS)] ---
-          a-m (tap-hold 240 240 a lmet)
-          s-a (tap-hold 240 240 s lalt)
-          d-c (tap-hold 240 240 d lctl)
-          f-s (tap-hold 240 240 f lsft)
+          a-m (tap-hold-release 240 240 a lmet)
+          s-a (tap-hold-release 240 240 s lalt)
+          d-c (tap-hold-release 240 240 d lctl)
+          f-s (tap-hold-release 240 240 f lsft)
 
-          j-s (tap-hold 240 240 j rsft)
-          k-c (tap-hold 240 240 k rctl)
-          l-a (tap-hold 240 240 l ralt)
-          ;-m (tap-hold 240 240 ; rmet)
+          j-s (tap-hold-release 240 240 j rsft)
+          k-c (tap-hold-release 240 240 k rctl)
+          l-a (tap-hold-release 240 240 l ralt)
+          ;-m (tap-hold-release 240 240 ; rmet)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc.
