@@ -147,7 +147,7 @@
       extraDefCfg = "process-unmapped-keys yes";
       config = ''
         (defsrc
-          caps
+          esc  caps
           q w e r t y u i o p
           a s d f g h j k l ; '
           z x c v b n m , . /
@@ -175,9 +175,9 @@
           ;-m (tap-hold-release 240 240 ; rmet)
 
           ;; --- [Special Aliases] ---
-          ;; CapsLock position -> Ctrl / Esc.
+          ;; CapsLock position -> Ctrl / Esc + IM Disable
           esc-en (tap-hold-press 240 240 (multi esc C-S-A-f12) lctl)
-          
+
           ;; Layer Switches for Toggle
           tog-raw (layer-switch raw)
           tog-def (layer-switch default)
@@ -195,7 +195,7 @@
         )
 
         (deflayer default
-          @esc-en
+          (multi esc C-S-A-f12) @esc-en
           q w e r t y u i o p
           @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
           @z-l x c @v-l b @n-l m , . @/-l
@@ -203,7 +203,7 @@
         )
 
         (deflayer nav
-          @tog-raw
+          _ @tog-raw
           mlft @m-u mrgt mmid _ home pgup pgdn end _
           @m-l @m-d @m-r _ @sc-u left down up rght _ _
           _ _ @sc-d _ _ _ bspc del _ _
@@ -211,7 +211,7 @@
         )
 
         (deflayer num
-          _
+          _ _
           _ _ _ _ _ / 7 8 9 -
           _ _ _ _ _ S-8 4 5 6 S-= _
           _ _ _ _ _ 0 1 2 3 .
@@ -219,7 +219,7 @@
         )
 
         (deflayer func
-          _
+          _ _
           _ _ _ _ _ f12 f7 f8 f9 _
           _ _ _ _ _ f11 f4 f5 f6 _ _
           _ _ _ _ _ f10 f1 f2 f3 _
@@ -227,7 +227,7 @@
         )
 
         (deflayer sym
-          _
+          _ _
           S-1 S-2 S-3 S-4 S-5 [ ] S-[ S-] `
           S-6 S-7 S-8 - = S-9 S-0 ' S-' S-; _
           S-` S-- S-= S-\ \ _ _ _ _ _
@@ -235,13 +235,12 @@
         )
 
         (deflayer raw
-          @tog-def ;; In RAW, same key toggles back to Default
+          _ @tog-def ;; In RAW, same key toggles back to Default
           q w e r t y u i o p
           a s d f g h j k l ; '
           z x c v b n m , . /
           spc lalt ralt
-        )
-      '';
+        )      '';
     };
   };
   # --- [9. Systemd Timeout Optimization] ---
