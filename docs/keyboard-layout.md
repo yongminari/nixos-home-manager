@@ -2,15 +2,15 @@
 
 이 문서는 Home Row Mods 및 레이어 설계를 요약한 가이드입니다. 적응기(약 2~4주) 동안 참고하세요.
 
-## 🌟 Core Concept: Home Row Mods (GACS)
+## 🌟 Core Concept: Home Row Mods (SCGA)
 손가락을 홈 로우(`asdf`, `jkl;`)에 올려둔 채로 **길게 누르면(Hold)** 아래와 같이 동작합니다.
 
 | 키 (왼손) | 일반 (Tap) | 모드 (Hold) | | 키 (오른손) | 일반 (Tap) | 모드 (Hold) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **A** | a | **Meta (Win)** | | **;** | ; | **Meta (Win)** |
-| **S** | s | **Alt** | | **L** | l | **Alt** |
-| **D** | d | **Ctrl** | | **K** | k | **Ctrl** |
-| **F** | f | **Shift** | | **J** | j | **Shift** |
+| **A** | a | **Shift** | | **;** | ; | **Shift** |
+| **S** | s | **Ctrl** | | **L** | l | **Ctrl** |
+| **D** | d | **Alt** | | **K** | k | **Alt** |
+| **F** | f | **Meta (Win)** | | **J** | j | **Meta (Win)** |
 
 ---
 
@@ -54,7 +54,7 @@
 ---
 
 ## 💡 Quick Tips for Beginners
-1.  **반대쪽 손 사용:** `Ctrl + C`를 누를 때는 **오른손 K(Ctrl)**를 누른 채로 **왼손 c**를 누르세요.
-2.  **한영 전환:** `f` (Hold) + `Space` (Tap) = `Shift + Space`. (교차로 누르면 더 편합니다.)
+1.  **반대쪽 손 사용:** `Ctrl + C`를 누를 때는 **오른손 L(Ctrl)**을 누른 채로 **왼손 c**를 누르세요.
+2.  **ESC 한영 전환:** 물리 `Esc` 또는 `Caps Lock`을 누르면 Vim 등에서 빠져나오며 자동으로 영문 모드로 전환됩니다.
 3.  **반복 입력:** `Space`를 꾹 눌러서 여러 번 입력하고 싶을 땐, **`톡-툭`** (더블 클릭하듯 두 번째에 꾹 누름) 하세요.
 4.  **연습 사이트:** [Monkeytype](https://monkeytype.com)이나 [Keybr](https://www.keybr.com)에서 하루 10분만 연습해도 적응 속도가 2배 빨라집니다.

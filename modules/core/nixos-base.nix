@@ -163,16 +163,16 @@
           g-l (tap-hold-release 240 240 g (layer-toggle sym))
           /-l (tap-hold-press 240 240 / (layer-toggle sym))
 
-          ;; --- [Home Row Mods (GACS)] ---
-          a-m (tap-hold-release 240 240 a lmet)
-          s-a (tap-hold-release 240 240 s lalt)
-          d-c (tap-hold-release 240 240 d lctl)
-          f-s (tap-hold-release 240 240 f lsft)
+          ;; --- [Home Row Mods (SCGA)] ---
+          a-s (tap-hold-release 240 240 a lsft)
+          s-c (tap-hold-release 240 240 s lctl)
+          d-a (tap-hold-release 240 240 d lalt)
+          f-m (tap-hold-release 240 240 f lmet)
 
-          j-s (tap-hold-release 240 240 j rsft)
-          k-c (tap-hold-release 240 240 k rctl)
-          l-a (tap-hold-release 240 240 l ralt)
-          ;-m (tap-hold-release 240 240 ; rmet)
+          j-m (tap-hold-release 240 240 j rmet)
+          k-a (tap-hold-release 240 240 k ralt)
+          l-c (tap-hold-release 240 240 l rctl)
+          ;-s (tap-hold-release 240 240 ; rsft)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc + IM Disable
@@ -197,7 +197,7 @@
         (deflayer default
           (multi esc C-S-A-f12) @esc-en
           q w e r t y u i o p
-          @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
+          @a-s @s-c @d-a @f-m @g-l h @j-m @k-a @l-c @;-s '
           @z-l x c @v-l b @n-l m , . @/-l
           spc @la-l ralt
         )
