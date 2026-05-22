@@ -156,27 +156,27 @@
 
         (defalias
           ;; --- [Layer Toggles] ---
-          v-l (tap-hold-release 240 240 v (layer-toggle nav))
-          n-l (tap-hold-release 240 240 n (layer-toggle nav))
-          z-l (tap-hold-release 240 240 z (layer-toggle num))
-          la-l (tap-hold-release 240 240 lalt (layer-toggle func))
-          g-l (tap-hold-release 240 240 g (layer-toggle sym))
-          /-l (tap-hold-press 240 240 / (layer-toggle sym))
+          v-l (tap-hold-release 220 220 v (layer-toggle nav))
+          n-l (tap-hold-release 220 220 n (layer-toggle nav))
+          z-l (tap-hold-release 220 220 z (layer-toggle num))
+          la-l (tap-hold-release 220 220 lalt (layer-toggle func))
+          g-l (tap-hold-release 220 220 g (layer-toggle sym))
+          /-l (tap-hold-press 220 220 / (layer-toggle sym))
 
-          ;; --- [Home Row Mods (SCGA)] ---
-          a-s (tap-hold-release 240 240 a lsft)
-          s-c (tap-hold-release 240 240 s lctl)
-          d-a (tap-hold-release 240 240 d lalt)
-          f-m (tap-hold-release 240 240 f lmet)
+          ;; --- [Home Row Mods (GACS)] ---
+          a-m (tap-hold-release 220 220 a lmet)
+          s-a (tap-hold-release 220 220 s lalt)
+          d-c (tap-hold-release 220 220 d lctl)
+          f-s (tap-hold-release 220 220 f lsft)
 
-          j-m (tap-hold-release 240 240 j rmet)
-          k-a (tap-hold-release 240 240 k ralt)
-          l-c (tap-hold-release 240 240 l rctl)
-          ;-s (tap-hold-release 240 240 ; rsft)
+          j-s (tap-hold-release 220 220 j rsft)
+          k-c (tap-hold-release 220 220 k rctl)
+          l-a (tap-hold-release 220 220 l ralt)
+          ;-m (tap-hold-release 220 220 ; rmet)
 
           ;; --- [Special Aliases] ---
           ;; CapsLock position -> Ctrl / Esc + IM Disable
-          esc-en (tap-hold-press 240 240 (multi esc C-S-A-f12) lctl)
+          esc-en (tap-hold-press 220 220 (multi esc C-S-A-f12) lctl)
 
           ;; Layer Switches for Toggle
           tog-raw (layer-switch raw)
@@ -197,7 +197,7 @@
         (deflayer default
           (multi esc C-S-A-f12) @esc-en
           q w e r t y u i o p
-          @a-s @s-c @d-a @f-m @g-l h @j-m @k-a @l-c @;-s '
+          @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
           @z-l x c @v-l b @n-l m , . @/-l
           spc @la-l ralt
         )

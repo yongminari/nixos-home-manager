@@ -2,15 +2,15 @@
 
 이 문서는 Home Row Mods 및 레이어 설계를 요약한 가이드입니다. 적응기(약 2~4주) 동안 참고하세요.
 
-## 🌟 Core Concept: Home Row Mods (SCGA)
+## 🌟 Core Concept: Home Row Mods (GACS)
 손가락을 홈 로우(`asdf`, `jkl;`)에 올려둔 채로 **길게 누르면(Hold)** 아래와 같이 동작합니다.
 
 | 키 (왼손) | 일반 (Tap) | 모드 (Hold) | | 키 (오른손) | 일반 (Tap) | 모드 (Hold) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **A** | a | **Shift** | | **;** | ; | **Shift** |
-| **S** | s | **Ctrl** | | **L** | l | **Ctrl** |
-| **D** | d | **Alt** | | **K** | k | **Alt** |
-| **F** | f | **Meta (Win)** | | **J** | j | **Meta (Win)** |
+| **A** | a | **Meta (Win)** | | **;** | ; | **Meta (Win)** |
+| **S** | s | **Alt** | | **L** | l | **Alt** |
+| **D** | d | **Ctrl** | | **K** | k | **Ctrl** |
+| **F** | f | **Shift** | | **J** | j | **Shift** |
 
 ---
 
