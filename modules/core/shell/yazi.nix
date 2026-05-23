@@ -40,7 +40,7 @@
       };
       plugin = {
         prepend_previewers = [
-          { name = "*.md"; run = "glow"; }
+          { url = "*.md"; run = "glow"; }
           { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }
           { mime = "{image,audio,video}/*"; run = "mediainfo"; }
         ];
