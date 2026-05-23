@@ -20,6 +20,16 @@ in {
     # --- [2. Power Management (Laptop Specific)] ---
     services.thermald.enable = true;
     services.auto-cpufreq.enable = true;
+    services.auto-cpufreq.settings = {
+      charger = {
+        governor = "performance";
+        turbo = "always";
+      };
+      battery = {
+        governor = "powersave";
+        turbo = "auto";
+      };
+    };
     services.power-profiles-daemon.enable = false;
 
     # --- [3. Utilities] ---

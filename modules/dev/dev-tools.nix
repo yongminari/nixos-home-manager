@@ -28,5 +28,9 @@
     # [현대적 대체 도구]
     sd              # sed 대체 (find & replace)
     xh              # curl/httpie 대체
+
+    # [Keyboard Development]
+    qmk             # QMK Firmware CLI
+    vial            # Vial GUI for keyboard configuration
   ];
 }
