@@ -1,0 +1,96 @@
+;; modules/core/kanata/kanata.kbd
+(defsrc
+  esc  caps
+  q w e r t y u i o p
+  a s d f g h j k l ; '
+  z x c v b n m , . /
+  spc lalt ralt
+)
+
+(defalias
+  ;; --- [Layer Toggles] ---
+  v-l (tap-hold-release 220 220 v (layer-toggle nav))
+  n-l (tap-hold-release 220 220 n (layer-toggle nav))
+  z-l (tap-hold-release 220 220 z (layer-toggle num))
+  la-l (tap-hold-release 220 220 lalt (layer-toggle func))
+  g-l (tap-hold-release 220 220 g (layer-toggle sym))
+  /-l (tap-hold-press 220 220 / (layer-toggle sym))
+
+  ;; --- [Home Row Mods (GACS)] ---
+  a-m (tap-hold-release 220 220 a lmet)
+  s-a (tap-hold-release 220 220 s lalt)
+  d-c (tap-hold-release 220 220 d lctl)
+  f-s (tap-hold-release 220 220 f lsft)
+
+  j-s (tap-hold-release 220 220 j rsft)
+  k-c (tap-hold-release 220 220 k rctl)
+  l-a (tap-hold-release 220 220 l ralt)
+  ;-m (tap-hold-release 220 220 ; rmet)
+
+  ;; --- [Special Aliases] ---
+  ;; CapsLock position -> Ctrl / Esc + IM Disable
+  esc-en (tap-hold-press 220 220 (multi esc C-S-A-f12) lctl)
+
+  ;; Layer Switches for Toggle
+  tog-raw (layer-switch raw)
+  tog-def (layer-switch default)
+
+  ;; Mouse Movements & Scroll
+  m-u (movemouse-up 4 1)
+  m-l (movemouse-left 4 1)
+  m-d (movemouse-down 4 1)
+  m-r (movemouse-right 4 1)
+  sc-u (mwheel-up 50 120)
+  sc-d (mwheel-down 50 120)
+
+  ;; Essential Alias for problem characters
+  dqt S-'
+)
+
+(deflayer default
+  (multi esc C-S-A-f12) @esc-en
+  q w e r t y u i o p
+  @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
+  @z-l x c @v-l b @n-l m , . @/-l
+  spc @la-l ralt
+)
+
+(deflayer nav
+  _ @tog-raw
+  mlft @m-u mrgt mmid _ home pgup pgdn end _
+  @m-l @m-d @m-r _ @sc-u left down up rght _ _
+  _ _ @sc-d _ _ _ bspc del _ _
+  tab _ _
+)
+
+(deflayer num
+  _ _
+  _ _ _ _ _ / 7 8 9 -
+  _ _ _ _ _ S-8 4 5 6 S-= _
+  _ _ _ _ _ 0 1 2 3 .
+  _ _ _
+)
+
+(deflayer func
+  _ _
+  _ _ _ _ _ f12 f7 f8 f9 _
+  _ _ _ _ _ f11 f4 f5 f6 _ _
+  _ _ _ _ _ f10 f1 f2 f3 _
+  _ _ _
+)
+
+(deflayer sym
+  _ _
+  S-1 S-2 S-3 S-4 S-5 [ ] S-[ S-] `
+  S-6 S-7 S-8 - = S-9 S-0 ' S-' S-; _
+  S-` S-- S-= S-\ \ _ _ _ _ _
+  _ _ _
+)
+
+(deflayer raw
+  _ @tog-def ;; In RAW, same key toggles back to Default
+  q w e r t y u i o p
+  a s d f g h j k l ; '
+  z x c v b n m , . /
+  spc lalt ralt
+)

@@ -28,6 +28,33 @@ in {
     environment.systemPackages = with pkgs; [ 
       sof-firmware alsa-utils pavucontrol 
       brightnessctl
+      mobile-broadband-provider-info
     ];
+
+    # --- [4. Cellular & Modem] ---
+    networking.modemmanager.enable = true;
+
+    networking.networkmanager.ensureProfiles.profiles = {
+      "KT LTE" = {
+        connection = {
+          id = "KT LTE";
+          uuid = "bec8eef6-8276-4564-9161-ae2e80a829e0";
+          type = "gsm";
+          interface-name = "wwan0mbim0";
+          autoconnect = true;
+        };
+        gsm = {
+          apn = "lte.ktfwing.com";
+          auto-config = false;
+        };
+        ipv4 = {
+          method = "auto";
+          route-metric = 100;
+        };
+        ipv6 = {
+          method = "auto";
+        };
+      };
+    };
   };
 }
