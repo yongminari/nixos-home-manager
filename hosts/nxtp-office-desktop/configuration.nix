@@ -55,6 +55,9 @@
   # NVIDIA Container Toolkit (Podman/Docker GPU 지원)
   hardware.nvidia-container-toolkit.enable = true;
 
+  # Wayland 안정성을 위한 커널 파라미터 추가
+  boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
+
   # --- [3. 절전 기능 비활성화] ---
   # 원격 접속 안정성을 위해 모든 형태의 절전을 끕니다.
   systemd.targets.sleep.enable = false;
