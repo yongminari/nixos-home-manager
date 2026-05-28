@@ -40,7 +40,7 @@
       };
       plugin = {
         prepend_previewers = [
-          { url = "*.md"; run = "glow"; }
+          { url = "*.md"; run = "rich-preview"; }
           { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }
           { mime = "{image,audio,video}/*"; run = "mediainfo"; }
         ];
@@ -57,26 +57,26 @@
       githead = pkgs.fetchFromGitHub {
         owner = "llanosrocas";
         repo = "githead.yazi";
-        rev = "main";
+        rev = "317d09f728928943f0af72ff6ce31ea335351202";
         sha256 = "sha256-o2EnQYOxp5bWn0eLn0sCUXcbtu6tbO9pdUdoquFCTVw=";
       };
       full-border = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
-        hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
+        rev = "c2c16c83dd6c754c38893030848a162bb2422ca2";
+        hash = "sha256-BdisAHsLHNqtuDu8rtBZZaqiTeL60pQOWKsRct35VZM=";
       }) + "/full-border.yazi";
       zoxide = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "1db18bb5a1c962f95873654a7af1202abb98da60";
-        hash = "sha256-kcZGQB8Dfon8OipuAcNnCeRgTp/S0mQokADkuvEG4Lc=";
+        rev = "c2c16c83dd6c754c38893030848a162bb2422ca2";
+        hash = "sha256-BdisAHsLHNqtuDu8rtBZZaqiTeL60pQOWKsRct35VZM=";
       }) + "/zoxide.yazi";
-      glow = pkgs.fetchFromGitHub {
-        owner = "Reledia";
-        repo = "glow.yazi";
-        rev = "bd3eaa58c065eaf216a8d22d64c62d8e0e9277e9";
-        hash = "sha256-mzW/ut/LTEriZiWF8YMRXG9hZ70OOC0irl5xObTNO40=";
+      rich-preview = pkgs.fetchFromGitHub {
+        owner = "AnirudhG07";
+        repo = "rich-preview.yazi";
+        rev = "7d616ad88498747b46124f32a35847324862cd83";
+        hash = "sha256-KHmjff7tHFLkPqOs8IdWQ0mCliSZn/mIKYof+ulnddk=";
       };
       ouch = pkgs.fetchFromGitHub {
         owner = "ndtoan96";
@@ -101,7 +101,7 @@
 
   # Yazi 의존성 패키지
   home.packages = with pkgs; [
-    glow
+    rich-cli
     ouch
     mediainfo
   ];
