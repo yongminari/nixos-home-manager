@@ -137,7 +137,7 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.trusted-users = [ "root" "yongminari" ];
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 
   # --- [8. Keyboard Remapping (Kanata)] ---
   # Moved to modules/core/kanata/default.nix

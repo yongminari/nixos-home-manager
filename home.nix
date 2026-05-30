@@ -39,7 +39,7 @@
   # --- [User Information] ---
   home.username = "yongminari";
   home.homeDirectory = "/home/yongminari";
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
  
   # --- [Global Packages] ---
   home.packages = with pkgs; [
