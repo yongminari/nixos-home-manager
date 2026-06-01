@@ -8,28 +8,27 @@
 )
 
 (defalias
-  ;; --- [Layer Toggles] ---
-  v-l (tap-hold-release 220 220 v (layer-toggle nav))
-  n-l (tap-hold-release 220 220 n (layer-toggle nav))
-  z-l (tap-hold-release 220 220 z (layer-toggle num))
-  la-l (tap-hold-release 220 220 lalt (layer-toggle func))
-  g-l (tap-hold-release 220 220 g (layer-toggle sym))
-  /-l (tap-hold-press 220 220 / (layer-toggle sym))
+  ;; --- [Layer Toggles - Disabled for Split Keyboard] ---
+  ;; v-l (tap-hold-release 220 220 v (layer-toggle nav))
+  ;; n-l (tap-hold-release 220 220 n (layer-toggle nav))
+  ;; z-l (tap-hold-release 220 220 z (layer-toggle num))
+  ;; la-l (tap-hold-release 220 220 lalt (layer-toggle func))
+  ;; g-l (tap-hold-release 220 220 g (layer-toggle sym))
+  ;; /-l (tap-hold-press 220 220 / (layer-toggle sym))
 
-  ;; --- [Home Row Mods (GACS)] ---
-  a-m (tap-hold-release 220 220 a lmet)
-  s-a (tap-hold-release 220 220 s lalt)
-  d-c (tap-hold-release 220 220 d lctl)
-  f-s (tap-hold-release 220 220 f lsft)
+  ;; --- [Home Row Mods (GACS) - Disabled for Split Keyboard] ---
+  ;; a-m (tap-hold-release 220 220 a lmet)
+  ;; s-a (tap-hold-release 220 220 s lalt)
+  ;; d-c (tap-hold-release 220 220 d lctl)
+  ;; f-s (tap-hold-release 220 220 f lsft)
 
-  j-s (tap-hold-release 220 220 j rsft)
-  k-c (tap-hold-release 220 220 k rctl)
-  l-a (tap-hold-release 220 220 l ralt)
-  ;-m (tap-hold-release 220 220 ; rmet)
+  ;; j-s (tap-hold-release 220 220 j rsft)
+  ;; k-c (tap-hold-release 220 220 k rctl)
+  ;; l-a (tap-hold-release 220 220 l ralt)
+  ;; ;-m (tap-hold-release 220 220 ; rmet)
 
-  ;; --- [Special Aliases] ---
-  ;; CapsLock position -> Ctrl / Esc + IM Disable
-  esc-en (tap-hold-press 220 220 (multi esc C-S-A-f12) lctl)
+  ;; --- [Special Aliases - Restored for IME] ---
+  esc-im (multi esc C-S-A-f12)
 
   ;; Layer Switches for Toggle
   tog-raw (layer-switch raw)
@@ -48,11 +47,11 @@
 )
 
 (deflayer default
-  (multi esc C-S-A-f12) @esc-en
+  @esc-im caps
   q w e r t y u i o p
-  @a-m @s-a @d-c @f-s @g-l h @j-s @k-c @l-a @;-m '
-  @z-l x c @v-l b @n-l m , . @/-l
-  spc @la-l ralt
+  a s d f g h j k l ; '
+  z x c v b n m , . /
+  spc lalt ralt
 )
 
 (deflayer nav
