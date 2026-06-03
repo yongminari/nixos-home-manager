@@ -34,18 +34,21 @@
         image = "ghcr.io/open-webui/open-webui:main";
         ports = [ "3000:8080" ];
         environment = {
-          OLLAMA_BASE_URL = "http://localhost:11434";
-          WEBUI_AUTH = "False"; # 로컬용이므로 인증 비활성화 (선택 사항)
+          OLLAMA_BASE_URL = "http://localhost:4000"; # LiteLLM Proxy를 거치도록 설정
+          WEBUI_AUTH = "False";
         };
-        extraOptions = [ "--network=host" ]; # Ollama와 직접 통신을 위해 호스트 네트워크 사용
+        extraOptions = [ "--network=host" ];
       };
       
-      # LiteLLM: Routing Proxy (나이도별 라우팅을 위해 추후 설정 확장 가능)
+      # LiteLLM: Routing Proxy
       litellm = {
         image = "ghcr.io/berriai/litellm:main-latest";
         ports = [ "4000:4000" ];
-        # config 파일은 추후 sops나 별도 파일을 통해 마운트 권장
-        # command = [ "--config", "/app/config.yaml" ];
+        volumes = [
+          "${./litellm_config.yaml}:/app/config.yaml"
+        ];
+        cmd = [ "--config" "/app/config.yaml" ];
+        extraOptions = [ "--network=host" ]; # Ollama(localhost:11434)와 통신을 위해 필요
       };
     };
   };

@@ -74,6 +74,12 @@
   fonts.fontconfig.enable = true;
   programs.home-manager.enable = true;
 
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-generations +3";
+  };
+
   home.shellAliases = {
     hms = "nh home switch"; 
     ns  = "nh os switch";  

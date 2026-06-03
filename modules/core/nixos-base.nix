@@ -137,6 +137,11 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.trusted-users = [ "root" "yongminari" ];
+  nix.gc = {
+    automatic = true;
+    dates = "weekly"; # 매주 한 번씩 자동으로 청소합니다.
+    options = "--delete-generations +3";
+  };
   system.stateVersion = "26.11";
 
   # --- [8. Keyboard Remapping (Kanata)] ---

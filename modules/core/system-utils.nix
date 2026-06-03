@@ -96,9 +96,8 @@
 
   programs.nh = {
     enable = true;
-    clean.enable = true;
-    clean.extraArgs = "--keep-since 4d --keep 3";
-    # flake 경로는 home.sessionVariables.FLAKE에서 전역으로 관리하므로 여기서 생략하거나 변수화 가능
+    clean.enable = false; # nix.gc 설정을 명시적으로 사용하므로 비활성화
+    # clean.extraArgs = "--keep-since 4d --keep 3";
   };
 
   # 클립보드 히스토리 감시 서비스
