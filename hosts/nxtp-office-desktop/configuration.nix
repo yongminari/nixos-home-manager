@@ -38,6 +38,9 @@
   # --- [1. NVIDIA 그래픽 드라이버 설정] ---
   services.xserver.videoDrivers = [ "nvidia" ];
 
+  # Google Vertex AI 기능 비활성화
+  modules.core.vertexAI.enable = false;
+
   hardware.graphics = {
     enable = true;
     enable32Bit = true;

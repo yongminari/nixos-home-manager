@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, osConfig, ... }:
 
 {
   programs.nushell = {
@@ -32,11 +32,13 @@
         | prepend $hm_bin
         | uniq
       )
+      ${lib.optionalString osConfig.modules.core.vertexAI.enable ''
       # [Gemini CLI Settings]
       $env.GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207"
       $env.GOOGLE_CLOUD_LOCATION = "global"
       $env.GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json"
       $env.GOOGLE_GENAI_USE_VERTEXAI = "True"
+      ''}
 
       # [Environment Detection]
       let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))

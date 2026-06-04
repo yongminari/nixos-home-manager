@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, lib, inputs, osConfig, ... }:
 
 {
   imports = [
@@ -49,25 +49,33 @@
   ];
 
   # --- [Global Session Variables] ---
-  home.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
-    TERMINAL = "ghostty"; # 기본 터미널 설정
+  home.sessionVariables = lib.mkMerge [
+    {
+      NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
+      TERMINAL = "ghostty"; # 기본 터미널 설정
 
-    # [Qt & Wayland Stability]
-    QT_QPA_PLATFORM = "wayland;xcb";
-    QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-    # NVIDIA GPU 관련 안정성 변수
-    LIBVA_DRIVER_NAME = "nvidia";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    GBM_BACKEND = "nvidia-drm";
-    # Quickshell/Qt6 rendering fix for NVIDIA
-    QSG_RHI_BACKEND = "opengl"; 
+      # [Qt & Wayland Stability]
+      QT_QPA_PLATFORM = "wayland;xcb";
+      QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+      # NVIDIA GPU 관련 안정성 변수
+      LIBVA_DRIVER_NAME = "nvidia";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      GBM_BACKEND = "nvidia-drm";
+      # Quickshell/Qt6 rendering fix for NVIDIA
+      QSG_RHI_BACKEND = "opengl"; 
+    }
+    (lib.mkIf osConfig.modules.core.vertexAI.enable {
+      # [Gemini CLI & Vertex AI Settings]
+      GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
+      GOOGLE_CLOUD_LOCATION = "global"; # 서울 리전
+      GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json";
+      GOOGLE_GENAI_USE_VERTEXAI = "True";
+    })
+  ];
 
-    # [Gemini CLI Settings]
-    GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
-    GOOGLE_CLOUD_LOCATION = "global"; # 서울 리전
-    GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json";
-    GOOGLE_GENAI_USE_VERTEXAI = "True";
+  # --- [Vertex AI Credential Symlink] ---
+  home.file.".config/gcloud/application_default_credentials.json" = lib.mkIf osConfig.modules.core.vertexAI.enable {
+    source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/vertex_ai_key";
   };
 
   # --- [Settings] ---
