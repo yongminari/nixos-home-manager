@@ -39,7 +39,7 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   # Google Vertex AI 기능 비활성화
-  modules.core.vertexAI.enable = false;
+  modules.core.vertexAI.enable = true;
 
   hardware.graphics = {
     enable = true;
