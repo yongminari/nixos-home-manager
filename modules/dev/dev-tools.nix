@@ -7,6 +7,7 @@
     fd 
     unzip 
     gh              # GitHub CLI
+    glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)
     lazydocker      # Docker TUI 관리
     (stdenv.mkDerivation rec {

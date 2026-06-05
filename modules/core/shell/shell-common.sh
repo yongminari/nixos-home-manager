@@ -107,3 +107,10 @@ if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
     fi
   fi
 fi
+
+# [GitLab CLI Configuration]
+if [[ -f /run/secrets/gitlab_token ]] && ! is_container; then
+  export GITLAB_TOKEN=$(cat /run/secrets/gitlab_token)
+  export GITLAB_HOST="192.168.0.230"
+fi
+
