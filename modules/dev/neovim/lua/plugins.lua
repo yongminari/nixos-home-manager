@@ -204,7 +204,8 @@ vim.api.nvim_create_autocmd("BufReadCmd", {
     local file = args.file
     if vim.fn.filereadable(file) == 1 then return end
 
-    local cmd = string.format("distrobox enter ros-jazzy -- cat '%s'", file)
+    local container = vim.env.DISTROBOX_NAME or "ros2-jazzy"
+    local cmd = string.format("distrobox enter %s -- cat '%s'", container, file)
     local content = vim.fn.systemlist(cmd)
     if vim.v.shell_error == 0 then
       vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
