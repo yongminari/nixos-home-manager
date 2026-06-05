@@ -73,9 +73,15 @@
     })
   ];
 
-  # --- [Vertex AI Credential Symlink] ---
-  home.file.".config/gcloud/application_default_credentials.json" = lib.mkIf osConfig.modules.core.vertexAI.enable {
-    source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/vertex_ai_key";
+  # --- [Secret Configurations Symlinks] ---
+  home.file = {
+    # Vertex AI Credentials Template
+    ".config/gcloud/application_default_credentials.json" = lib.mkIf osConfig.modules.core.vertexAI.enable {
+      source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/rendered/application_default_credentials.json";
+    };
+
+    # GitLab CLI Configuration Template
+    ".config/glab-cli/config.yml".source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/rendered/glab-config.yml";
   };
 
   # --- [Settings] ---

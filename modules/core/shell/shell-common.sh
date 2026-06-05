@@ -114,3 +114,4 @@ if [[ -f /run/secrets/gitlab_token ]] && ! is_container; then
   export GITLAB_HOST="192.168.0.230"
 fi
 
+
