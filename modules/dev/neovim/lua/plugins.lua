@@ -234,13 +234,15 @@ if vim.lsp.config then
                          vim.env.AMENT_PREFIX_PATH ~= nil or
                          #vim.fs.find('package.xml', { upward = true }) > 0
   
+  local use_distrobox = is_ros_project or vim.env.DISTROBOX_NAME ~= nil
+  
   local clangd_cmd = { 
     "clangd", 
     "--offset-encoding=utf-16",
     "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
   }
   
-  if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
+  if use_distrobox and vim.fn.executable("clangd-distrobox") == 1 then
     clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
   end
 
@@ -254,13 +256,15 @@ else
                            vim.env.AMENT_PREFIX_PATH ~= nil or
                            #vim.fs.find('package.xml', { upward = true }) > 0
 
+    local use_distrobox = is_ros_project or vim.env.DISTROBOX_NAME ~= nil
+
     local clangd_cmd = { 
       "clangd", 
       "--offset-encoding=utf-16",
       "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
     }
     
-    if is_ros_project and vim.fn.executable("clangd-distrobox") == 1 then
+    if use_distrobox and vim.fn.executable("clangd-distrobox") == 1 then
       clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
     end
     lspconfig.clangd.setup { capabilities = capabilities, cmd = clangd_cmd }
