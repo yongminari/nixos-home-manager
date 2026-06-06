@@ -33,6 +33,7 @@
   outputs = { self, nixpkgs, home-manager, noctalia, sops-nix, ... }@inputs:
     let
       system = "x86_64-linux";
+      username = "yongminari"; # 중앙화된 유저명 설정. 다른 아이디로 변경하려면 이곳만 수정하면 됩니다.
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
@@ -41,65 +42,71 @@
       # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
       nixosConfigurations."galaxy-book" = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs username; };
         modules = [
           ./hosts/galaxy-book/configuration.nix
           sops-nix.nixosModules.sops
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager
-          {
+          ({ config, ... }: {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.yongminari = import ./home.nix;
-          }
+            home-manager.extraSpecialArgs = { inherit inputs username; };
+            home-manager.users.${username} = import ./home.nix;
+          })
         ];
       };
 
       nixosConfigurations."ai-x1-pro" = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs username; };
         modules = [
           ./hosts/ai-x1-pro/configuration.nix
           sops-nix.nixosModules.sops
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager
-          {
+          ({ config, ... }: {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.yongminari = import ./home.nix;
-          }
+            home-manager.extraSpecialArgs = { inherit inputs username; };
+            home-manager.users.${username} = import ./home.nix;
+          })
         ];
       };
 
       nixosConfigurations."nxtp-office-desktop" = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs username; };
         modules = [
           ./hosts/nxtp-office-desktop/configuration.nix
           sops-nix.nixosModules.sops
           
           # Home Manager를 NixOS 모듈로 통합
           home-manager.nixosModules.home-manager
-          {
+          ({ config, ... }: {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.yongminari = import ./home.nix;
-          }
+            home-manager.extraSpecialArgs = { inherit inputs username; };
+            home-manager.users.${username} = import ./home.nix;
+          })
         ];
       };
 
       # 독립 실행형 Home Manager 설정 (기존 방식 유지용: home-manager switch --flake .#yongminari)
-      homeConfigurations."yongminari" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."${username}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit inputs; };
+        extraSpecialArgs = {
+          inherit inputs username;
+          osConfig = {
+            modules.core.vertexAI.enable = false;
+            networking.hostName = "";
+          };
+        };
         modules = [ ./home.nix ];
       };
     };

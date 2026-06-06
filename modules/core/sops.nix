@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, username, ... }:
 
 {
   options.modules.core.vertexAI.enable = lib.mkOption {
@@ -10,17 +10,17 @@
   config = {
     sops = {
       defaultSopsFile = ../../secrets/secrets.yaml;
-      age.keyFile = "/home/yongminari/.config/sops/age/keys.txt";
+      age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
       secrets = {
-        gitlab_token = { owner = "yongminari"; };
+        gitlab_token = { owner = username; };
       } // (if config.modules.core.vertexAI.enable then {
-        vertex_ai_key = { owner = "yongminari"; };
+        vertex_ai_key = { owner = username; };
       } else {});
 
       templates = {
         # GitLab CLI Configuration Template
         "glab-config.yml" = {
-          owner = "yongminari";
+          owner = username;
           mode = "0600";
           content = ''
             hosts:
@@ -33,7 +33,7 @@
 
         # Vertex AI Credentials JSON Template Migration
         "application_default_credentials.json" = lib.mkIf config.modules.core.vertexAI.enable {
-          owner = "yongminari";
+          owner = username;
           content = ''
             ${config.sops.placeholder.vertex_ai_key}
           '';

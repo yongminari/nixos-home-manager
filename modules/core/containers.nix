@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   # --- [Container Engine (Podman)] ---
@@ -15,5 +15,5 @@
   ];
 
   # 사용자 계정을 podman 그룹에 추가 (이미 nixos-base에서 wheel 등에 추가되어 있지만 명시)
-  users.users.yongminari.extraGroups = [ "podman" ];
+  users.users.${username}.extraGroups = [ "podman" ];
 }

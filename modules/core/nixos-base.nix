@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   imports = [
@@ -43,9 +43,9 @@
 
   # --- [4. User Accounts & Shell] ---
   programs.zsh.enable = true;
-  users.users.yongminari = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "yongminari";
+    description = username;
     extraGroups = [ "networkmanager" "wheel" "video" "input" "uinput" "audio" ];
     shell = pkgs.zsh; 
   };
@@ -136,7 +136,7 @@
   # --- [7. System Policy] ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
-  nix.settings.trusted-users = [ "root" "yongminari" ];
+  nix.settings.trusted-users = [ "root" username ];
   nix.gc = {
     automatic = true;
     dates = "weekly"; # 매주 한 번씩 자동으로 청소합니다.

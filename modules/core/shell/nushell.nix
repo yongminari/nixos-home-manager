@@ -36,7 +36,7 @@
       # [Gemini CLI Settings]
       $env.GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207"
       $env.GOOGLE_CLOUD_LOCATION = "global"
-      $env.GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json"
+      $env.GOOGLE_APPLICATION_CREDENTIALS = "${config.home.homeDirectory}/.config/gcloud/application_default_credentials.json"
       $env.GOOGLE_GENAI_USE_VERTEXAI = "True"
       ''}
 

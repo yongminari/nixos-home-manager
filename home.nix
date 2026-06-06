@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, osConfig, ... }:
+{ config, pkgs, lib, inputs, osConfig, username, ... }:
 
 {
   imports = [
@@ -37,8 +37,8 @@
   ];
 
   # --- [User Information] ---
-  home.username = "yongminari";
-  home.homeDirectory = "/home/yongminari";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "26.11";
  
   # --- [Global Packages] ---
@@ -68,7 +68,7 @@
       # [Gemini CLI & Vertex AI Settings]
       GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
       GOOGLE_CLOUD_LOCATION = "global"; # 서울 리전
-      GOOGLE_APPLICATION_CREDENTIALS = "/home/yongminari/.config/gcloud/application_default_credentials.json";
+      GOOGLE_APPLICATION_CREDENTIALS = "${config.home.homeDirectory}/.config/gcloud/application_default_credentials.json";
       GOOGLE_GENAI_USE_VERTEXAI = "True";
     })
   ];
