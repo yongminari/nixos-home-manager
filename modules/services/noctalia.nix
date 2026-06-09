@@ -44,8 +44,9 @@ in
       Description = "Timer to automatically fetch a new wallpaper from Wallhaven";
     };
     Timer = {
-      OnUnitActiveSec = "10min"; # 10분마다 실행
-      OnBootSec = "1min";        # 부팅 1분 후 첫 실행
+      OnActiveSec = "5sec";     # 타이머 활성화 5초 후 즉시 실행 (부팅/등록 즉시 실행 유도)
+      OnUnitActiveSec = "5min"; # 5분마다 실행
+      OnBootSec = "1min";        # 부팅 1분 후 실행 (백업용)
     };
     Install = {
       WantedBy = [ "timers.target" ];
