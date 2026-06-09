@@ -130,6 +130,9 @@ binds {
     Print { spawn "sh" "-c" "grim - | swappy -f -"; }
     Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
 
+    // Wallhaven 무작위 배경화면 가져오기
+    Mod+Shift+W { spawn "fetch-wallhaven"; }
+
     // 알림 센터 (Noctalia Shell)
     Mod+N { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
 

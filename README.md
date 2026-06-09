@@ -115,7 +115,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | :--- | :--- |
 | **`Super + Enter`** | Ghostty 터미널 실행 |
 | **`Super + Space`** | Noctalia 앱 런처 실행 |
-| **`Super + N`** | Noctalia 알림 센터 토글 |
+| **`Super + N`** | Noctalia 알림 및 컨트롤 센터 토글 |
+| **`Super + Shift + W`** | Wallhaven 무작위 배경화면 가져오기 (`fetch-wallhaven`) |
 | **`Super + Q`** | 현재 창 닫기 |
 | **`Super + Shift + R`** | 설정 리로드 |
 | **`Super + 1~9`** | 워크스페이스 이동 |
