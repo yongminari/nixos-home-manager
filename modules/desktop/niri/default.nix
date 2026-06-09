@@ -44,6 +44,8 @@ in
     xwayland-satellite
   ];
 
+  wayland.systemd.target = "graphical-session.target";
+
   # 터치패드 토글 스크립트 (랩탑일 경우에만 생성)
   xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf isLaptop {
     executable = true;

@@ -5,8 +5,9 @@
     inputs.noctalia.homeModules.default
   ];
 
-  programs.noctalia-shell = {
+  programs.noctalia = {
     enable = true;
+    systemd.enable = true;
     
     # 기본 설정 (Matugen 기반으로 테마가 자동 생성되나 필요시 커스텀 가능)
     settings = {
@@ -54,24 +55,6 @@
       };
 
       colorSchemes.predefinedScheme = "Ayu";
-    };
-  };
-
-  # Systemd를 통한 Noctalia Shell 관리
-  systemd.user.services.noctalia-shell = {
-    Unit = {
-      Description = "Noctalia Shell (Managed by Home Manager)";
-      After = [ "graphical-session-pre.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      # 쉘 실행 파일 경로 자동 지정
-      ExecStart = "${config.programs.noctalia-shell.package}/bin/noctalia-shell";
-      Restart = "on-failure";
-      RestartSec = 1;
-    };
-    Install = {
-      WantedBy = [ "niri-session.target" "graphical-session.target" ];
     };
   };
 }

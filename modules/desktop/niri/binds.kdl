@@ -4,7 +4,7 @@ binds {
 
     // 실행
     Mod+Return { spawn "ghostty"; }
-    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Mod+Space { spawn "noctalia" "ipc" "call" "launcher" "toggle"; }
     Mod+V { spawn "ghostty" "--class=floating_shell" "-e" "sh" "-c" "cliphist list | fzf --prompt='📋 Clipboard History: ' --height=40% --layout=reverse --border --margin=1 | cliphist decode | wl-copy"; }
 
     // 창 관리
@@ -131,7 +131,7 @@ binds {
     Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
 
     // 알림 센터 (Noctalia Shell)
-    Mod+N { spawn "noctalia-shell" "ipc" "call" "notifications" "toggleHistory"; }
+    Mod+N { spawn "noctalia" "ipc" "call" "notifications" "toggleHistory"; }
 
     // --- [화면 잠금 및 전원 제어] ---
     // 화면 잠금 (Mod + Alt + BackSpace)
