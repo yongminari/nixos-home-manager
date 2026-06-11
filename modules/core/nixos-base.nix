@@ -137,6 +137,7 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.trusted-users = [ "root" username ];
+  nix.settings.auto-optimise-store = true; # 중복 파일 자동 하드링크 최적화
   nix.gc = {
     automatic = true;
     dates = "weekly"; # 매주 한 번씩 자동으로 청소합니다.
