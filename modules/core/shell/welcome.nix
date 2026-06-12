@@ -57,7 +57,7 @@ let
     printf "  \033[1;35m📸 [Utilities & System]\033[0m\n"
     printf "  \033[1;32mPrint (PrtSc)\033[0m       Screenshot (Full)\n"
     printf "  \033[1;32mSuper + Shift + S\033[0m   Screenshot (Area + Editor)\n"
-    printf "  \033[1;32mSuper + Escape\033[0m      Lock Screen (Hyprlock)\n"
+    printf "  \033[1;32mSuper + Escape\033[0m      Lock Screen (Noctalia)\n"
     printf "  \033[1;32mSuper + Shift + E\033[0m   Exit Hyprland (Logout)\n\n" | ${pkgs.lolcat}/bin/lolcat
   '';
 

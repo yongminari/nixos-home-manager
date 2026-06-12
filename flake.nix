@@ -15,11 +15,6 @@
       # 이렇게 해야 빌드 해시가 개발팀의 빌드와 일치하여 컴파일 없이 즉시 바이너리를 다운로드합니다.
     };
 
-    hyprlock-themes = {
-      url = "github:catppuccin/hyprlock";
-      flake = false;
-    };
-
     alacritty-theme = {
       url = "github:alacritty/alacritty-theme";
       flake = false;

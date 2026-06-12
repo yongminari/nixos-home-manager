@@ -36,22 +36,6 @@
         "type": "github"
       }
     },
-    "hyprlock-themes": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1748874053,
-        "narHash": "sha256-kgVlPaWeaH/p0qGc1+Lj2H6YlDAk5CemNo1FFF8ymZ8=",
-        "owner": "catppuccin",
-        "repo": "hyprlock",
-        "rev": "f650895064ae80db7c0e095829fce83fd85d0b26",
-        "type": "github"
-      },
-      "original": {
-        "owner": "catppuccin",
-        "repo": "hyprlock",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1781074563,
@@ -103,7 +87,6 @@
       "inputs": {
         "alacritty-theme": "alacritty-theme",
         "home-manager": "home-manager",
-        "hyprlock-themes": "hyprlock-themes",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
         "sops-nix": "sops-nix"

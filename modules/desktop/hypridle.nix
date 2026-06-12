@@ -5,7 +5,7 @@
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
+        lock_cmd = "${config.programs.noctalia.package}/bin/noctalia msg session lock";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "${pkgs.niri}/bin/niri msg action power-on-monitors";
       };
