@@ -2,8 +2,6 @@
 
 {
   imports = [
-    (if builtins.pathExists ./local.nix then ./local.nix else {})
-
     # [1. core] 필수 설정 및 CLI
     ./modules/core/system-utils.nix
     ./modules/core/theme.nix
