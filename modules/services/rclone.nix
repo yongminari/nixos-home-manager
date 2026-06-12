@@ -13,7 +13,7 @@
         Type = "simple";
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/mnt/gdrive";
         ExecStart = "${pkgs.rclone}/bin/rclone mount gdrive: %h/mnt/gdrive --vfs-cache-mode full --vfs-cache-max-age 24h --buffer-size 128M --vfs-read-chunk-size 64M --vfs-read-chunk-size-limit 1G";
-        ExecStop = "/usr/bin/fusermount3 -u %h/mnt/gdrive";
+        ExecStop = "/run/wrappers/bin/fusermount3 -u %h/mnt/gdrive";
         Restart = "on-failure";
         RestartSec = "10s";
       };
@@ -32,7 +32,7 @@
         Type = "simple";
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/mnt/onedrive";
         ExecStart = "${pkgs.rclone}/bin/rclone mount onedrive: %h/mnt/onedrive --vfs-cache-mode full --vfs-cache-max-age 24h --buffer-size 128M --vfs-read-chunk-size 64M --vfs-read-chunk-size-limit 1G";
-        ExecStop = "/usr/bin/fusermount3 -u %h/mnt/onedrive";
+        ExecStop = "/run/wrappers/bin/fusermount3 -u %h/mnt/onedrive";
         Restart = "on-failure";
         RestartSec = "10s";
       };
