@@ -137,7 +137,14 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.trusted-users = [ "root" username ];
-  nix.settings.accept-flake-config = true;
+  nix.settings.substituters = [
+    "https://cache.nixos.org"
+    "https://noctalia.cachix.org"
+  ];
+  nix.settings.trusted-public-keys = [
+    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+  ];
   nix.settings.auto-optimise-store = true; # 중복 파일 자동 하드링크 최적화
   nix.gc = {
     automatic = true;
