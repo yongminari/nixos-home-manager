@@ -4,7 +4,6 @@
   imports = [
     ./containers.nix
     ./kanata
-    ../hardware/samsung-galaxy-book.nix
   ];
 
   # --- [1. Boot & System Engine] ---

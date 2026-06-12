@@ -7,6 +7,7 @@
     ../../modules/core/sops.nix
     ../../modules/services/wireguard-client.nix
     ../../modules/hardware/printing.nix
+    ../../modules/hardware/samsung-galaxy-book.nix
   ];
 
   networking.hostName = "galaxy-book";
