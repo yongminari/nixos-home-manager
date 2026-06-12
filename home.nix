@@ -57,13 +57,14 @@
       # [Qt & Wayland Stability]
       QT_QPA_PLATFORM = "wayland;xcb";
       QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-      # NVIDIA GPU 관련 안정성 변수
+    }
+    # NVIDIA 그래픽 드라이버가 활성화된 호스트에서만 주입 (NVIDIA 전용 설정)
+    (lib.mkIf (lib.elem "nvidia" (osConfig.services.xserver.videoDrivers or [])) {
       LIBVA_DRIVER_NAME = "nvidia";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
       GBM_BACKEND = "nvidia-drm";
-      # Quickshell/Qt6 rendering fix for NVIDIA
-      QSG_RHI_BACKEND = "opengl"; 
-    }
+      QSG_RHI_BACKEND = "opengl"; # Quickshell/Qt6 rendering fix for NVIDIA
+    })
     (lib.mkIf osConfig.modules.core.vertexAI.enable {
       # [Gemini CLI & Vertex AI Settings]
       GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
