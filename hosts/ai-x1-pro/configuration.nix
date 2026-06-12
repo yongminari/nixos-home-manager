@@ -7,6 +7,7 @@
     ../../modules/core/sops.nix
     ../../modules/services/wireguard-client.nix
     ../../modules/services/local-ai.nix
+    ../../modules/hardware/printing.nix
   ];
 
   networking.hostName = "ai-x1-pro";

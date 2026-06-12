@@ -6,6 +6,7 @@
     ../../modules/core/nixos-base.nix
     ../../modules/core/sops.nix
     ../../modules/services/wireguard-client.nix
+    ../../modules/hardware/printing.nix
   ];
 
   networking.hostName = "galaxy-book";
