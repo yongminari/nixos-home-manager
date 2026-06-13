@@ -63,14 +63,14 @@
       full-border = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "c2c16c83dd6c754c38893030848a162bb2422ca2";
-        hash = "sha256-BdisAHsLHNqtuDu8rtBZZaqiTeL60pQOWKsRct35VZM=";
+        rev = "598cdb671401574ac27aeee257e2f3b0c80610a1";
+        hash = "sha256-bqGN6JxbU+/o7TlM/Cm9Qj/s1McA4pB5QWArGZPcme4=";
       }) + "/full-border.yazi";
       zoxide = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "c2c16c83dd6c754c38893030848a162bb2422ca2";
-        hash = "sha256-BdisAHsLHNqtuDu8rtBZZaqiTeL60pQOWKsRct35VZM=";
+        rev = "598cdb671401574ac27aeee257e2f3b0c80610a1";
+        hash = "sha256-bqGN6JxbU+/o7TlM/Cm9Qj/s1McA4pB5QWArGZPcme4=";
       }) + "/zoxide.yazi";
       rich-preview = pkgs.fetchFromGitHub {
         owner = "AnirudhG07";
@@ -93,8 +93,8 @@
       mediainfo = pkgs.fetchFromGitHub {
         owner = "boydaihungst";
         repo = "mediainfo.yazi";
-        rev = "49f5ab722d617a64b3bea87944e3e4e17ba3a46b";
-        hash = "sha256-PcGrFG06XiJYgBWq+c7fYsx1kjkCvIYRaBiWaJT+xkw=";
+        rev = "a6d30a1c85faabe9bab215b83efb3c646b4c2924";
+        hash = "sha256-s2/6ljln64oVbKVFTGbRdxB8x9ASCo7FKDvC65eyDWM=";
       };
     };
   };
