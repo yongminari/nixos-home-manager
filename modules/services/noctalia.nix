@@ -53,6 +53,13 @@ in
     };
   };
 
+  # Fcitx5 입력기 충돌로 인해 Qt6 기반 Noctalia의 키보드 입력이 먹통되는 현상 해결
+  systemd.user.services.noctalia = {
+    Service = {
+      Environment = [ "QT_IM_MODULE=" ];
+    };
+  };
+
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
