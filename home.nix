@@ -41,7 +41,6 @@
   # --- [Global Packages] ---
   home.packages = with pkgs; [
     libnotify        # 알림용
-    fnm              # Node.js 버전 매니저
     google-cloud-sdk # Google Cloud SDK
   ];
 
