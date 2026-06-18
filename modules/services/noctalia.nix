@@ -73,10 +73,6 @@ in
         height = 36;
       };
       
-      launcher = {
-        # 앱 그리드 뷰 활성화 여부 등
-        view = "grid";
-      };
 
       # 테마 설정 (v5 규격)
       theme = {
@@ -105,7 +101,7 @@ in
         # 배경화면 변경 자동화 설정 (5분 주기)
         automation = {
           enabled = true;
-          interval_minutes = 5;
+          interval_seconds = 300;
           order = "random";
           recursive = true;
         };
