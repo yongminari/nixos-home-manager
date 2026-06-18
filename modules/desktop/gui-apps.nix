@@ -12,6 +12,7 @@
       google-chrome)
     xwayland-satellite
     obsidian
+    geeqie
   ];
 
   programs.zathura = {
