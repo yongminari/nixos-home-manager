@@ -1,8 +1,15 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, osConfig ? {}, ... }:
 
 {
   home.packages = with pkgs; [
-    google-chrome
+    (if (osConfig.networking.hostName or "") == "ai-x1-pro" then
+      (google-chrome.override {
+        commandLineArgs = [
+          "--ozone-platform=x11"
+        ];
+      })
+     else
+      google-chrome)
     xwayland-satellite
     obsidian
   ];
