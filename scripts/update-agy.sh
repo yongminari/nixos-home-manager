@@ -48,29 +48,29 @@ with open("$DEV_TOOLS_PATH", "r") as f:
 import re
 
 # Replace version
-content = re.sub(r'version\s*=\s*"[^"]+";', f'version = "{LATEST_VERSION}";', content)
+content = re.sub(r'version\s*=\s*"[^"]+";', 'version = "${LATEST_VERSION}";', content)
 
 # Replace hashes
 content = re.sub(
     r'x86_64-linux\s*=\s*"sha512-[^"]+";',
-    f'x86_64-linux = "{SRI_AMD64}";',
+    'x86_64-linux = "${SRI_AMD64}";',
     content
 )
 content = re.sub(
     r'aarch64-linux\s*=\s*"sha512-[^"]+";',
-    f'aarch64-linux = "{SRI_ARM64}";',
+    'aarch64-linux = "${SRI_ARM64}";',
     content
 )
 
 # Replace urls
 content = re.sub(
     r'x86_64-linux\s*=\s*"https://storage\.googleapis\.com/[^"]+";',
-    f'x86_64-linux = "{URL_AMD64}";',
+    'x86_64-linux = "${URL_AMD64}";',
     content
 )
 content = re.sub(
     r'aarch64-linux\s*=\s*"https://storage\.googleapis\.com/[^"]+";',
-    f'aarch64-linux = "{URL_ARM64}";',
+    'aarch64-linux = "${URL_ARM64}";',
     content
 )
 
