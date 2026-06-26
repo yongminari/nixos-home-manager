@@ -5,7 +5,8 @@
     (if (osConfig.networking.hostName or "") == "ai-x1-pro" then
       (google-chrome.override {
         commandLineArgs = [
-          "--ozone-platform=x11"
+          "--ozone-platform=wayland"
+          "--enable-features=WaylandWindowDecorations"
         ];
       })
      else
