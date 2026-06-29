@@ -63,14 +63,14 @@
       full-border = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "598cdb671401574ac27aeee257e2f3b0c80610a1";
-        hash = "sha256-bqGN6JxbU+/o7TlM/Cm9Qj/s1McA4pB5QWArGZPcme4=";
+        rev = "39aaf6dc77e546fe7f7836f102a6c57f96d15365";
+        hash = "sha256-rl8EA8aymVQU1296IVsEZ2WR9xBxQTYBK+VUCic/K3k=";
       }) + "/full-border.yazi";
       zoxide = (pkgs.fetchFromGitHub {
         owner = "yazi-rs";
         repo = "plugins";
-        rev = "598cdb671401574ac27aeee257e2f3b0c80610a1";
-        hash = "sha256-bqGN6JxbU+/o7TlM/Cm9Qj/s1McA4pB5QWArGZPcme4=";
+        rev = "39aaf6dc77e546fe7f7836f102a6c57f96d15365";
+        hash = "sha256-rl8EA8aymVQU1296IVsEZ2WR9xBxQTYBK+VUCic/K3k=";
       }) + "/zoxide.yazi";
       rich-preview = pkgs.fetchFromGitHub {
         owner = "AnirudhG07";
@@ -87,8 +87,8 @@
       starship = pkgs.fetchFromGitHub {
         owner = "Rolv-Apneseth";
         repo = "starship.yazi";
-        rev = "a83710153ab5625a64ef98d55e6ddad480a3756f";
-        hash = "sha256-CPRVJVunBLwFLCoj+XfoIIwrrwHxqoElbskCXZgFraw=";
+        rev = "159eaba5b5052bf78ff6cfbfe4e527b946818c82";
+        hash = "sha256-I21to4cxlszRpsb58cvsmwX7VglQBSJC0rrsFIltzC8=";
       };
       mediainfo = pkgs.fetchFromGitHub {
         owner = "boydaihungst";
