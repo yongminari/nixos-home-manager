@@ -41,6 +41,7 @@
     nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
     comma              # 임시 패키지 실행 ( , 명령어 )
     nix-tree           # Nix 의존성 트리 탐색
+    sops               # Sops 암호화 편집 도구
 
     # [추가 유틸리티]
     procs              # ps 대체

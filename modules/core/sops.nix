@@ -13,6 +13,7 @@
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
       secrets = {
         gitlab_token = { owner = username; };
+        slack_token = { owner = username; };
       } // (if config.modules.core.vertexAI.enable then {
         vertex_ai_key = { owner = username; };
       } else {});

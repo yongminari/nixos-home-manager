@@ -4,6 +4,7 @@
   imports = [
     # [1. core] 필수 설정 및 CLI
     ./modules/core/system-utils.nix
+    ./modules/core/weechat.nix
     ./modules/core/theme.nix
     ./modules/core/fonts.nix
     ./modules/core/shell/utils.nix
