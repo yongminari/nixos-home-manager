@@ -15,7 +15,10 @@ in {
       "snd_intel_dspcfg.dsp_driver=1" # Use legacy driver for Intel SST
       "snd_hda_intel.model=alc298-samsung-amp-v2-4-amps" # Speaker amp patch
       "i915.enable_dpcd_backlight=3" # LCD backlight control
+      "loglevel=3" # Suppress non-critical ACPI/kernel warnings
     ];
+
+    boot.blacklistedKernelModules = [ "fan" ]; # Stop the kernel from querying broken BIOS fan status to eliminate dmesg spam
 
     # --- [2. Power Management (Laptop Specific)] ---
     services.thermald.enable = true;
