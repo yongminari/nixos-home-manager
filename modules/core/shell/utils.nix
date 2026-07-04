@@ -60,6 +60,8 @@
     enable = true;
     enableBashIntegration = true;
     enableZshIntegration = true;
+    # Atuin이 Ctrl-R 히스토리 검색을 전담할 수 있도록 FZF의 Ctrl-R 바인딩을 비활성화합니다.
+    historyWidget.command = "";
   };
 
   # Direnv
