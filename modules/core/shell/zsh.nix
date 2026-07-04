@@ -4,8 +4,17 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    autosuggestion.enable = true;
+    # zsh-autocomplete와의 심각한 버퍼 충돌을 막기 위해 기존 autosuggestion은 비활성화합니다.
+    autosuggestion.enable = false;
     syntaxHighlighting.enable = true;
+
+    plugins = [
+      {
+        name = "zsh-autocomplete";
+        src = pkgs.zsh-autocomplete;
+        file = "share/zsh-autocomplete/zsh-autocomplete.plugin.zsh";
+      }
+    ];
 
     # [Zsh Performance Tuning]
     localVariables = {
@@ -40,6 +49,10 @@
       # [Keybindings]
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
+
+      # [zsh-autocomplete Tuning]
+      # 1. 자동완성 목록 활성화 시에도 Enter 키 입력 시 완성이 아닌 명령어가 즉시 실행되도록 수정
+      bindkey -M menuselect '^M' .accept-line
 
       # [Final Cleanup for Containers]
       # 모든 자동 통합(zoxide, atuin 등)이 끝난 후 컨테이너라면 한 번 더 청소합니다.
