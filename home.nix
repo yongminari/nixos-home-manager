@@ -80,6 +80,18 @@
 
     # GitLab CLI Configuration Template
     ".config/glab-cli/config.yml".source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/rendered/glab-config.yml";
+
+    # Antigravity CLI Keybindings (Zellij의 Ctrl+g 충돌을 피해 Ctrl+Shift+e로 변경 및 필수/기본 단축키 명시)
+    ".gemini/antigravity-cli/keybindings.json".text = ''
+      {
+        "cli.exit": [ "ctrl+d" ],
+        "cli.escape": [ "esc", "ctrl+c" ],
+        "cli.enter": [ "enter" ],
+        "cli.clear_screen": [ "ctrl+l" ],
+        "prompt.insert_newline": [ "shift+enter", "ctrl+j" ],
+        "edit.open_editor": [ "ctrl+shift+e" ]
+      }
+    '';
   };
 
   # --- [Settings] ---
