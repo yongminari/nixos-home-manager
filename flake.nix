@@ -20,40 +20,9 @@
       # 이렇게 해야 빌드 해시가 개발팀의 빌드와 일치하여 컴파일 없이 즉시 바이너리를 다운로드합니다.
     };
 
-    alacritty-theme = {
-      url = "github:alacritty/alacritty-theme";
-      flake = false;
-    };
-
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Yazi Plugins
-    yazi-githead = {
-      url = "github:llanosrocas/githead.yazi";
-      flake = false;
-    };
-    yazi-plugins = {
-      url = "github:yazi-rs/plugins";
-      flake = false;
-    };
-    yazi-rich-preview = {
-      url = "github:AnirudhG07/rich-preview.yazi";
-      flake = false;
-    };
-    yazi-ouch = {
-      url = "github:ndtoan96/ouch.yazi";
-      flake = false;
-    };
-    yazi-starship = {
-      url = "github:Rolv-Apneseth/starship.yazi";
-      flake = false;
-    };
-    yazi-mediainfo = {
-      url = "github:boydaihungst/mediainfo.yazi";
-      flake = false;
     };
   };
 

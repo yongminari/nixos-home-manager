@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "alacritty-theme": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1781303280,
-        "narHash": "sha256-jXL0UCLoqiXwihko6F+o247FX4UNFFCOoiA4pZuL/v0=",
-        "owner": "alacritty",
-        "repo": "alacritty-theme",
-        "rev": "659d2e1d669cd5722f11e58c44fd45dc26a6ffcd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "alacritty",
-        "repo": "alacritty-theme",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -70,11 +54,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1783385193,
-        "narHash": "sha256-CU7XyTRfzOWYEwSoWxvnYEwV779iTSi0bn+iXoy7Jn4=",
+        "lastModified": 1783387066,
+        "narHash": "sha256-/BwIwX+au3DnMyg7aKdkgThUIQHq1ND7sq+UysfUsVg=",
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
-        "rev": "7ac5e62ff374b1f1b4cef7410176cf2688ce149e",
+        "rev": "ac754afedf8022b02ba480175cd9c384607f1ecd",
         "type": "github"
       },
       "original": {
@@ -85,17 +69,10 @@
     },
     "root": {
       "inputs": {
-        "alacritty-theme": "alacritty-theme",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
         "sops-nix": "sops-nix",
-        "yazi-githead": "yazi-githead",
-        "yazi-mediainfo": "yazi-mediainfo",
-        "yazi-ouch": "yazi-ouch",
-        "yazi-plugins": "yazi-plugins",
-        "yazi-rich-preview": "yazi-rich-preview",
-        "yazi-starship": "yazi-starship",
         "zsh-patina": "zsh-patina"
       }
     },
@@ -116,102 +93,6 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
-        "type": "github"
-      }
-    },
-    "yazi-githead": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1769427142,
-        "narHash": "sha256-o2EnQYOxp5bWn0eLn0sCUXcbtu6tbO9pdUdoquFCTVw=",
-        "owner": "llanosrocas",
-        "repo": "githead.yazi",
-        "rev": "317d09f728928943f0af72ff6ce31ea335351202",
-        "type": "github"
-      },
-      "original": {
-        "owner": "llanosrocas",
-        "repo": "githead.yazi",
-        "type": "github"
-      }
-    },
-    "yazi-mediainfo": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1780706120,
-        "narHash": "sha256-s2/6ljln64oVbKVFTGbRdxB8x9ASCo7FKDvC65eyDWM=",
-        "owner": "boydaihungst",
-        "repo": "mediainfo.yazi",
-        "rev": "a6d30a1c85faabe9bab215b83efb3c646b4c2924",
-        "type": "github"
-      },
-      "original": {
-        "owner": "boydaihungst",
-        "repo": "mediainfo.yazi",
-        "type": "github"
-      }
-    },
-    "yazi-ouch": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1772505001,
-        "narHash": "sha256-14x/bD0aD9hXONaqQD8Dt7rLBCMq7bkVLH6uCPOQ0C8=",
-        "owner": "ndtoan96",
-        "repo": "ouch.yazi",
-        "rev": "406ce6c13ec3a18d4872b8f64b62f4a530759b2c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ndtoan96",
-        "repo": "ouch.yazi",
-        "type": "github"
-      }
-    },
-    "yazi-plugins": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1783246245,
-        "narHash": "sha256-f4y952sUF/lrHMX6enQts/obk2DeatqAcaVHfjTD65k=",
-        "owner": "yazi-rs",
-        "repo": "plugins",
-        "rev": "8cd50c622898d3ace3ca821f540241965308289a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "yazi-rs",
-        "repo": "plugins",
-        "type": "github"
-      }
-    },
-    "yazi-rich-preview": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1770801763,
-        "narHash": "sha256-KHmjff7tHFLkPqOs8IdWQ0mCliSZn/mIKYof+ulnddk=",
-        "owner": "AnirudhG07",
-        "repo": "rich-preview.yazi",
-        "rev": "7d616ad88498747b46124f32a35847324862cd83",
-        "type": "github"
-      },
-      "original": {
-        "owner": "AnirudhG07",
-        "repo": "rich-preview.yazi",
-        "type": "github"
-      }
-    },
-    "yazi-starship": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1781463098,
-        "narHash": "sha256-I21to4cxlszRpsb58cvsmwX7VglQBSJC0rrsFIltzC8=",
-        "owner": "Rolv-Apneseth",
-        "repo": "starship.yazi",
-        "rev": "159eaba5b5052bf78ff6cfbfe4e527b946818c82",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Rolv-Apneseth",
-        "repo": "starship.yazi",
         "type": "github"
       }
     },

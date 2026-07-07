@@ -54,13 +54,12 @@
     '';
 
     plugins = {
-      githead = inputs.yazi-githead;
-      full-border = "${inputs.yazi-plugins}/full-border.yazi";
-      zoxide = "${inputs.yazi-plugins}/zoxide.yazi";
-      rich-preview = inputs.yazi-rich-preview;
-      ouch = inputs.yazi-ouch;
-      starship = inputs.yazi-starship;
-      mediainfo = inputs.yazi-mediainfo;
+      githead = pkgs.yaziPlugins.githead;
+      full-border = pkgs.yaziPlugins.full-border;
+      rich-preview = pkgs.yaziPlugins.rich-preview;
+      ouch = pkgs.yaziPlugins.ouch;
+      starship = pkgs.yaziPlugins.starship;
+      mediainfo = pkgs.yaziPlugins.mediainfo;
     };
   };
 
