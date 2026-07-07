@@ -28,7 +28,7 @@
   ;; ;-m (tap-hold-release 220 220 ; rmet)
 
   ;; --- [Special Aliases - Restored for IME] ---
-  esc-im (multi esc C-S-A-f12)
+  ;; esc-im (multi esc C-S-A-f12)
 
   ;; Layer Switches for Toggle
   tog-raw (layer-switch raw)
@@ -47,7 +47,7 @@
 )
 
 (deflayer default
-  @esc-im caps
+  esc caps ;; @esc-im
   q w e r t y u i o p
   a s d f g h j k l ; '
   z x c v b n m , . /
