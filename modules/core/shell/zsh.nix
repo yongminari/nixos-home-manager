@@ -1,18 +1,21 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  home.packages = [
+    inputs.zsh-patina.packages.${pkgs.system}.default
+  ];
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    # zsh-autocomplete와의 심각한 버퍼 충돌을 막기 위해 기존 autosuggestion은 비활성화합니다.
-    autosuggestion.enable = false;
-    syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = false;
 
     plugins = [
       {
-        name = "zsh-autocomplete";
-        src = pkgs.zsh-autocomplete;
-        file = "share/zsh-autocomplete/zsh-autocomplete.plugin.zsh";
+        name = "fzf-tab";
+        src = pkgs.zsh-fzf-tab;
+        file = "share/fzf-tab/fzf-tab.plugin.zsh";
       }
     ];
 
@@ -50,10 +53,6 @@
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
 
-      # [zsh-autocomplete Tuning]
-      # 1. 자동완성 목록 활성화 시에도 Enter 키 입력 시 완성이 아닌 명령어가 즉시 실행되도록 수정
-      bindkey -M menuselect '^M' .accept-line
-
       # [Final Cleanup for Containers]
       # 모든 자동 통합(zoxide, atuin 등)이 끝난 후 컨테이너라면 한 번 더 청소합니다.
       # zoxide가 'cd'를 함수나 별칭으로 가로채는 것을 방지하기 위해 cd도 목록에 추가합니다.
@@ -69,6 +68,11 @@
         # 2. 별칭 및 함수 제거
         unalias ls ll lt cat v vi vim g z cd 2>/dev/null
         unset -f z zi cd __zoxide_hook _atuin_precmd 2>/dev/null
+      fi
+
+      # [zsh-patina Syntax Highlighting]
+      if command -v zsh-patina &>/dev/null; then
+        eval "$(zsh-patina activate)"
       fi
     '';
 

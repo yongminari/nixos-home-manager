@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783222121,
-        "narHash": "sha256-E/ElL373TO8lQ2aMvYyzN+k4xkVaUGoRqoa8AtM71tI=",
+        "lastModified": 1783358420,
+        "narHash": "sha256-UEyBpf+XmQe8laXfDzIlo11Er7E0rKrLS8jeMnMj0Ds=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "a1645f40777620c4bd2b6d854b290c2fc354a266",
+        "rev": "0d33882bd46c1f9ef62276700f5e5f2bd6ff6604",
         "type": "github"
       },
       "original": {
@@ -70,11 +70,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1783307563,
-        "narHash": "sha256-iecD8ErVZWFlFK5nsNrtOH1rqvKKqMeaOvB71ysRFjU=",
+        "lastModified": 1783385193,
+        "narHash": "sha256-CU7XyTRfzOWYEwSoWxvnYEwV779iTSi0bn+iXoy7Jn4=",
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
-        "rev": "d8d8ed597e6a3b5a6846c0b474e6f67f573dc630",
+        "rev": "7ac5e62ff374b1f1b4cef7410176cf2688ce149e",
         "type": "github"
       },
       "original": {
@@ -95,7 +95,8 @@
         "yazi-ouch": "yazi-ouch",
         "yazi-plugins": "yazi-plugins",
         "yazi-rich-preview": "yazi-rich-preview",
-        "yazi-starship": "yazi-starship"
+        "yazi-starship": "yazi-starship",
+        "zsh-patina": "zsh-patina"
       }
     },
     "sops-nix": {
@@ -211,6 +212,26 @@
       "original": {
         "owner": "Rolv-Apneseth",
         "repo": "starship.yazi",
+        "type": "github"
+      }
+    },
+    "zsh-patina": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782989899,
+        "narHash": "sha256-4c7jpWqdqOslXv9D6v1/E9+dRUUtd7xJtNCHlXfZCtc=",
+        "owner": "michel-kraemer",
+        "repo": "zsh-patina",
+        "rev": "5a0f7889343c1c14ca2b49372a973c7975033e40",
+        "type": "github"
+      },
+      "original": {
+        "owner": "michel-kraemer",
+        "repo": "zsh-patina",
         "type": "github"
       }
     }
