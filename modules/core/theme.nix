@@ -65,6 +65,7 @@
 
   # 커서 테마를 시스템 전반에 적용
   home.pointerCursor = {
+    enable = true;
     gtk.enable = true;
     x11.enable = true;
     package = pkgs.bibata-cursors;

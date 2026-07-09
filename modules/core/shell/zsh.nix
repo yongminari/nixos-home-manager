@@ -2,7 +2,7 @@
 
 {
   home.packages = [
-    inputs.zsh-patina.packages.${pkgs.system}.default
+    inputs.zsh-patina.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   programs.zsh = {
