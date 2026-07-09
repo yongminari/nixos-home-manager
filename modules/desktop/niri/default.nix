@@ -13,7 +13,16 @@ let
     ai-x1-pro = {
       scale = "1.0";
       deviceType = "desktop";
-      extraConfig = "";
+      extraConfig = ''
+        output "Hexium Ltd. 40LGD5KGM 0000000000000" {
+            mode "5120x2160@120"
+            position x=0 y=0
+        }
+        output "Samsung Electric Company SAMSUNG Unknown" {
+            mode "3840x2160@60"
+            position x=5120 y=0
+        }
+      '';
     };
     nxtp-office-desktop = {
       scale = "1.0";
