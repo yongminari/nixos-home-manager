@@ -99,4 +99,8 @@
   # [GNOME 런처 인식 문제 해결]
   home.file.".local/share/applications/com.mitchellh.ghostty.desktop".source = 
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop";
+
+  # [Ghostty Cursor Shaders 자동 배포]
+  home.file.".config/ghostty/shaders/ripple_cursor.glsl".source = ./shaders/ripple_cursor.glsl;
+  home.file.".config/ghostty/shaders/cursor_tail.glsl".source = ./shaders/cursor_tail.glsl;
 }
