@@ -29,6 +29,13 @@
       cursor-style = "block";
       cursor-style-blink = true;
 
+      # [Cursor Shaders]
+      custom-shader = [
+        "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
+        "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl"
+      ];
+      custom-shader-animation = "always";
+
       # [Shell Integration]
       shell-integration = "detect";
       shell-integration-features = "no-cursor,ssh-terminfo";
