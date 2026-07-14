@@ -21,7 +21,7 @@
       font-size = 12;
 
       # [Window & Visuals]
-      window-decoration = "auto";
+      window-decoration = "none";
       background-opacity = 1.0;
       theme = "Ayu";
 

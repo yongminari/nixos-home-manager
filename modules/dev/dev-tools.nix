@@ -12,16 +12,16 @@
     lazydocker      # Docker TUI 관리
     (stdenv.mkDerivation rec {
       pname = "agy";
-      version = "1.1.0";
+      version = "1.1.1";
 
       src = let
         hashes = {
-          x86_64-linux = "sha512-S6raCOUgl3XeFvUBL5JOP2bZydmeHtp4IF2j2bUnIlRSgEo9Vz+lSBDiouZnKamc2QdkQpSGJaMJgqzJI4HzAw==";
-          aarch64-linux = "sha512-UW83SlZJU5bRNQs0hLSxbeT4cnOmeaDeDEm6Bpg6A2H+Fc+2okklyv1tQKZIFX79DB8gQbM0XmBGjUy4XIm5ng==";
+          x86_64-linux = "sha512-/OutgkfgRTCX4rJtg5NxyI3wQOb7GPrD/YByhRGUc5z0YkBBRptX9Sm8nC4RQKbOTNXnFE5k5u/FYFqfEKhitw==";
+          aarch64-linux = "sha512-bT2Jx7iNTiLi7vk3znMTRSmWV6x6FCNqk6X53OZ+tyUYRczJgEsKsYgRJf9hZTEc5zxpM8E3bsO5ZmWalHU+YA==";
         };
         urls = {
-          x86_64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.0-4523441756438528/linux-x64/cli_linux_x64.tar.gz";
-          aarch64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.0-4523441756438528/linux-arm/cli_linux_arm64.tar.gz";
+          x86_64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.1-6269367663591424/linux-x64/cli_linux_x64.tar.gz";
+          aarch64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.1-6269367663591424/linux-arm/cli_linux_arm64.tar.gz";
         };
       in fetchurl {
         url = urls.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
