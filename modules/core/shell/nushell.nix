@@ -75,9 +75,14 @@
 
       # [SSH Wrapper]
       def --env ssh [...args] {
+        let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
+        let in_multiplexer = (not ($env | get -o ZELLIJ | is-empty)) or (not ($env | get -o TMUX | is-empty))
         let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
-        if ($is_ghostty and ($args | length) > 0) {
+        let is_kitty = ($env.TERM? == "xterm-kitty") or ($env.TERM_PROGRAM? == "kitty")
+        if (not $is_ssh) and (not $in_multiplexer) and $is_ghostty and ($args | length) > 0 {
           ^ghostty +ssh ...$args
+        } else if (not $is_ssh) and (not $in_multiplexer) and $is_kitty and ($args | length) > 0 {
+          ^kitty +kitten ssh ...$args
         } else {
           with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
             ^ssh ...$args

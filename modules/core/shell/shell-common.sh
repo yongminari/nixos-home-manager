@@ -50,6 +50,12 @@ if is_ssh; then
     fi
     # SSH가 전달하지 않았을 COLORTERM을 명시적으로 선언 (256/Truecolor 활성화의 핵심)
     export COLORTERM=truecolor
+  elif [[ "$TERM" == "xterm-kitty" ]]; then
+    # 시스템이 xterm-kitty를 모르면 xterm-256color로 fallback
+    if ! infocmp xterm-kitty >/dev/null 2>&1; then
+      export TERM=xterm-256color
+    fi
+    export COLORTERM=truecolor
   fi
 fi
 
@@ -78,10 +84,12 @@ if ! is_container; then
 fi
 
 # [SSH Wrapper]
-# Ghostty 사용 시 'ghostty +ssh'를 통해 terminfo 자동 주입 시도 (중첩 SSH는 제외)
+# Ghostty 또는 Kitty 사용 시 terminfo 자동 주입 시도 (중첩 SSH 및 Zellij/Tmux 멀티플렉서 환경은 제외)
 function ssh() {
-  if ! is_ssh && [[ "$TERM" == "xterm-ghostty" || "$TERM_PROGRAM" == "Ghostty" ]]; then
+  if [[ -z "$ZELLIJ" && -z "$TMUX" ]] && ! is_ssh && [[ "$TERM" == "xterm-ghostty" || "$TERM_PROGRAM" == "Ghostty" ]]; then
     ghostty +ssh "$@"
+  elif [[ -z "$ZELLIJ" && -z "$TMUX" ]] && ! is_ssh && [[ "$TERM" == "xterm-kitty" || "$TERM_PROGRAM" == "kitty" ]]; then
+    kitty +kitten ssh "$@"
   else
     TERM=xterm-256color COLORTERM=truecolor command ssh "$@"
   fi

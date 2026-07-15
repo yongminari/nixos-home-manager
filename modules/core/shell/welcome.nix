@@ -40,7 +40,7 @@ let
 
   hyprCheatScript = pkgs.writeShellScriptBin "hypr-cheat" ''
     printf "\n  \033[1;35m🪄 [Hyprland Core & Launch]\033[0m\n"
-    printf "  \033[1;32mSuper + Enter\033[0m       Launch Ghostty\n"
+    printf "  \033[1;32mSuper + Enter\033[0m       Launch Kitty\n"
     printf "  \033[1;32mSuper + Space\033[0m       Launch Noctalia (Apps)\n"
     printf "  \033[1;32mSuper + Q\033[0m           Kill Active Window\n"
     printf "  \033[1;32mSuper + F\033[0m           Toggle Fullscreen\n"
@@ -63,7 +63,7 @@ let
 
   niriCheatScript = pkgs.writeShellScriptBin "niri-cheat" ''
     printf "\n  \033[1;35m🪄 [Niri Core & Launch]\033[0m\n"
-    printf "  \033[1;32mSuper + Enter\033[0m       Launch Ghostty\n"
+    printf "  \033[1;32mSuper + Enter\033[0m       Launch Kitty\n"
     printf "  \033[1;32mSuper + Space\033[0m       Launch Application Menu\n"
     printf "  \033[1;32mSuper + Q\033[0m           Close Window\n"
     printf "  \033[1;32mSuper + F\033[0m           Toggle Fullscreen\n\n"

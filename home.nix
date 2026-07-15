@@ -27,6 +27,7 @@
     ./modules/desktop/hypridle.nix
     ./modules/desktop/gui-apps.nix
     ./modules/desktop/ghostty.nix
+    ./modules/desktop/kitty.nix
     ./modules/desktop/swappy.nix
 
     # [4. services] 백그라운드 서비스
@@ -49,7 +50,7 @@
   home.sessionVariables = lib.mkMerge [
     {
       NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
-      TERMINAL = "ghostty"; # 기본 터미널 설정
+      TERMINAL = "kitty"; # 기본 터미널 설정
 
       # [Qt & Wayland Stability]
       QT_QPA_PLATFORM = "wayland;xcb";

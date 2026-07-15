@@ -8,6 +8,7 @@
     cat = "bat";
     # Ghostty를 유지하면서 SSH 호환성을 챙기는 가장 현대적인 방법
     gssh = "ghostty +ssh";
+    kssh = "kitty +kitten ssh";
     # ROS 2 & Qt Wayland compatibility fixes
     rviz2 = "env QT_QPA_PLATFORM=xcb rviz2";
     wireshark = "env QT_QPA_PLATFORM=xcb wireshark";
