@@ -18,6 +18,9 @@
       cursor_trail = 3;
       cursor_trail_decay = "0.1 0.4";
       cursor_trail_start_threshold = 2;
+
+      # 커서 깜빡임 애니메이션 (fade in/out 효과)
+      cursor_blink_interval = "0.5 ease-in-out";
       
       # 타이틀바 비활성화
       hide_window_decorations = "yes";
