@@ -1,5 +1,37 @@
 {
   "nodes": {
+    "ghostty-aurora": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1765890874,
+        "narHash": "sha256-4evex4GkzUGfcWxJ1S35MPupxWJOqEmwglwhnot7fC8=",
+        "owner": "cmmichael",
+        "repo": "ghostty-aurora",
+        "rev": "f75dc3ade01197ee0ba18e1d90cbdaef9a0a33ba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cmmichael",
+        "repo": "ghostty-aurora",
+        "type": "github"
+      }
+    },
+    "ghostty-shaders": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783927614,
+        "narHash": "sha256-WwiFYbzEgDux+Zu4qh4ZrYNHhIRKsMzzS9BrfUfokco=",
+        "owner": "0xhckr",
+        "repo": "ghostty-shaders",
+        "rev": "85898f08fcf4a9274e418912098e99e00a5f8350",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0xhckr",
+        "repo": "ghostty-shaders",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -69,6 +101,8 @@
     },
     "root": {
       "inputs": {
+        "ghostty-aurora": "ghostty-aurora",
+        "ghostty-shaders": "ghostty-shaders",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",

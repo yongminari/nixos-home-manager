@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   programs.ghostty = {
@@ -22,19 +22,35 @@
 
       # [Window & Visuals]
       window-decoration = "none";
-      background-opacity = 1.0;
       theme = "Ayu";
+      background-opacity = 1.0;
+
+      # [Process & Shutdown Tune]
+      # 마지막 창이 닫힐 때 확실하게 프로세스를 종료하여 종료 시 systemd hang(2분 대기) 현상을 방지합니다.
+      quit-after-last-window-closed = true;
 
       # [Cursor]
       cursor-style = "block";
       cursor-style-blink = true;
 
-      # [Cursor Shaders]
+      # [Cursor & Effect Shaders]
+      # 여러 셰이더를 체이닝하여 동시에 쓸 수 있지만, 화면 전체 셰이더와 커서 셰이더를 과도하게 조합하면 
+      # GPU 부하가 늘어나 출력이 씹히거나 느려질 수 있습니다.
       custom-shader = [
+        # -- A. 화면 전체 및 테두리 이펙트 (원하는 것 하나만 주석 해제하여 사용 추천) --
+        # "${config.home.homeDirectory}/.config/ghostty/shaders/aurora.glsl" # 오로라 테두리 네온 효과
+        # "${config.home.homeDirectory}/.config/ghostty/shaders/bettercrt.glsl" # 깔끔한 레트로 CRT 필터
+        # "${config.home.homeDirectory}/.config/ghostty/shaders/crt.glsl" # 강한 빈티지 CRT 곡률/스캔라인 필터
+
+        # -- B. 커서 이펙트 (기존 물결 및 트레일 효과) --
         "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
         "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl"
       ];
-      custom-shader-animation = "always";
+
+      # [Shader Animation Performance Tune]
+      # "always"로 두면 백그라운드에서도 GPU를 지속 점유하여 터미널 렌더링 지연(출력 리프레시 밀림) 및
+      # 종료 시 행(hang)을 유발하므로 비활성화(기본값: 창 포커스 시에만 렌더링)하는 것을 권장합니다.
+      # custom-shader-animation = "always";
 
       # [Shell Integration]
       shell-integration = "detect";
@@ -100,7 +116,10 @@
   home.file.".local/share/applications/com.mitchellh.ghostty.desktop".source = 
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop";
 
-  # [Ghostty Cursor Shaders 자동 배포]
+  # [Ghostty Cursor & Effect Shaders 자동 배포]
   home.file.".config/ghostty/shaders/ripple_cursor.glsl".source = ./shaders/ripple_cursor.glsl;
   home.file.".config/ghostty/shaders/cursor_tail.glsl".source = ./shaders/cursor_tail.glsl;
+  home.file.".config/ghostty/shaders/aurora.glsl".source = "${inputs.ghostty-aurora}/aurora.glsl";
+  home.file.".config/ghostty/shaders/bettercrt.glsl".source = "${inputs.ghostty-shaders}/bettercrt.glsl";
+  home.file.".config/ghostty/shaders/crt.glsl".source = "${inputs.ghostty-shaders}/crt.glsl";
 }

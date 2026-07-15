@@ -24,6 +24,16 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ghostty-aurora = {
+      url = "github:cmmichael/ghostty-aurora";
+      flake = false;
+    };
+
+    ghostty-shaders = {
+      url = "github:0xhckr/ghostty-shaders";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, noctalia, sops-nix, ... }@inputs:
