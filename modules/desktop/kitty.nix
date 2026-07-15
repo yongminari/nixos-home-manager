@@ -12,7 +12,14 @@
       shell = "${pkgs.zsh}/bin/zsh";
       
       # 윈도우 투명도 및 레이아웃
-      background_opacity = "1.0";
+      background_opacity = "0.85";
+      background_blur = 1;
+      window_padding_width = 8;
+      
+      # 커서 흔적 효과 (Cursor Trail)
+      cursor_trail = 3;
+      cursor_trail_decay = "0.1 0.4";
+      cursor_trail_start_threshold = 2;
       
       # 타이틀바 비활성화
       hide_window_decorations = "yes";
