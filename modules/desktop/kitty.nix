@@ -11,9 +11,7 @@
       # 쉘 설정 (zsh)
       shell = "${pkgs.zsh}/bin/zsh";
       
-      # 윈도우 투명도 및 레이아웃
-      background_opacity = "0.85";
-      background_blur = 1;
+      # 윈도우 레이아웃
       window_padding_width = 8;
       
       # 커서 흔적 효과 (Cursor Trail)
