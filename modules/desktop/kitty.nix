@@ -34,6 +34,22 @@
       # 클립보드 제어 허용
       clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
     };
+    extraConfig = ''
+      # 모든 기본 단축키 비활성화
+      clear_all_shortcuts yes
+
+      # 복사 및 붙여넣기 (터미널 표준)
+      map ctrl+shift+c copy_to_clipboard
+      map ctrl+shift+v paste_from_clipboard
+
+      # 폰트 크기 조절
+      map ctrl+shift+equal change_font_size all +2.0
+      map ctrl+shift+minus change_font_size all -2.0
+      map ctrl+shift+backspace change_font_size all 0
+
+      # 설정 파일 실시간 리로드 (기존 ctrl+shift+f5 -> ctrl+shift+,)
+      map ctrl+shift+, load_config_file
+    '';
     themeFile = "ayu";
   };
 }
