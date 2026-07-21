@@ -14,6 +14,7 @@
     xwayland-satellite
     obsidian
     geeqie
+    onlyoffice-desktopeditors
   ];
 
   programs.zathura = {
