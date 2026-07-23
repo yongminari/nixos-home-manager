@@ -37,6 +37,13 @@
     initContent = ''
       source ${./shell-common.sh}
 
+      # [Completion Styling & Descriptions]
+      zstyle ':completion:*' verbose yes
+      zstyle ':completion:*:descriptions' format '[%d]'
+      zstyle ':completion:*:messages' format ' %d'
+      zstyle ':completion:*:warnings' format ' %d'
+      zstyle ':completion:*' group-name ""
+
       # [SSH/Zellij Specific Fixes]
       if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
         bindkey "^?" backward-delete-char
