@@ -10,6 +10,7 @@
     glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)
     lazydocker      # Docker TUI 관리
+    codex           # Lightweight coding agent in terminal
     (stdenv.mkDerivation rec {
       pname = "agy";
       version = "1.1.8";
