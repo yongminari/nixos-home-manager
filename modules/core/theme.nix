@@ -5,10 +5,10 @@
   gtk = {
     enable = true;
     
-    # 1. 테마 설정 (Ayu Dark)
+    # 1. 테마 설정 (Adw-gtk3 Dark)
     theme = {
-      name = "Ayu-Dark";
-      package = pkgs.ayu-theme-gtk;
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
     };
 
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
@@ -59,7 +59,7 @@
       cursor-size = 48;
       cursor-theme = "Bibata-Modern-Ice";
       icon-theme = "Papirus-Dark";
-      gtk-theme = "Ayu-Dark";
+      gtk-theme = "adw-gtk3-dark";
     };
   };
 
