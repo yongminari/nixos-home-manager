@@ -62,10 +62,12 @@ in {
         };
         ipv4 = {
           method = "auto";
-          route-metric = 100;
+          # Prefer Wi-Fi (NetworkManager's default metric is 600) over LTE.
+          route-metric = 700;
         };
         ipv6 = {
           method = "auto";
+          route-metric = 700;
         };
       };
     };
