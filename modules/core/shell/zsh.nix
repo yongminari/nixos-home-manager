@@ -1,8 +1,8 @@
-{ config, pkgs, lib, inputs, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = [
-    inputs.zsh-patina.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.zsh-patina
   ];
 
   programs.zsh = {
@@ -78,9 +78,7 @@
       fi
 
       # [zsh-patina Syntax Highlighting]
-      if command -v zsh-patina &>/dev/null; then
-        eval "$(zsh-patina activate)"
-      fi
+      eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"
     '';
 
     oh-my-zsh = {
