@@ -21,12 +21,14 @@ let
       extraConfig = ''
         output "Hexium Ltd. 40LGD5KGM 0000000000000" {
             mode "5120x2160@120"
+            scale 1.25
             position x=0 y=0
         }
         output "Samsung Electric Company SAMSUNG Unknown" {
             off
             mode "3840x2160@60"
-            position x=5120 y=0
+            scale 1.25
+            position x=4096 y=0
         }
       '';
     };
