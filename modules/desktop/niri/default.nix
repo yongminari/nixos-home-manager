@@ -8,17 +8,23 @@ let
     galaxy-book = {
       scale = "1.0";
       deviceType = "laptop";
+      outputs = null;
       extraConfig = "";
     };
     ai-x1-pro = {
       scale = "1.0";
       deviceType = "desktop";
+      outputs = {
+        left = "Hexium Ltd. 40LGD5KGM 0000000000000";
+        right = "Samsung Electric Company SAMSUNG Unknown";
+      };
       extraConfig = ''
         output "Hexium Ltd. 40LGD5KGM 0000000000000" {
             mode "5120x2160@120"
             position x=0 y=0
         }
         output "Samsung Electric Company SAMSUNG Unknown" {
+            off
             mode "3840x2160@60"
             position x=5120 y=0
         }
@@ -27,6 +33,10 @@ let
     nxtp-office-desktop = {
       scale = "1.0";
       deviceType = "desktop";
+      outputs = {
+        left = "DP-2";
+        right = "DP-3";
+      };
       # 모니터 좌우 배치 변경: DP-2(왼쪽), DP-3(오른쪽)
       # 깜빡임 이슈 해결을 위해 주사율을 120Hz로 하향 조정
       extraConfig = ''
@@ -42,14 +52,102 @@ let
     };
   };
 
-  currentHost = hostRegistry.${hostname} or { scale = "1.0"; deviceType = "desktop"; extraConfig = ""; };
+  currentHost = hostRegistry.${hostname} or {
+    scale = "1.0";
+    deviceType = "desktop";
+    outputs = null;
+    extraConfig = "";
+  };
   baseConfig = builtins.readFile ./config.kdl;
-  
+
   isLaptop = currentHost.deviceType == "laptop";
+
+  outputSelector = side:
+    if currentHost.outputs == null then ""
+    else currentHost.outputs.${side};
+
+  niri-output-toggle = pkgs.writeShellApplication {
+    name = "niri-output-toggle";
+    runtimeInputs = with pkgs; [ jq libnotify niri ];
+    text = ''
+      side="''${1:-}"
+
+      case "$side" in
+        left)
+          target=${lib.escapeShellArg (outputSelector "left")}
+          fallback=${lib.escapeShellArg (outputSelector "right")}
+          label="왼쪽"
+          ;;
+        right)
+          target=${lib.escapeShellArg (outputSelector "right")}
+          fallback=${lib.escapeShellArg (outputSelector "left")}
+          label="오른쪽"
+          ;;
+        *)
+          notify-send -u critical "모니터 전환" "left 또는 right를 지정해야 합니다."
+          exit 2
+          ;;
+      esac
+
+      if [ -z "$target" ] || [ -z "$fallback" ]; then
+        notify-send -u normal "모니터 전환" "이 호스트에는 좌·우 모니터가 설정되어 있지 않습니다."
+        exit 1
+      fi
+
+      if ! outputs=$(niri msg --json outputs); then
+        notify-send -u critical "모니터 전환" "Niri 출력 상태를 읽지 못했습니다."
+        exit 1
+      fi
+
+      resolve_output() {
+        jq -r --arg selector "$1" '
+          first(
+            to_entries[]
+            | select(
+                .key == $selector
+                or .value.name == $selector
+                or ([.value.make, .value.model, .value.serial]
+                    | map(. // "Unknown")
+                    | join(" ")) == $selector
+              )
+            | .key
+          ) // empty
+        ' <<< "$outputs"
+      }
+
+      target_name=$(resolve_output "$target")
+      fallback_name=$(resolve_output "$fallback")
+
+      if [ -z "$target_name" ]; then
+        notify-send -u normal "모니터 전환" "$label 모니터가 연결되어 있지 않습니다."
+        exit 1
+      fi
+
+      if jq -e --arg output "$target_name" '.[$output].current_mode != null' <<< "$outputs" >/dev/null; then
+        if [ -z "$fallback_name" ] \
+          || ! jq -e --arg output "$fallback_name" '.[$output].current_mode != null' <<< "$outputs" >/dev/null; then
+          notify-send -u critical "모니터 전환" "마지막 활성 모니터는 끄지 않습니다."
+          exit 1
+        fi
+
+        focused=$(niri msg --json focused-output | jq -r '.name // empty')
+        if [ "$focused" = "$target_name" ]; then
+          niri msg action focus-monitor "$fallback_name"
+        fi
+
+        niri msg output "$target_name" off
+        notify-send -u low "모니터 전환" "$label 모니터를 비활성화했습니다."
+      else
+        niri msg output "$target_name" on
+        notify-send -u low "모니터 전환" "$label 모니터를 활성화했습니다."
+      fi
+    '';
+  };
 in
 {
   home.packages = with pkgs; [
     niri
+    niri-output-toggle
     xwayland-satellite
   ];
 

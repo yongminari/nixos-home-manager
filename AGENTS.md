@@ -1,4 +1,4 @@
-# Gemini Project Instructions: nixos-home-manager
+# Agent Project Instructions: nixos-home-manager
 
 이 프로젝트는 NixOS와 Home Manager를 Flake 기반으로 통합 관리하는 시스템 설정 저장소입니다.
 

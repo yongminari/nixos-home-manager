@@ -36,6 +36,10 @@ binds {
     Mod+Alt+K     { focus-monitor-up; }
     Mod+Alt+L     { focus-monitor-right; }
 
+    // 좌·우 모니터 활성화/비활성화 (Mod + Ctrl + H/L)
+    Mod+Ctrl+H hotkey-overlay-title="왼쪽 모니터 켜기/끄기" { spawn "niri-output-toggle" "left"; }
+    Mod+Ctrl+L hotkey-overlay-title="오른쪽 모니터 켜기/끄기" { spawn "niri-output-toggle" "right"; }
+
     // 창 이동
     Mod+Shift+Left  { move-column-left; }
     Mod+Shift+Down  { move-window-down; }

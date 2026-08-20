@@ -120,6 +120,8 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | **`Super + Q`** | 현재 창 닫기 |
 | **`Super + Shift + R`** | 설정 리로드 |
 | **`Super + 1~9`** | 워크스페이스 이동 |
+| **`Super + Ctrl + H`** | 왼쪽 모니터 활성화/비활성화 |
+| **`Super + Ctrl + L`** | 오른쪽 모니터 활성화/비활성화 |
 | **`Super + Shift + S`** | 화면 캡처 및 편집 (**Swappy**) |
 
 ### 🖱️ Keyboard Mouse Control (Kanata)
