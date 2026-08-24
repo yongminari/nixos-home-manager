@@ -16,10 +16,6 @@ let
   '';
 in
 {
-  imports = [
-    inputs.noctalia.homeModules.default
-  ];
-
   # Niri 기본 배경화면 파일을 유저 배경화면 디렉토리로 복사
   home.file."Pictures/Wallpapers/niri_wallpaper.jpg".source = ../desktop/niri/niri_wallpaper.jpg;
 
@@ -63,6 +59,7 @@ in
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
     
     # 기본 설정 (Matugen 기반으로 테마가 자동 생성되나 필요시 커스텀 가능)
     settings = {
