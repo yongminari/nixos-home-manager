@@ -7,6 +7,13 @@ window-rule {
 window-rule {
     match is-active=false
     opacity 0.75
+    draw-border-with-background true
+
+    border {
+        on
+        width 0
+        inactive-color "#e5c07b60"
+    }
 }
 
 layer-rule {
