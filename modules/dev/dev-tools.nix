@@ -13,16 +13,16 @@
     codex           # Lightweight coding agent in terminal
     (stdenv.mkDerivation rec {
       pname = "agy";
-      version = "1.1.15";
+      version = "1.1.20";
 
       src = let
         hashes = {
-          x86_64-linux = "sha512-fWAgyv8uBqXd8lU/LZ1bQo477MaXJ9EQMvEOQGCbk420KFeMzVxyaUurXk2kg96a0xIVeMwXKt8XSqUmPOUdzA==";
-          aarch64-linux = "sha512-JXEDHe2AemJPrVFmv7fuLrDJeGJID8Qj2mc/3iAltxo1JA0hPs5qQq1E0hWVn6BQpxdQx281i+/dJF9ZM8ShBA==";
+          x86_64-linux = "sha512-bNx/yQViukDIvwZY8w7eAW5qzQMIN3m+jVTUv2PdmYADk+M8AK3flD9sK3m02s78b7SpY7KwL2zmNjXvVKQoaA==";
+          aarch64-linux = "sha512-cQM22VZTsIqsTh1ANAHEvdlrjryde0FHU9nYPKEDZiT++aSUHtpxCvxbxBbR/3BU2TesFMll9a0o0o4F5GIQkw==";
         };
         urls = {
-          x86_64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.15-5350383476932608/linux-x64/cli_linux_x64.tar.gz";
-          aarch64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.15-5350383476932608/linux-arm/cli_linux_arm64.tar.gz";
+          x86_64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.20-5830032204103680/linux-x64/cli_linux_x64.tar.gz";
+          aarch64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.20-5830032204103680/linux-arm/cli_linux_arm64.tar.gz";
         };
       in fetchurl {
         url = urls.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
