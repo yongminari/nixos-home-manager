@@ -1,12 +1,12 @@
 // 창 규칙
 window-rule {
-    geometry-corner-radius 20
+    geometry-corner-radius 8
     clip-to-geometry true
 }
 
 window-rule {
     match is-active=false
-    opacity 0.85
+    opacity 0.75
 }
 
 layer-rule {
@@ -16,7 +16,7 @@ layer-rule {
 
 layout {
     background-color "transparent"
-    gaps 10
+    gaps 6
     center-focused-column "never"
 
     // 새 창이 열릴 때의 기본 너비 (0.5 = 50%)
@@ -31,9 +31,7 @@ layout {
     }
 
     focus-ring {
-        width 4
-        active-color "#7fc1ca"
-        inactive-color "#45475a"
+        off
     }
 }
 
