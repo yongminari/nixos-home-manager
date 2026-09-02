@@ -23,7 +23,7 @@ layer-rule {
 
 layout {
     background-color "transparent"
-    gaps 6
+    gaps 2
     center-focused-column "never"
 
     // 새 창이 열릴 때의 기본 너비 (0.5 = 50%)
