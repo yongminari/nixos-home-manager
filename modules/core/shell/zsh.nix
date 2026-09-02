@@ -28,7 +28,6 @@
     };
 
     envExtra = ''
-      export PATH=$HOME/.local/bin:$PATH
       export ZSH_DISABLE_COMPFIX="true" 
     '';
 

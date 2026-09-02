@@ -10,38 +10,6 @@
     glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)
     lazydocker      # Docker TUI 관리
-    codex           # Lightweight coding agent in terminal
-    (stdenv.mkDerivation rec {
-      pname = "agy";
-      version = "1.1.21";
-
-      src = let
-        hashes = {
-          x86_64-linux = "sha512-PedVLvCJwTbA9XDNycBGUieOAsHUHtORGtX58bjDvVZ2Q6pAGhkWBg6jKhsX+6+Qy7QXBx2zP0Z4gPzYSIaNkg==";
-          aarch64-linux = "sha512-HQpnPIOPMjUYe+EpLCDUG/O+AcRdnXRdX7aHPiAoNgfcNU+iC3eq98aBRekC1LDfarFx2Z6Ra9Umkcd6Q803Qg==";
-        };
-        urls = {
-          x86_64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.21-6424454201475072/linux-x64/cli_linux_x64.tar.gz";
-          aarch64-linux = "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.1.21-6424454201475072/linux-arm/cli_linux_arm64.tar.gz";
-        };
-      in fetchurl {
-        url = urls.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
-        hash = hashes.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
-      };
-
-      nativeBuildInputs = [ installShellFiles ];
-
-      sourceRoot = ".";
-
-      installPhase = ''
-        install -Dm755 antigravity $out/bin/agy
-      '';
-
-      meta = {
-        description = "Antigravity CLI tool";
-        homepage = "https://antigravity.google";
-      };
-    })
     
     # [개발 보조 도구 (LSP/Parsers)]
     tree-sitter   # Tree-sitter CLI (Fix checkhealth error)
@@ -66,4 +34,22 @@
     qmk             # QMK Firmware CLI
     vial            # Vial GUI for keyboard configuration
   ];
+
+  # Codex와 Antigravity는 각 업스트림의 최신 버전을 ~/.local/bin에 설치합니다.
+  home.sessionPath = [ "$HOME/.local/bin" ];
+
+  home.file = {
+    ".local/bin/update-codex" = {
+      source = ../../scripts/update-codex.sh;
+      executable = true;
+    };
+    ".local/bin/update-agy" = {
+      source = ../../scripts/update-agy.sh;
+      executable = true;
+    };
+    ".local/bin/update-ai-tools" = {
+      source = ../../scripts/update-ai-tools.sh;
+      executable = true;
+    };
+  };
 }
