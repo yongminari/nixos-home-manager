@@ -10,6 +10,7 @@
     glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)
     lazydocker      # Docker TUI 관리
+    bubblewrap      # Codex CLI Linux sandbox runtime
     
     # [개발 보조 도구 (LSP/Parsers)]
     tree-sitter   # Tree-sitter CLI (Fix checkhealth error)
