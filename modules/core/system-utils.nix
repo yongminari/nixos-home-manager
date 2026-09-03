@@ -1,6 +1,20 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, osConfig, ... }:
 
-{
+let
+  hasNvidiaGpu = lib.elem "nvidia" (osConfig.services.xserver.videoDrivers or []);
+  btopPackage = if hasNvidiaGpu then
+    pkgs.symlinkJoin {
+      name = "btop-nvidia";
+      paths = [ pkgs.btop ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/btop \
+          --prefix LD_LIBRARY_PATH : /run/opengl-driver/lib
+      '';
+    }
+  else
+    pkgs.btop;
+in {
   home.packages = with pkgs; [
     # [시스템 모니터링 및 정보]
     htop
@@ -87,11 +101,13 @@
 
   programs.btop = {
     enable = true;
+    package = btopPackage;
     settings = {
       color_theme = "ayu";
       theme_background = false; # 투명 배경 사용
       vim_keys = true;
       update_ms = 500; # 업데이트 간격 (0.5초)
+      show_gpu_info = "On";
     };
   };
 
