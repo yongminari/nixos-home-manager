@@ -66,8 +66,13 @@ in
       # Noctalia Shell의 설정 인터페이스(GUI)를 통해 변경한 내용을 
       # 나중에 여기에 복사하여 영구적으로 유지할 수 있습니다.
       bar = {
-        position = "top";
-        height = 36;
+        default = {
+          position = "top";
+          thickness = 36;
+          auto_hide = false;
+          smart_auto_hide = true;
+          reserve_space = false;
+        };
       };
       
 
