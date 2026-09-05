@@ -64,7 +64,7 @@ cursor {
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "NIRI_SOCKET"
 spawn-at-startup "systemctl" "--user" "start" "niri-session.target"
 
-spawn-at-startup "fcitx5" "-d"
+// Fcitx5는 NixOS가 제공하는 XDG 자동 시작으로 실행합니다 (중복 실행 방지).
 // spawn-at-startup "noctalia" // systemd가 관리하도록 제거
 spawn-at-startup "nm-applet"
 

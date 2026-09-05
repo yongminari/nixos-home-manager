@@ -140,10 +140,13 @@ sudo nixos-rebuild switch --flake .#<hostname>
 - **`?`**: 도움말 열기
 
 ### 🇰🇷 한글 입력 (Fcitx5)
-1. `fcitx5-configtool` 실행.
-2. `Input Method` 탭에서 **`Only Show Current Language` 해제**.
-3. `+` 버튼을 눌러 **`Hangul`** 추가.
-4. `Hangul` 설정에서 한글 키 등 전환 키 등록.
+
+- 모든 NixOS 호스트에 영어(US) + Hangul 두벌식과 `Shift+Space` 전환 기본값을 제공합니다.
+- 기존 `~/.config/fcitx5/` 설정이 있으면 사용자 설정이 우선합니다. 변경은 `fcitx5-configtool`에서 할 수 있습니다.
+- Fcitx5는 XDG 자동 시작으로 한 번만 실행합니다. Niri에 별도 실행 명령을 추가하지 않습니다.
+- GTK Wayland 앱은 기본 Wayland 입력 경로를 사용합니다. X11/XWayland용 GTK 설정과 `XMODIFIERS=@im=fcitx`, Qt 호환용 `QT_IM_MODULE=fcitx`는 유지합니다. Noctalia는 서비스에서 Qt 입력기 변수를 비웁니다.
+- 적용: 각 호스트에서 `ns` 실행 후 로그아웃/로그인합니다. OS 환경 변수 변경이 포함되어 `hms`만으로는 전체 적용되지 않습니다.
+- 확인: GTK 앱, Qt 앱, Chrome/Obsidian, Noctalia 런처에서 `Shift+Space`로 한글 조합·삭제·확정을 확인합니다. Chromium/Electron 앱은 버전과 실행 백엔드에 따라 별도 IME 옵션이 필요할 수 있습니다.
 
 ---
 

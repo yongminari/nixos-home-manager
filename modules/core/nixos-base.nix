@@ -53,8 +53,37 @@
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-hangul fcitx5-gtk fcitx5-lua ];
+    fcitx5 = {
+      addons = with pkgs; [ fcitx5-hangul fcitx5-gtk fcitx5-lua ];
+      # GTK Wayland 앱은 text-input을 사용하고, X11 앱은 GTK 설정으로 연결합니다.
+      waylandFrontend = true;
+
+      # 모든 호스트의 기본값. 기존 ~/.config/fcitx5 사용자 설정은 우선합니다.
+      settings = {
+        inputMethod = {
+          "Groups/0" = {
+            Name = "Default";
+            "Default Layout" = "us";
+            DefaultIM = "hangul";
+          };
+          "Groups/0/Items/0".Name = "keyboard-us";
+          "Groups/0/Items/1".Name = "hangul";
+          GroupOrder."0" = "Default";
+        };
+        globalOptions = {
+          "Hotkey/TriggerKeys" = {
+            "0" = "Shift+space";
+            "1" = "Zenkaku_Hankaku";
+          };
+          Behavior.ActiveByDefault = false;
+        };
+        addons.hangul.globalSection.Keyboard = "Dubeolsik";
+      };
+    };
   };
+
+  # Qt5/XWayland 호환성을 유지합니다. Noctalia는 해당 서비스에서 별도 처리합니다.
+  environment.variables.QT_IM_MODULE = "fcitx";
 
   fonts.packages = with pkgs; [ maple-mono.NF d2coding ];
   fonts.fontconfig = {
