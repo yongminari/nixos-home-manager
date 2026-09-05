@@ -20,6 +20,7 @@
 - **Niri Config:** 창 관리자 설정은 `modules/desktop/niri/` 하위의 KDL 파일들을 사용합니다.
 
 ## 🤖 Agent Role
+- **Repository Scope:** 이 저장소의 주 목적은 개인 PC 전체의 NixOS/Home Manager 관리입니다. 로컬 AI는 `ai-x1-pro`의 여러 호스트별 서비스 중 하나이며, 여기서는 GPU·Podman·systemd·방화벽·패키지·영속 저장 경로 등 시스템 설정만 담당합니다. 애플리케이션 코드·프롬프트·워크플로·테스트는 이 저장소의 범위가 아닙니다.
 - **Hostname Awareness:** 작업을 시작하기 전에 항상 현재 `hostname`을 확인하여 어떤 기기에서 작업 중인지 파악하십시오.
 - **Scope Judgment:** 새로운 기능을 추가하거나 설정을 변경할 때, 이것이 모든 장비에 적용되어야 할 공통 기능(Horizontal)인지 특정 기기에만 특화된 기능(Host-specific)인지 먼저 판단하십시오.
 - **Recommendation:** 판단 결과를 바탕으로 사용자에게 최적의 적용 방식을 먼저 추천하고, 최종 결정은 사용자가 할 수 있도록 하십시오.
