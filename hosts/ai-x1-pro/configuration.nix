@@ -14,6 +14,7 @@
   networking.networkmanager.enable = true;
   # Allow asymmetric return paths when Wi-Fi, Ethernet, or WireGuard overlap.
   networking.firewall.checkReversePath = "loose";
+  networking.firewall.allowedTCPPorts = [ 8080 ]; # Open WebUI
 
   # --- [GPU Memory Optimization] ---
   # 96GB RAM 중 64GB를 GPU가 활용할 수 있도록 설정 (GTT size)
