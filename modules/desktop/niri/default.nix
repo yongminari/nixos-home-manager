@@ -186,6 +186,10 @@ in
 
     // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
     animations {
+      // 좌우 스크롤 끝에 눈에 띄는 탄성을 줍니다.
+      horizontal-view-movement {
+        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+      }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
           ${builtins.readFile "${inputs.niri-shaders}/smoke/config"}
