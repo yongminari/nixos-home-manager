@@ -186,6 +186,10 @@ in
 
     // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
     animations {
+      // 워크스페이스 전환에도 좌우 스크롤과 같은 탄성을 줍니다.
+      workspace-switch {
+        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+      }
       // 좌우 스크롤 끝에 눈에 띄는 탄성을 줍니다.
       horizontal-view-movement {
         spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
