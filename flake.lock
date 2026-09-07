@@ -52,6 +52,22 @@
         "type": "github"
       }
     },
+    "niri-shaders": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784811723,
+        "narHash": "sha256-ctcILT4UJWBTraB8eQDQdmTM6Va1Cd6Y85Ql7s30Qf0=",
+        "owner": "liixini",
+        "repo": "shaders",
+        "rev": "238e7c70e317bb0ca0b0366cf0851b8de3ddc969",
+        "type": "github"
+      },
+      "original": {
+        "owner": "liixini",
+        "repo": "shaders",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1788614874,
@@ -104,6 +120,7 @@
         "ghostty-aurora": "ghostty-aurora",
         "ghostty-shaders": "ghostty-shaders",
         "home-manager": "home-manager",
+        "niri-shaders": "niri-shaders",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
         "sops-nix": "sops-nix"

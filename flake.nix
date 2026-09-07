@@ -29,6 +29,11 @@
       url = "github:0xhckr/ghostty-shaders";
       flake = false;
     };
+
+    niri-shaders = {
+      url = "github:liixini/shaders";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, noctalia, sops-nix, ... }@inputs:

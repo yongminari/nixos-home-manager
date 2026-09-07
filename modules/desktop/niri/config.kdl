@@ -24,7 +24,9 @@ layer-rule {
 layout {
     background-color "transparent"
     gaps 2
-    center-focused-column "never"
+    center-focused-column "always"
+    // 작업 공간에 열이 하나만 남으면 가운데 정렬합니다.
+    always-center-single-column
 
     // 새 창이 열릴 때의 기본 너비 (0.5 = 50%)
     default-column-width { proportion 0.5; }

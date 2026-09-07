@@ -1,4 +1,4 @@
-{ config, pkgs, lib, osConfig, ... }:
+{ config, pkgs, lib, inputs, osConfig, ... }:
 
 let
   hostname = osConfig.networking.hostName or "";
@@ -183,6 +183,18 @@ in
     ${currentHost.extraConfig}
 
     ${baseConfig}
+
+    // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
+    animations {
+      ${lib.concatMapStringsSep "\n" (action: ''
+        window-${action} {
+          ${builtins.readFile "${inputs.niri-shaders}/smoke/config"}
+          custom-shader r#"
+            ${builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
+          "#
+        }
+      '') [ "open" "close" ]}
+    }
     
     input {
         keyboard {
