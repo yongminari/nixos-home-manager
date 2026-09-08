@@ -194,6 +194,13 @@ in
       horizontal-view-movement {
         spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
       }
+      // 창을 합치거나 분리할 때 이동과 크기 변경에 같은 탄성을 줍니다.
+      window-movement {
+        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+      }
+      window-resize {
+        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+      }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
           ${builtins.readFile "${inputs.niri-shaders}/smoke/config"}
