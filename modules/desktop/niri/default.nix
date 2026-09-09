@@ -147,6 +147,8 @@ let
   };
 in
 {
+  imports = [ ./monitor-flash.nix ];
+
   home.packages = with pkgs; [
     niri
     niri-output-toggle
