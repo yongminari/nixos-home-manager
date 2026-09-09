@@ -21,6 +21,25 @@ layer-rule {
     place-within-backdrop true
 }
 
+// 블러 강도는 전역 설정입니다. 윤곽만 살짝 부드러워질 정도로 낮춥니다.
+blur {
+    passes 1
+    offset 0.2
+}
+
+// Noctalia의 유리 효과가 배경화면 대신 실제 뒤쪽 창을 흐리도록 합니다.
+layer-rule {
+    match namespace="^noctalia" layer="top"
+    match namespace="^noctalia" layer="overlay"
+
+    background-effect {
+        xray false
+        // 배경색 과장과 입자감을 줄여 반투명 화면을 차분하게 표현합니다.
+        saturation 1.0
+        noise 0.0
+    }
+}
+
 layout {
     background-color "transparent"
     gaps 2

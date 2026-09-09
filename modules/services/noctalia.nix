@@ -104,11 +104,11 @@ in
         };
       };
 
-      # 오버뷰 시 블러 및 명암 효과 (v5 규격)
+      # 오버뷰 배경화면에도 아주 약한 블러만 적용합니다.
       backdrop = {
         enabled = true;
-        blur_intensity = 0.5;
-        tint_intensity = 0.5;
+        blur_intensity = 0.05;
+        tint_intensity = 0.25;
       };
     };
   };

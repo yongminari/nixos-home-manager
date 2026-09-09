@@ -1,13 +1,23 @@
-# Noctalia v5 L-frame preset
-# Keep both bars visible on empty workspaces and hide them intelligently when windows overlap.
-# Float both bars with a small gap at the corner; panels float independently.
+# Noctalia v5: 반투명 유리 느낌의 L-frame 프리셋.
+# 빈 작업 공간에서는 바를 표시하고, 창과 겹치면 자동으로 숨깁니다.
+# 둥근 바와 패널에 투명도와 부드러운 그림자를 함께 사용합니다.
+
+[shell]
+corner_radius_scale = 1.25
+
+[shell.shadow]
+direction = "down"
+alpha = 0.45
 
 [shell.panel]
+launcher_placement = "floating"
 control_center_placement = "floating"
 session_placement = "floating"
 wallpaper_placement = "floating"
 wallpaper_position = "center"
 transparency_mode = "glass"
+borders = true
+shadow = true
 
 [bar]
 order = ["top", "left"]
@@ -15,8 +25,8 @@ order = ["top", "left"]
 [bar.top]
 position = "top"
 thickness = 40
-background_opacity = 0.88
-radius = 14
+background_opacity = 0.25
+radius = 20
 margin_ends = 60
 margin_edge = 8
 padding = 8
@@ -27,8 +37,8 @@ smart_auto_hide = true
 reserve_space = false
 capsule = true
 capsule_fill = "surface_variant"
-capsule_radius = 12.0
-capsule_opacity = 0.72
+capsule_radius = 16.0
+capsule_opacity = 0.12
 start = ["media"]
 center = ["clock"]
 end = [
@@ -43,8 +53,8 @@ end = [
 [bar.left]
 position = "left"
 thickness = 44
-background_opacity = 0.88
-radius = 14
+background_opacity = 0.25
+radius = 22
 margin_ends = 56
 margin_edge = 8
 padding = 6
@@ -55,8 +65,8 @@ smart_auto_hide = true
 reserve_space = false
 capsule = true
 capsule_fill = "surface_variant"
-capsule_radius = 12.0
-capsule_opacity = 0.72
+capsule_radius = 16.0
+capsule_opacity = 0.12
 start = ["launcher", "wallpaper"]
 center = ["workspaces"]
 end = [
