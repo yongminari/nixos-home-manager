@@ -1,6 +1,8 @@
 { inputs, pkgs, config, lib, ... }:
 
 let
+  lFramePreset = builtins.fromTOML (builtins.readFile ./noctalia/l-frame.toml);
+
   fetchWallhaven = pkgs.writeShellScriptBin "fetch-wallhaven" ''
     mkdir -p ~/Pictures/Wallpapers
     API_URL="https://wallhaven.cc/api/v1/search?q=dark&categories=111&purity=100&sorting=random"
@@ -65,16 +67,9 @@ in
     settings = {
       # Noctalia Shell의 설정 인터페이스(GUI)를 통해 변경한 내용을 
       # 나중에 여기에 복사하여 영구적으로 유지할 수 있습니다.
-      bar = {
-        default = {
-          position = "top";
-          thickness = 36;
-          auto_hide = false;
-          smart_auto_hide = true;
-          reserve_space = false;
-        };
-      };
-      
+      # 별도 TOML 프리셋에서 L-frame과 floating panel 구성을 불러옵니다.
+      bar = lFramePreset.bar;
+      shell = lFramePreset.shell;
 
       # 테마 설정 (v5 규격)
       theme = {
