@@ -25,7 +25,7 @@ in
   # Niri 세션에서만 모니터 이동을 감지합니다. 한 모니터에서는 표시하지 않습니다.
   systemd.user.services.niri-monitor-flash = {
     Unit = {
-      Description = "Water ripples when Niri focus moves to another monitor";
+      Description = "Brief border glow when Niri focus moves to another monitor";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
       ConditionEnvironment = "NIRI_SOCKET";

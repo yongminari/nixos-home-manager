@@ -1,4 +1,4 @@
-"""Niri 모니터 포커스가 바뀔 때 입력을 가로채지 않는 물결을 표시합니다."""
+"""Niri 모니터 포커스가 바뀔 때 입력을 가로채지 않는 테두리 빛을 표시합니다."""
 
 import json
 import math
@@ -15,61 +15,10 @@ gi.require_version("Gtk4LayerShell", "1.0")
 from gi.repository import Gdk, Gio, GLib, Gtk, Gtk4LayerShell as LayerShell
 
 
-DURATION_US = 800_000
-EDGE_WIDTH = 120
+DURATION_US = 1_000_000
+EDGE_WIDTH = 360
 COLOR = (0.38, 0.85, 1.0)
 PEAK_ALPHA = 0.48
-SCREEN_ALPHA = 0.05
-
-
-def draw_ripples(cr, width, height, progress):
-    """화면 가장자리의 파동과 물방울을 시간에 따라 그립니다."""
-    reach = min(340, min(width, height) * 0.28)
-    sources = []
-    for fraction in (0.3, 0.7):
-        sources.extend((
-            (width * fraction, 0, math.pi / 2),
-            (width * fraction, height, -math.pi / 2),
-            (0, height * fraction, 0),
-            (width, height * fraction, math.pi),
-        ))
-
-    for index, (x, y, direction) in enumerate(sources):
-        for delay in (0.0, 0.16):
-            t = (progress - delay) / (1 - delay)
-            if not 0 < t < 1:
-                continue
-            radius = 8 + reach * (1 - (1 - t) ** 2)
-            alpha = math.sin(math.pi * t) * (1 - t) ** 0.5
-            # 넓은 청록빛 아래에 가는 밝은 선을 겹쳐 물결의 윤곽을 표현합니다.
-            for line_width, color, opacity in (
-                (16, COLOR, 0.10),
-                (5, COLOR, 0.35),
-                (1.8, (0.82, 0.97, 1.0), 0.75),
-            ):
-                cr.set_source_rgba(*color, alpha * opacity)
-                cr.set_line_width(line_width)
-                cr.arc(x, y, radius, 0, math.tau)
-                cr.stroke()
-
-        # 고정된 궤적으로 프레임마다 입자가 흔들리지 않게 합니다.
-        for droplet in range(5):
-            delay = droplet * 0.025
-            t = (progress - delay) / (1 - delay)
-            if not 0 < t < 1:
-                continue
-            angle = direction + (droplet - 2) * 0.23
-            distance = reach * (0.65 + 0.06 * ((index + droplet) % 4)) * (1 - (1 - t) ** 2)
-            dx = x + math.cos(angle) * distance
-            dy = y + math.sin(angle) * distance
-            radius = (3 + droplet % 3) * (1 - 0.65 * t)
-            alpha = math.sin(math.pi * t) * (1 - t)
-            cr.set_source_rgba(*COLOR, alpha * 0.35)
-            cr.arc(dx, dy, radius, 0, math.tau)
-            cr.fill_preserve()
-            cr.set_line_width(1)
-            cr.set_source_rgba(0.88, 0.98, 1.0, alpha * 0.85)
-            cr.stroke()
 
 
 class FocusTracker:
@@ -174,12 +123,15 @@ class MonitorFlash(Gtk.Application):
         area = Gtk.DrawingArea()
         area.set_can_target(False)
         window.set_child(area)
-        state = {"start": None, "alpha": 0.0, "progress": 0.0}
+        state = {"start": None, "alpha": 0.0}
 
         def draw(_area, cr, width, height):
-            # 화면 전체에도 약한 빛을 더하고, 가장자리에서 안쪽으로 넓게 퍼뜨립니다.
-            cr.set_source_rgba(*COLOR, SCREEN_ALPHA * state["alpha"] / PEAK_ALPHA)
+            # 이전 프레임을 지워 반투명한 빛이 누적되지 않게 합니다.
+            cr.save()
+            cr.set_operator(cairo.OPERATOR_CLEAR)
             cr.paint()
+            cr.restore()
+            # 단색 선 없이 가장자리에서 안쪽으로 부드럽게 빛을 퍼뜨립니다.
             for x0, y0, x1, y1, rect in (
                 (0, 0, EDGE_WIDTH, 0, (0, 0, EDGE_WIDTH, height)),
                 (width, 0, width - EDGE_WIDTH, 0, (width - EDGE_WIDTH, 0, EDGE_WIDTH, height)),
@@ -187,12 +139,11 @@ class MonitorFlash(Gtk.Application):
                 (0, height, 0, height - EDGE_WIDTH, (0, height - EDGE_WIDTH, width, EDGE_WIDTH)),
             ):
                 gradient = cairo.LinearGradient(x0, y0, x1, y1)
-                gradient.add_color_stop_rgba(0, *COLOR, state["alpha"])
-                gradient.add_color_stop_rgba(1, *COLOR, 0)
+                for offset, strength in ((0, 1), (0.2, 0.65), (0.5, 0.2), (0.8, 0.025), (1, 0)):
+                    gradient.add_color_stop_rgba(offset, *COLOR, state["alpha"] * strength)
                 cr.set_source(gradient)
                 cr.rectangle(*rect)
                 cr.fill()
-            draw_ripples(cr, width, height, state["progress"])
 
         def tick(_area, clock):
             now = clock.get_frame_time()
@@ -204,7 +155,6 @@ class MonitorFlash(Gtk.Application):
                 if self.window is window:
                     self.window = None
                 return GLib.SOURCE_REMOVE
-            state["progress"] = progress
             state["alpha"] = PEAK_ALPHA * math.sin(math.pi * progress) ** 2
             area.queue_draw()
             return GLib.SOURCE_CONTINUE
