@@ -16,7 +16,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk, Gtk4LayerShell as LayerShell
 
 
 DURATION_US = 1_000_000
-EDGE_WIDTH = 360
+EDGE_WIDTH = 720
 COLOR = (0.38, 0.85, 1.0)
 PEAK_ALPHA = 0.48
 
