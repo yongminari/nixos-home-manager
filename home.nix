@@ -42,7 +42,6 @@
  
   # --- [Global Packages] ---
   home.packages = with pkgs; [
-    libnotify        # 알림용
     google-cloud-sdk # Google Cloud SDK
   ];
 

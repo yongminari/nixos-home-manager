@@ -91,6 +91,5 @@ in
     hyprCheatScript
     niriCheatScript
     yaziCheatScript
-    pkgs.lolcat 
   ];
 }

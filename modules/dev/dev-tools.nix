@@ -3,9 +3,6 @@
 {
   home.packages = with pkgs; [
     # [검색 및 파일 제어 도구]
-    ripgrep 
-    fd 
-    unzip 
     gh              # GitHub CLI
     glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)

@@ -11,7 +11,6 @@
       })
      else
       google-chrome)
-    xwayland-satellite
     obsidian
     geeqie
     onlyoffice-desktopeditors

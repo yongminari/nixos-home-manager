@@ -47,7 +47,6 @@ in {
     
     # [클립보드 및 기타]
     wl-clipboard
-    cliphist           # 클립보드 히스토리 관리
     networkmanagerapplet
 
     # [Nix 관리]

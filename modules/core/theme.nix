@@ -40,11 +40,9 @@
 
   # 아이콘 테마 및 필수 테마 관련 패키지 명시적 추가
   home.packages = with pkgs; [
-    papirus-icon-theme
     adwaita-icon-theme
     hicolor-icon-theme
     # Qt6 및 Wayland 테마 통합 패키지
-    qt6Packages.qt6ct
     kdePackages.qqc2-desktop-style
   ];
 

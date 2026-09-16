@@ -94,8 +94,6 @@
   # 공통 CLI 패키지
   home.packages = with pkgs; [
     htop
-    fastfetch
-    lolcat
     lsb-release
     python3
   ];
