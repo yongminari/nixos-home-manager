@@ -1,7 +1,9 @@
-{ config, lib, osConfig, username, ... }:
+{ config, inputs, lib, osConfig, username, ... }:
 
 {
   imports = [
+    inputs.nix-index-database.homeModules.nix-index
+
     # [1. core] 필수 설정 및 CLI
     ./modules/core/system-utils.nix
     ./modules/core/theme.nix

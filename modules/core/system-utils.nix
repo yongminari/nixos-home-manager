@@ -47,8 +47,6 @@ in {
 
     # [Nix 관리]
     nix-output-monitor # nh가 빌드 로그를 시각화할 때 사용
-    nix-index          # 파일이 어떤 패키지에 있는지 검색 (nix-locate)
-    comma              # 임시 패키지 실행 ( , 명령어 )
     nix-tree           # Nix 의존성 트리 탐색
     sops               # Sops 암호화 편집 도구
 
@@ -111,6 +109,9 @@ in {
     clean.enable = false; # nix.gc 설정을 명시적으로 사용하므로 비활성화
     # clean.extraArgs = "--keep-since 4d --keep 3";
   };
+
+  # 사전 생성된 데이터베이스를 사용하는 nix-locate와 comma 래퍼
+  programs.nix-index-database.comma.enable = true;
 
   # 클립보드 히스토리 감시 서비스
   services.cliphist.enable = true;
