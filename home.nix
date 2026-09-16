@@ -20,7 +20,6 @@
     ./modules/dev/git.nix
     ./modules/dev/dev-tools.nix
     ./modules/dev/neovim.nix
-    ./modules/dev/ros.nix
     ./modules/dev/containers.nix
 
     # [3. desktop] UI 및 데스크탑 앱

@@ -11,7 +11,7 @@
 - **🚀 Advanced CLI Tools:** `gh` (GitHub), `podman-tui`, `xh` (HTTP), `sd` (sed replacement), `gping` (Visual Ping), `comma` (Run without install), `nix-tree`.
 - **💻 Terminal:** **Kitty** (Default), **Ghostty** (SSH integration / GPU effects).
 - **📝 Editor:** **Neovim** (Lua-based modular config).
-  - **Enhanced:** Neovim 0.11 support, ROS/Distrobox integration, `git-conflict-nvim`, and refined LSP visuals.
+  - **Enhanced:** Neovim 0.11 support, `git-conflict-nvim`, and refined LSP visuals.
 - **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
 - **🔒 Security:** **sops-nix** (Secret management) & **OpenSSH Server** included.
 - **🌐 Network:** **WireGuard** (wg-quick with manual toggle).

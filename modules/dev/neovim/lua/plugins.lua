@@ -197,26 +197,6 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- [Container/Distrobox 하이브리드 지원 로직]
-vim.api.nvim_create_autocmd("BufReadCmd", {
-  pattern = { "/opt/*", "/usr/include/*" },
-  callback = function(args)
-    local file = args.file
-    if vim.fn.filereadable(file) == 1 then return end
-
-    local container = vim.env.DISTROBOX_NAME or "ros2-jazzy"
-    local cmd = string.format("distrobox enter %s -- cat '%s'", container, file)
-    local content = vim.fn.systemlist(cmd)
-    if vim.v.shell_error == 0 then
-      vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, content)
-      vim.api.nvim_set_option_value("readonly", true, { buf = args.buf })
-      vim.api.nvim_set_option_value("buftype", "nowrite", { buf = args.buf })
-      local ft = vim.filetype.match({ filename = file })
-      if ft then vim.api.nvim_set_option_value("filetype", ft, { buf = args.buf }) end
-    end
-  end,
-})
-
 -- [LSP Config (Neovim 0.11+ Modern Way)]
 local capabilities = {}
 local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
@@ -230,43 +210,24 @@ if vim.lsp.config then
     vim.lsp.enable(lsp)
   end
 
-  local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
-                         vim.env.AMENT_PREFIX_PATH ~= nil or
-                         #vim.fs.find('package.xml', { upward = true }) > 0
-  
-  local use_distrobox = is_ros_project or vim.env.DISTROBOX_NAME ~= nil
-  
   local clangd_cmd = { 
     "clangd", 
     "--offset-encoding=utf-16",
     "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
   }
   
-  if use_distrobox and vim.fn.executable("clangd-distrobox") == 1 then
-    clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
-  end
-
   vim.lsp.config('clangd', { capabilities = capabilities, cmd = clangd_cmd })
   vim.lsp.enable('clangd')
 else
   local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
   if lspconfig_ok then
     for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
-    local is_ros_project = vim.env.ROS_DISTRO ~= nil or 
-                           vim.env.AMENT_PREFIX_PATH ~= nil or
-                           #vim.fs.find('package.xml', { upward = true }) > 0
-
-    local use_distrobox = is_ros_project or vim.env.DISTROBOX_NAME ~= nil
-
     local clangd_cmd = { 
       "clangd", 
       "--offset-encoding=utf-16",
       "--query-driver=/nix/store/*/bin/clang++,/nix/store/*/bin/g++,/usr/bin/clang++,/usr/bin/g++"
     }
     
-    if use_distrobox and vim.fn.executable("clangd-distrobox") == 1 then
-      clangd_cmd = { "clangd-distrobox", "--offset-encoding=utf-16" }
-    end
     lspconfig.clangd.setup { capabilities = capabilities, cmd = clangd_cmd }
   end
 end
