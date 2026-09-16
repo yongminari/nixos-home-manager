@@ -25,7 +25,6 @@ in {
     fd
     unzip
     lolcat
-    rclone
     dust               # 시각적 디스크 용량 분석
     tealdeer           # tldr (명령어 예제 사전)
 

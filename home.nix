@@ -1,10 +1,9 @@
-{ config, pkgs, lib, inputs, osConfig, username, ... }:
+{ config, lib, osConfig, username, ... }:
 
 {
   imports = [
     # [1. core] 필수 설정 및 CLI
     ./modules/core/system-utils.nix
-    ./modules/core/weechat.nix
     ./modules/core/theme.nix
     ./modules/core/fonts.nix
     ./modules/core/shell/utils.nix
@@ -32,7 +31,6 @@
 
     # [4. services] 백그라운드 서비스
     ./modules/services/noctalia.nix
-    ./modules/services/rclone.nix
   ];
 
   # --- [User Information] ---
@@ -40,11 +38,6 @@
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "26.11";
  
-  # --- [Global Packages] ---
-  home.packages = with pkgs; [
-    google-cloud-sdk # Google Cloud SDK
-  ];
-
   # --- [Global Session Variables] ---
   home.sessionVariables = lib.mkMerge [
     {
@@ -62,22 +55,10 @@
       GBM_BACKEND = "nvidia-drm";
       QSG_RHI_BACKEND = "opengl"; # Quickshell/Qt6 rendering fix for NVIDIA
     })
-    (lib.mkIf osConfig.modules.core.vertexAI.enable {
-      # [Gemini CLI & Vertex AI Settings]
-      GOOGLE_CLOUD_PROJECT = "gemini-cli-vertex-ai-493207";
-      GOOGLE_CLOUD_LOCATION = "global"; # 서울 리전
-      GOOGLE_APPLICATION_CREDENTIALS = "${config.home.homeDirectory}/.config/gcloud/application_default_credentials.json";
-      GOOGLE_GENAI_USE_VERTEXAI = "True";
-    })
   ];
 
   # --- [Secret Configurations Symlinks] ---
   home.file = {
-    # Vertex AI Credentials Template
-    ".config/gcloud/application_default_credentials.json" = lib.mkIf osConfig.modules.core.vertexAI.enable {
-      source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/rendered/application_default_credentials.json";
-    };
-
     # GitLab CLI Configuration Template
     ".config/glab-cli/config.yml".source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/rendered/glab-config.yml";
 

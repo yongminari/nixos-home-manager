@@ -28,7 +28,6 @@
   - `vpn-on`: VPN 연결
   - `vpn-off`: VPN 해제
   - `vpn-stat`: 상태 확인
-- **자동 키 배치**: Google Cloud (Vertex AI) 키 등은 빌드 시 `~/.config/gcloud/`에 자동으로 배치됩니다.
 
 ---
 

@@ -109,7 +109,6 @@
         extraSpecialArgs = {
           inherit inputs username;
           osConfig = {
-            modules.core.vertexAI.enable = false;
             networking.hostName = "";
           };
         };
