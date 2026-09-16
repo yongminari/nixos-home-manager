@@ -11,7 +11,6 @@
         email = "easyid21c@gmail.com";
       };
       init.defaultBranch = "main";
-      core.ignorecase = true;
     };
   };
 
@@ -59,5 +58,4 @@
     '';
   };
 }
-
 
