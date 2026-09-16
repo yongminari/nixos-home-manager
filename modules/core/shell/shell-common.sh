@@ -9,32 +9,21 @@ function is_container() {
 }
 function is_vscode() { [[ "$TERM_PROGRAM" == "vscode" || -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" ]]; }
 
-# [Container Error Shield]
-# 컨테이너 환경에서 호스트 전용 도구들이 실행되어 에러가 발생하는 것을 방지
+# [Container Shell Baseline]
+# 호출한 RC 파일은 이 설정을 읽은 뒤 조기 종료하여 호스트 전용 통합을 건너뜁니다.
 if is_container; then
-    # 1. 'alias' 명령어를 가로채서 안전한 기본값으로 교체
-    function alias() {
-        case "$1" in
-            ls=*eza*)  builtin alias ls='ls --color=auto' ;;
-            ll=*eza*)  builtin alias ll='ls -al --color=auto' ;;
-            lt=*eza*)  builtin alias lt='ls -R --color=auto' ;;
-            cat=*bat*) builtin alias cat='cat' ;;
-            v=*nvim*)  builtin alias v='vi' ;;
-            *)         builtin alias "$@" ;;
-        esac
-    }
+    # 이미 로드된 Home Manager/Oh My Zsh 별칭과 Zoxide 훅을 제거합니다.
+    unalias -a 2>/dev/null
+    unset -f z zi cd __zoxide_hook _atuin_precmd 2>/dev/null
+    if [[ -n "${ZSH_VERSION:-}" ]]; then
+        chpwd_functions=(${chpwd_functions:#__zoxide_hook})
+        precmd_functions=(${precmd_functions:#_atuin_precmd})
+    fi
 
-    # 2. 초기 안전 별칭 설정
+    # 컨테이너 기본 명령만 사용하는 최소 별칭입니다.
     builtin alias ls='ls --color=auto'
     builtin alias ll='ls -al --color=auto'
     builtin alias lt='ls -R --color=auto'
-
-    # 3. 호스트 도구가 없을 경우를 대비한 더미(Dummy) 정의
-    for cmd in atuin starship welcome-msg eza bat zoxide nvim; do
-        if ! command -v "$cmd" &>/dev/null; then
-            eval "$cmd() { :; }" 
-        fi
-    done
 fi
 
 # [SSH Terminfo Fallback]
@@ -105,7 +94,7 @@ function zellij() {
 }
 
 # [Zellij Auto-start]
-if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
+if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode && command -v zellij &>/dev/null; then
   parent_proc=$(ps -p $PPID -o comm= 2>/dev/null)
   if [[ "$parent_proc" != "zellij" ]]; then
     if is_ssh; then
@@ -121,5 +110,4 @@ if [[ -f /run/secrets/gitlab_token ]] && ! is_container; then
   export GITLAB_TOKEN=$(cat /run/secrets/gitlab_token)
   export GITLAB_HOST="192.168.0.230"
 fi
-
 
