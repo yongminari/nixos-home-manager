@@ -36,9 +36,6 @@
     initContent = ''
       source ${./shell-common.sh}
 
-      # 컨테이너에서는 이후에 생성되는 호스트 전용 통합을 로드하지 않습니다.
-      if is_container; then return; fi
-
       # [Completion Styling & Descriptions]
       zstyle ':completion:*' verbose yes
       zstyle ':completion:*:descriptions' format '[%d]'

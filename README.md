@@ -35,17 +35,18 @@
 
 ```text
 nixos-home-manager/
-├── flake.nix              # 통합 엔트리포인트 (System + User)
+├── flake.nix              # NixOS와 Home Manager 통합 엔트리포인트
+├── home.nix               # 모든 호스트의 공통 사용자 설정
 ├── hosts/
-│   └── <hostname>/        # [기기별 시스템 영역] (예: galaxy-book, desktop)
-│       ├── configuration.nix           # 해당 기기의 OS 엔진 및 서비스 설정
-│       └── hardware-configuration.nix  # 해당 기기의 하드웨어 종속 설정 (자동 생성)
-├── home.nix               # [사용자 공통 영역] 메인 로더 & 패키지 관리
-└── modules/               # 세부 모듈화된 설정들
-    ├── shell/             # Zsh, Nushell, Bash, Starship 등
-    ├── neovim/            # Neovim 전용 Lua 설정
-    ├── niri/              # Niri 컴포지터 설정 (KDL)
-    └── ...                # 기타 앱 및 테마 설정
+│   └── <hostname>/        # 호스트별 시스템 및 하드웨어 설정
+├── modules/
+│   ├── core/              # 공통 NixOS, 셸, 테마, 컨테이너 기반 설정
+│   ├── desktop/           # Niri, 터미널, 데스크톱 앱
+│   ├── dev/               # 개발 도구와 Neovim
+│   ├── hardware/          # 장치별 하드웨어 모듈
+│   └── services/          # Noctalia, WireGuard, 호스트별 서비스
+├── scripts/               # 사용자 도구 업데이트 스크립트
+└── docs/                  # 운영 및 장치별 참고 문서
 ```
 
 ---
@@ -90,10 +91,10 @@ sudo nixos-rebuild switch --flake .#<hostname>
 
 | 대상 | nh 명령어 (권장) | 표준 명령어 (Native) |
 | :--- | :--- | :--- |
-| **전체 (시스템+유저)** | `nh os switch` | `sudo nixos-rebuild switch --flake .#<hostname>` |
-| **유저 전용** | `nh home switch` | `home-manager switch --flake .#yongminari@<hostname>` |
+| **전체 (시스템+유저)** | `ns` | `sudo nixos-rebuild switch --flake ~/nixos-home-manager#<hostname>` |
+| **유저 전용** | `hms` | `home-manager switch --flake ~/nixos-home-manager#yongminari@<hostname>` |
 
-- `nh`는 빌드 시 `nix-output-monitor`를 통한 시각적 로그를 제공하며, `hms`와 `ns` 별칭은 저장소의 절대 경로를 직접 전달합니다.
+- `nh`는 빌드 시 `nix-output-monitor`를 통한 시각적 로그를 제공하며, `hms`와 `ns`는 현재 사용자의 홈에서 저장소 경로를 계산하여 직접 전달합니다.
 - `nh home switch`는 `yongminari@<현재 hostname>` 출력을 선택하므로 `ns`에 포함된 Home Manager와 동일한 호스트 정보를 사용합니다.
 
 ### 2. 패키지 업데이트 및 청소
@@ -105,6 +106,18 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | **오래된 세대 청소** | `nh clean all` | `nix-collect-garbage -d` |
 
 상세한 `nh` 사용법은 [docs/nh.md](docs/nh.md)를 참고하세요.
+
+### 3. Distrobox 공용 홈 사용
+
+Distrobox는 기본값대로 호스트의 홈 디렉터리를 공유합니다. 따라서 별도 `--home` 없이 컨테이너를 생성하고, 호스트와 컨테이너에서 같은 작업공간을 사용합니다.
+
+```bash
+distrobox create --name <name> --image <image>
+distrobox enter <name>
+cd ~/Workspace/nx_ws
+```
+
+Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home Manager가 제공하는 Zsh, Bash, Nushell, Starship, Zellij, Neovim 설정을 호스트와 동일하게 사용합니다. 별도의 컨테이너용 셸 프로필이나 컨테이너 이름별 설정은 관리하지 않습니다.
 
 ---
 

@@ -50,6 +50,25 @@
         "ai-x1-pro"
         "nxtp-office-desktop"
       ];
+      mkNixosConfiguration = hostName:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs username; };
+          modules = [
+            (./hosts + "/${hostName}/configuration.nix")
+            sops-nix.nixosModules.sops
+
+            # Home Manager를 NixOS 모듈로 통합
+            home-manager.nixosModules.home-manager
+            ({ ... }: {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.extraSpecialArgs = { inherit inputs username; };
+              home-manager.users.${username} = import ./home.nix;
+            })
+          ];
+        };
       mkHomeConfiguration = hostName:
         home-manager.lib.homeManagerConfiguration {
           pkgs = self.nixosConfigurations.${hostName}.pkgs;
@@ -61,62 +80,10 @@
         };
     in {
       # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
-      nixosConfigurations."galaxy-book" = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs username; };
-        modules = [
-          ./hosts/galaxy-book/configuration.nix
-          sops-nix.nixosModules.sops
-          
-          # Home Manager를 NixOS 모듈로 통합
-          home-manager.nixosModules.home-manager
-          ({ config, ... }: {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs username; };
-            home-manager.users.${username} = import ./home.nix;
-          })
-        ];
-      };
-
-      nixosConfigurations."ai-x1-pro" = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs username; };
-        modules = [
-          ./hosts/ai-x1-pro/configuration.nix
-          sops-nix.nixosModules.sops
-          
-          # Home Manager를 NixOS 모듈로 통합
-          home-manager.nixosModules.home-manager
-          ({ config, ... }: {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs username; };
-            home-manager.users.${username} = import ./home.nix;
-          })
-        ];
-      };
-
-      nixosConfigurations."nxtp-office-desktop" = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs username; };
-        modules = [
-          ./hosts/nxtp-office-desktop/configuration.nix
-          sops-nix.nixosModules.sops
-          
-          # Home Manager를 NixOS 모듈로 통합
-          home-manager.nixosModules.home-manager
-          ({ config, ... }: {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit inputs username; };
-            home-manager.users.${username} = import ./home.nix;
-          })
-        ];
-      };
+      nixosConfigurations = builtins.listToAttrs (map (hostName: {
+        name = hostName;
+        value = mkNixosConfiguration hostName;
+      }) hostNames);
 
       # nh home switch가 현재 hostname에 맞는 NixOS 정보를 사용하도록 호스트별 출력 제공
       homeConfigurations = builtins.listToAttrs (map (hostName: {

@@ -34,17 +34,9 @@
       )
       # [Environment Detection]
       let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
-      let is_container = (
-        ("/.dockerenv" | path exists) or 
-        ("/run/.containerenv" | path exists) or 
-        (not ($env | get -o DISTROBOX_ENTER_PATH | is-empty))
-      )
-
-      # [Starship 설정 연동]
+      # [SSH Starship 설정 연동]
       if ($is_ssh) {
         $env.STARSHIP_CONFIG = ($env.HOME | path join ".config" "starship-ssh.toml")
-      } else if ($is_container) {
-        $env.STARSHIP_CONFIG = ($env.HOME | path join ".config" "starship-docker.toml")
       }
     '';
 
@@ -77,12 +69,7 @@
       # [Zellij Wrapper]
       def --wrapped zellij [...args] {
         let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
-        let is_container = (
-          ("/.dockerenv" | path exists) or
-          ("/run/.containerenv" | path exists) or
-          (not ($env | get -o DISTROBOX_ENTER_PATH | is-empty))
-        )
-        if ($is_ssh or $is_container) {
+        if $is_ssh {
           ^zellij --config ($env.HOME | path join ".config" "zellij" "remote.kdl") ...$args
         } else {
           ^zellij ...$args

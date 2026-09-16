@@ -20,7 +20,7 @@ vim.g.mapleader = " "
 vim.opt.background = "dark"
 
 -- [클립보드 설정]
--- 원격 세션(SSH/Container)에서만 OSC52를 사용하며, 로컬 환경(Zellij 포함)에서는 wl-clipboard 등 네이티브 클립보드 사용
+-- SSH 세션에서만 OSC52를 사용하며, 로컬 환경(Distrobox/Zellij 포함)에서는 wl-clipboard 등 네이티브 클립보드 사용
 if utils.is_remote then
   vim.g.clipboard = {
     name = 'osc52',
