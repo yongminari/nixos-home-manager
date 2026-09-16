@@ -1,54 +1,132 @@
-{ config, pkgs, ... }:
+{ config, lib, osConfig, pkgs, ... }:
 
 let
-  niri-focus-saver = pkgs.writeShellScriptBin "niri-focus-saver" ''
-    ACTION=$1
-    STATE_FILE="/tmp/niri-last-focus"
+  isLaptop = (osConfig.networking.hostName or "") == "galaxy-book";
 
-    if [ "$ACTION" = "save" ]; then
-      WINDOW_ID=$(${pkgs.niri}/bin/niri msg --json focused-window 2>/dev/null | ${pkgs.jq}/bin/jq -r '.id // empty')
-      OUTPUT_NAME=$(${pkgs.niri}/bin/niri msg --json outputs 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[] | select(.focused == true) | .name // empty')
-      
-      echo "WINDOW_ID=$WINDOW_ID" > "$STATE_FILE"
-      echo "OUTPUT_NAME=$OUTPUT_NAME" >> "$STATE_FILE"
-    elif [ "$ACTION" = "restore" ]; then
-      if [ -f "$STATE_FILE" ]; then
-        source "$STATE_FILE"
-        
-        # 1. 윈도우 ID로 포커스 복원 시도
-        if [ -n "$WINDOW_ID" ]; then
-          ${pkgs.niri}/bin/niri msg action focus-window --id "$WINDOW_ID" 2>/dev/null
-          if [ $? -eq 0 ]; then
+  niri-focus-saver = pkgs.writeShellApplication {
+    name = "niri-focus-saver";
+    runtimeInputs = with pkgs; [ coreutils jq niri ];
+    text = ''
+      action="''${1:-}"
+      runtime_dir="''${XDG_RUNTIME_DIR:-}"
+
+      if [[ -z "$runtime_dir" ]]; then
+        exit 0
+      fi
+
+      state_file="$runtime_dir/niri-last-focus.json"
+
+      case "$action" in
+        save)
+          umask 077
+          window_id="$(niri msg --json focused-window 2>/dev/null | jq -r '.id // empty' || true)"
+          output_name="$(niri msg --json focused-output 2>/dev/null | jq -r '.name // empty' || true)"
+          temporary_file="$(mktemp "$runtime_dir/niri-last-focus.XXXXXX")"
+
+          jq -n \
+            --arg window_id "$window_id" \
+            --arg output_name "$output_name" \
+            '{ window_id: $window_id, output_name: $output_name }' \
+            > "$temporary_file"
+          mv "$temporary_file" "$state_file"
+          ;;
+        restore)
+          if [[ ! -r "$state_file" ]]; then
             exit 0
           fi
-        fi
-        
-        # 2. 윈도우 ID 복원이 실패했거나 없는 경우, 모니터(output) 이름으로 포커스 복원
-        if [ -n "$OUTPUT_NAME" ]; then
-          ${pkgs.niri}/bin/niri msg action focus-monitor "$OUTPUT_NAME" 2>/dev/null
-        fi
+
+          window_id="$(jq -r '.window_id // empty' "$state_file")"
+          output_name="$(jq -r '.output_name // empty' "$state_file")"
+
+          # 윈도우가 사라졌다면 기존 모니터로 포커스를 복원합니다.
+          if [[ "$window_id" =~ ^[0-9]+$ ]] \
+            && niri msg action focus-window --id "$window_id" >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          if [[ -n "$output_name" ]]; then
+            niri msg action focus-monitor "$output_name" >/dev/null 2>&1 || true
+          fi
+          ;;
+        *)
+          exit 2
+          ;;
+      esac
+    '';
+  };
+
+  brightness-state = pkgs.writeShellApplication {
+    name = "hypridle-brightness-state";
+    runtimeInputs = with pkgs; [ brightnessctl coreutils ];
+    text = ''
+      action="''${1:-}"
+      runtime_dir="''${XDG_RUNTIME_DIR:-}"
+
+      if [[ -z "$runtime_dir" ]]; then
+        exit 0
       fi
-    fi
-  '';
+
+      state_file="$runtime_dir/hypridle-brightness"
+
+      case "$action" in
+        dim)
+          current="$(brightnessctl --class=backlight get 2>/dev/null)" || exit 0
+          maximum="$(brightnessctl --class=backlight max 2>/dev/null)" || exit 0
+
+          if [[ ! "$current" =~ ^[0-9]+$ || ! "$maximum" =~ ^[0-9]+$ ]]; then
+            exit 0
+          fi
+
+          umask 077
+          printf '%s\n' "$current" > "$state_file"
+
+          target=$((maximum / 10))
+          if (( target < 1 )); then
+            target=1
+          fi
+
+          if (( current > target )); then
+            brightnessctl --quiet --class=backlight set "$target"
+          fi
+          ;;
+        restore)
+          if [[ ! -r "$state_file" ]]; then
+            exit 0
+          fi
+
+          read -r previous < "$state_file"
+          rm -f "$state_file"
+
+          if [[ "$previous" =~ ^[0-9]+$ ]]; then
+            brightnessctl --quiet --class=backlight set "$previous" || true
+          fi
+          ;;
+        *)
+          exit 2
+          ;;
+      esac
+    '';
+  };
 in
 {
   services.hypridle = {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "${niri-focus-saver}/bin/niri-focus-saver save && ${config.programs.noctalia.package}/bin/noctalia msg session lock";
+        lock_cmd = "${niri-focus-saver}/bin/niri-focus-saver save || true; ${config.programs.noctalia.package}/bin/noctalia msg session lock";
         unlock_cmd = "${niri-focus-saver}/bin/niri-focus-saver restore";
         before_sleep_cmd = "loginctl lock-session";
         after_sleep_cmd = "${pkgs.niri}/bin/niri msg action power-on-monitors";
       };
 
-      listener = [
+      listener = lib.optionals isLaptop [
         # [9분: 화면 어둡게 하기 (경고)]
         {
           timeout = 540;
-          on-timeout = "${pkgs.brightnessctl}/bin/brightnessctl set 10%";
-          on-resume = "${pkgs.brightnessctl}/bin/brightnessctl set 100%";
+          on-timeout = "${brightness-state}/bin/hypridle-brightness-state dim";
+          on-resume = "${brightness-state}/bin/hypridle-brightness-state restore";
         }
+      ] ++ [
         # [10분: 화면 잠금 (Lock Screen)]
         {
           timeout = 600;
