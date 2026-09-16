@@ -45,10 +45,20 @@
     let
       system = "x86_64-linux";
       username = "yongminari"; # 중앙화된 유저명 설정. 다른 아이디로 변경하려면 이곳만 수정하면 됩니다.
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      hostNames = [
+        "galaxy-book"
+        "ai-x1-pro"
+        "nxtp-office-desktop"
+      ];
+      mkHomeConfiguration = hostName:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = self.nixosConfigurations.${hostName}.pkgs;
+          extraSpecialArgs = {
+            inherit inputs username;
+            osConfig = self.nixosConfigurations.${hostName}.config;
+          };
+          modules = [ ./home.nix ];
+        };
     in {
       # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
       nixosConfigurations."galaxy-book" = nixpkgs.lib.nixosSystem {
@@ -108,16 +118,10 @@
         ];
       };
 
-      # 독립 실행형 Home Manager 설정 (기존 방식 유지용: home-manager switch --flake .#yongminari)
-      homeConfigurations."${username}" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit inputs username;
-          osConfig = {
-            networking.hostName = "";
-          };
-        };
-        modules = [ ./home.nix ];
-      };
+      # nh home switch가 현재 hostname에 맞는 NixOS 정보를 사용하도록 호스트별 출력 제공
+      homeConfigurations = builtins.listToAttrs (map (hostName: {
+        name = "${username}@${hostName}";
+        value = mkHomeConfiguration hostName;
+      }) hostNames);
     };
 }

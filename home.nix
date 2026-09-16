@@ -85,7 +85,7 @@
   programs.home-manager.enable = true;
 
   home.shellAliases = {
-    hms = "nh home switch"; 
-    ns  = "nh os switch";  
+    hms = "nh home switch ${config.home.homeDirectory}/nixos-home-manager";
+    ns = "nh os switch ${config.home.homeDirectory}/nixos-home-manager";
   };
 }

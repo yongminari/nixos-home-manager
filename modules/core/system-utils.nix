@@ -106,6 +106,7 @@ in {
 
   programs.nh = {
     enable = true;
+    flake = "${config.home.homeDirectory}/nixos-home-manager";
     clean.enable = false; # nix.gc 설정을 명시적으로 사용하므로 비활성화
     # clean.extraArgs = "--keep-since 4d --keep 3";
   };

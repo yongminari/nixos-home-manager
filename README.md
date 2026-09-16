@@ -91,9 +91,10 @@ sudo nixos-rebuild switch --flake .#<hostname>
 | 대상 | nh 명령어 (권장) | 표준 명령어 (Native) |
 | :--- | :--- | :--- |
 | **전체 (시스템+유저)** | `nh os switch` | `sudo nixos-rebuild switch --flake .#<hostname>` |
-| **유저 전용** | `nh home switch` | `home-manager switch --flake .` |
+| **유저 전용** | `nh home switch` | `home-manager switch --flake .#yongminari@<hostname>` |
 
-- `nh`는 빌드 시 `nix-output-monitor`를 통한 시각적 로그를 제공하며, 설정된 `flake` 경로를 자동으로 인식합니다.
+- `nh`는 빌드 시 `nix-output-monitor`를 통한 시각적 로그를 제공하며, `hms`와 `ns` 별칭은 저장소의 절대 경로를 직접 전달합니다.
+- `nh home switch`는 `yongminari@<현재 hostname>` 출력을 선택하므로 `ns`에 포함된 Home Manager와 동일한 호스트 정보를 사용합니다.
 
 ### 2. 패키지 업데이트 및 청소
 

@@ -18,9 +18,11 @@ nh os switch --hostname <hostname>
 nh home switch
 ```
 
+`nh home switch`는 현재 hostname을 기준으로 `yongminari@<hostname>` 출력을 자동 선택합니다. 따라서 Niri 모니터 설정과 GPU별 환경 변수도 해당 NixOS 호스트 구성과 일치합니다.
+
 - **장점**: 
     - 빌드 과정을 `nix-output-monitor`를 통해 그래프로 보여줍니다.
-    - 설정 파일에서 `flake` 경로를 `/home/yongminari/nixos-home-manager`로 고정해두었기 때문에, 어느 디렉토리에서든 실행 가능합니다.
+    - `hms`와 `ns` 별칭이 `/home/yongminari/nixos-home-manager`를 직접 전달하므로 로그인 세션 환경과 관계없이 어느 디렉토리에서든 실행 가능합니다.
 
 ### 2. 패키지 검색 (Search)
 `nix search`보다 훨씬 빠르고 깔끔한 결과를 보여줍니다.
@@ -43,7 +45,7 @@ nh clean all
 ## 💡 Troubleshooting
 
 ### "Hostname not found" 에러 발생 시
-현재 기기의 `hostname`이 `flake.nix`에 정의된 이름(`galaxy-book` 또는 `ai-x1-pro`)과 일치하는지 확인하세요. 만약 다르다면 다음과 같이 실행합니다:
+현재 기기의 `hostname`이 `flake.nix`에 정의된 이름(`galaxy-book`, `ai-x1-pro`, `nxtp-office-desktop`)과 일치하는지 확인하세요. 만약 다르다면 다음과 같이 실행합니다:
 
 ```bash
 nh os switch --hostname galaxy-book
