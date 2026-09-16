@@ -146,7 +146,7 @@
   };
 
   environment.systemPackages = with pkgs; [ 
-    vim git curl wget net-tools wireguard-tools
+    vim git curl wget wireguard-tools
   ];
 
   programs.nix-ld.enable = true;

@@ -6,14 +6,12 @@
     gh              # GitHub CLI
     glab            # GitLab CLI
     vcs2l           # VCS tool for multiple repositories (replacement for vcstool)
-    lazydocker      # Docker TUI 관리
     bubblewrap      # Codex CLI Linux sandbox runtime
     
     # [개발 보조 도구 (LSP/Parsers)]
     tree-sitter   # Tree-sitter CLI (Fix checkhealth error)
     nil           # Nix Language Server
     ast-grep      # ast-grep CLI
-    lua51Packages.jsregexp # Luasnip dependency
     gopls         # Go LSP
     clang-tools   # clangd 등 (헤더 검색 등 에디터용)
     pyright       # Python LSP

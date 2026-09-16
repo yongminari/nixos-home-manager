@@ -17,9 +17,7 @@ let
 in {
   home.packages = with pkgs; [
     # [시스템 모니터링 및 정보]
-    htop
     fastfetch
-    lsb-release
     jq
 
     # [파일 및 네트워크 유틸리티]
@@ -37,7 +35,6 @@ in {
     swappy
     
     # [알림]
-    swaynotificationcenter
     libnotify
     
     # [하드웨어 제어]

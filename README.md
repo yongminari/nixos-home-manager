@@ -8,8 +8,8 @@
 - **🪟 Window Manager:** **Niri** (Scroll-based tiling compositor) - 현대적이고 매끄러운 사용자 경험.
 - **⚡ Shell:** **Zsh** (Main), **Nushell (Experimental)**, **Bash** - **Starship** 테마 적용.
 - **🛠️ Modern Core Utils:** `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`, `ps` → `procs`.
-- **🚀 Advanced CLI Tools:** `gh` (GitHub), `lazydocker`, `xh` (HTTP), `sd` (sed replacement), `gping` (Visual Ping), `comma` (Run without install), `nix-tree`.
-- **💻 Terminal:** **Ghostty** (Primary / High Performance), **Alacritty**.
+- **🚀 Advanced CLI Tools:** `gh` (GitHub), `podman-tui`, `xh` (HTTP), `sd` (sed replacement), `gping` (Visual Ping), `comma` (Run without install), `nix-tree`.
+- **💻 Terminal:** **Kitty** (Default), **Ghostty** (SSH integration / GPU effects).
 - **📝 Editor:** **Neovim** (Lua-based modular config).
   - **Enhanced:** Neovim 0.11 support, ROS/Distrobox integration, `git-conflict-nvim`, and refined LSP visuals.
 - **🚀 Desktop Shell:** **Noctalia Shell** (Integrated Bar, Launcher, & Notifications).
@@ -113,7 +113,7 @@ sudo nixos-rebuild switch --flake .#<hostname>
 ### ⌨️ Keybindings (Niri)
 | Shortcut | Action |
 | :--- | :--- |
-| **`Super + Enter`** | Ghostty 터미널 실행 |
+| **`Super + Enter`** | Kitty 터미널 실행 |
 | **`Super + Space`** | Noctalia 앱 런처 실행 |
 | **`Super + N`** | Noctalia 알림 및 컨트롤 센터 토글 |
 | **`Super + Shift + W`** | Wallhaven 무작위 배경화면 가져오기 (`fetch-wallhaven`) |
