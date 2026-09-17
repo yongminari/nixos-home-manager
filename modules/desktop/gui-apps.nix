@@ -13,7 +13,7 @@
       google-chrome)
     obsidian
     geeqie
-    onlyoffice-desktopeditors
+    libreoffice
   ];
 
   programs.zathura = {
