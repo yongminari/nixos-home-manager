@@ -64,18 +64,6 @@ let
 
   isLaptop = currentHost.deviceType == "laptop";
 
-  selectIbusHangul = pkgs.writeShellScript "select-ibus-hangul" ''
-    for attempt in {1..100}; do
-      if ${osConfig.i18n.inputMethod.package}/bin/ibus engine hangul >/dev/null 2>&1; then
-        exit 0
-      fi
-      ${pkgs.coreutils}/bin/sleep 0.1
-    done
-
-    echo "IBus Hangul engine did not become ready" >&2
-    exit 1
-  '';
-
   outputSelector = side:
     if currentHost.outputs == null then ""
     else currentHost.outputs.${side};
@@ -168,38 +156,6 @@ in
   ];
 
   wayland.systemd.target = "graphical-session.target";
-
-  # NixOS의 기본 IBus 자동 시작은 X11용 daemon 명령을 사용하므로 사용자 범위에서 가립니다.
-  xdg.configFile."autostart/ibus-daemon.desktop" = {
-    text = ''
-      [Desktop Entry]
-      Hidden=true
-    '';
-  };
-
-  # IBus 1.5.32+의 Wayland input-method-v2 프런트엔드를 Niri 세션에서만 시작합니다.
-  xdg.configFile."autostart/ibus-wayland.desktop" = {
-    text = ''
-      [Desktop Entry]
-      Name=IBus Wayland
-      Type=Application
-      Exec=${osConfig.i18n.inputMethod.package}/bin/ibus start --type wayland
-      OnlyShowIn=niri;
-      NoDisplay=true
-    '';
-  };
-
-  # IBus daemon 준비 후 Hangul 엔진을 선택합니다. preload만으로는 전역 엔진이 설정되지 않습니다.
-  xdg.configFile."autostart/ibus-hangul.desktop" = {
-    text = ''
-      [Desktop Entry]
-      Name=IBus Hangul Engine
-      Type=Application
-      Exec=${selectIbusHangul}
-      OnlyShowIn=niri;
-      NoDisplay=true
-    '';
-  };
 
   # 터치패드 토글 스크립트 (랩탑일 경우에만 생성)
   xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf isLaptop {

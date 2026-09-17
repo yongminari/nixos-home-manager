@@ -60,27 +60,8 @@
       gtk-theme = "adw-gtk3-dark";
     };
     "org/gnome/desktop/input-sources" = {
-      sources = [ (lib.hm.gvariant.mkTuple [ "ibus" "hangul" ]) ];
-    };
-    "org/freedesktop/ibus/general" = {
-      preload-engines = [ "hangul" ];
-      engines-order = [ "hangul" ];
-      enable-by-default = true;
-      use-global-engine = true;
-      use-system-keyboard-layout = true;
-    };
-    "org/freedesktop/ibus/general/hotkey" = {
-      trigger = [];
-      triggers = [];
-      next-engine = [];
-      next-engine-in-menu = [];
-    };
-    "org/freedesktop/ibus/engine/hangul" = {
-      hangul-keyboard = "2";
-      initial-input-mode = "latin";
-      switch-keys = "Hangul,Shift+space";
-      # Native Wayland에서는 전달된 키 이벤트가 유실될 수 있으므로 X11용 우회를 끕니다.
-      use-event-forwarding = false;
+      # GNOME에는 XKB 레이아웃만 맡기고 한글 전환은 Fcitx5가 담당합니다.
+      sources = [ (lib.hm.gvariant.mkTuple [ "xkb" "us" ]) ];
     };
   };
 

@@ -52,10 +52,32 @@
   # --- [5. Input Method & Fonts] ---
   i18n.inputMethod = {
     enable = true;
-    type = "ibus";
-    ibus = {
-      engines = with pkgs.ibus-engines; [ hangul ];
+    type = "fcitx5";
+    fcitx5 = {
+      addons = with pkgs; [ fcitx5-hangul fcitx5-gtk fcitx5-lua ];
       waylandFrontend = true;
+
+      # 모든 호스트에 동일한 영문/한글 두벌식 기본값을 제공합니다.
+      settings = {
+        inputMethod = {
+          "Groups/0" = {
+            Name = "Default";
+            "Default Layout" = "us";
+            DefaultIM = "hangul";
+          };
+          "Groups/0/Items/0".Name = "keyboard-us";
+          "Groups/0/Items/1".Name = "hangul";
+          GroupOrder."0" = "Default";
+        };
+        globalOptions = {
+          "Hotkey/TriggerKeys" = {
+            "0" = "Shift+space";
+            "1" = "Zenkaku_Hankaku";
+          };
+          Behavior.ActiveByDefault = false;
+        };
+        addons.hangul.globalSection.Keyboard = "Dubeolsik";
+      };
     };
   };
 

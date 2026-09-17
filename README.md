@@ -152,11 +152,11 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 - **`Shift + U`**: 스테이징 해제 (Reset item)
 - **`?`**: 도움말 열기
 
-### 🇰🇷 한글 입력
+### 🇰🇷 한글 입력 (Fcitx5)
 
-- 모든 NixOS 호스트에서 IBus와 Hangul 두벌식, `Shift+Space` 전환을 사용합니다.
-- Niri에서는 XDG 자동 시작으로 입력기를 한 번만 실행합니다. 기존 X11용 자동 시작을 가리고 `ibus start --type wayland`를 사용합니다.
-- GTK/Qt 입력기 변수를 강제하지 않고 Wayland 입력 프로토콜을 사용합니다. XWayland 앱은 `XMODIFIERS=@im=ibus`로 호환합니다.
+- 모든 NixOS 호스트에서 영어(US)와 Hangul 두벌식, `Shift+Space` 전환을 사용합니다.
+- Fcitx5는 XDG 자동 시작으로 한 번만 실행하며, Niri에는 별도 실행 명령을 추가하지 않습니다.
+- GTK/Qt 입력기 변수를 전역으로 강제하지 않고 네이티브 Wayland 입력 프로토콜을 사용합니다. XWayland 앱에는 `XMODIFIERS=@im=fcitx`가 제공됩니다.
 - Obsidian은 Nixpkgs 래퍼가 Wayland IME와 text-input-v3 옵션을 자동으로 적용합니다.
 - 적용: 각 호스트에서 `ns` 실행 후 로그아웃/로그인합니다. OS 환경 변수 변경이 포함되어 `hms`만으로는 전체 적용되지 않습니다.
 - 확인: GTK 앱, Qt 앱, Chrome/Obsidian, Noctalia 런처에서 `Shift+Space`로 한글 조합·삭제·확정을 확인합니다. Chromium/Electron 앱은 버전과 실행 백엔드에 따라 별도 IME 옵션이 필요할 수 있습니다.
