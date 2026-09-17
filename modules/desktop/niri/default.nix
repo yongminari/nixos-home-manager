@@ -64,6 +64,18 @@ let
 
   isLaptop = currentHost.deviceType == "laptop";
 
+  selectIbusHangul = pkgs.writeShellScript "select-ibus-hangul" ''
+    for attempt in {1..100}; do
+      if ${osConfig.i18n.inputMethod.package}/bin/ibus engine hangul >/dev/null 2>&1; then
+        exit 0
+      fi
+      ${pkgs.coreutils}/bin/sleep 0.1
+    done
+
+    echo "IBus Hangul engine did not become ready" >&2
+    exit 1
+  '';
+
   outputSelector = side:
     if currentHost.outputs == null then ""
     else currentHost.outputs.${side};
@@ -172,6 +184,18 @@ in
       Name=IBus Wayland
       Type=Application
       Exec=${osConfig.i18n.inputMethod.package}/bin/ibus start --type wayland
+      OnlyShowIn=niri;
+      NoDisplay=true
+    '';
+  };
+
+  # IBus daemon 준비 후 Hangul 엔진을 선택합니다. preload만으로는 전역 엔진이 설정되지 않습니다.
+  xdg.configFile."autostart/ibus-hangul.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Name=IBus Hangul Engine
+      Type=Application
+      Exec=${selectIbusHangul}
       OnlyShowIn=niri;
       NoDisplay=true
     '';

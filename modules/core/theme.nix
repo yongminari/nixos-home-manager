@@ -79,6 +79,8 @@
       hangul-keyboard = "2";
       initial-input-mode = "latin";
       switch-keys = "Hangul,Shift+space";
+      # Native Wayland에서는 전달된 키 이벤트가 유실될 수 있으므로 X11용 우회를 끕니다.
+      use-event-forwarding = false;
     };
   };
 
