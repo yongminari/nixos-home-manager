@@ -1,8 +1,21 @@
-{ config, username, ... }:
+{ config, inputs, pkgs, username, ... }:
 
+let
+  sopsPkgs = import inputs.sops-nix {
+    pkgs = pkgs.extend (_final: prev: {
+      buildGo125Module = prev.buildGo126Module;
+    });
+  };
+in
 {
   config = {
     sops = {
+      # TODO(sops-nix, 2026-09-17): Keep this compatibility override until
+      # upstream replaces buildGo125Module with a supported Go builder.
+      # After updating sops-nix, remove this package override and the sopsPkgs
+      # compatibility block only after `ns` succeeds without them.
+      # https://github.com/Mic92/sops-nix/blob/master/pkgs/sops-install-secrets/default.nix
+      package = sopsPkgs.sops-install-secrets;
       defaultSopsFile = ../../secrets/secrets.yaml;
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
       secrets = {
