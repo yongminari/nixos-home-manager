@@ -1,15 +1,10 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
 {
   # GTK Theme Configuration
   gtk = {
     enable = true;
 
-    # X11/XWayland에서는 Fcitx를 사용하고, Wayland에서는 GTK 기본 입력기를 사용합니다.
-    gtk2.extraConfig = ''gtk-im-module="fcitx"'';
-    gtk3.extraConfig.gtk-im-module = "fcitx";
-    gtk4.extraConfig.gtk-im-module = "fcitx";
-    
     # 1. 테마 설정 (Adw-gtk3 Dark)
     theme = {
       name = "adw-gtk3-dark";
@@ -58,16 +53,32 @@
 
   # dconf 설정으로 GNOME 환경의 아이콘 및 커서 테마 지정
   dconf.settings = {
-    "org/gnome/settings-daemon/plugins/xsettings" = {
-      overrides = [
-        (lib.hm.gvariant.mkDictionaryEntry [ "Gtk/IMModule" (lib.hm.gvariant.mkVariant "fcitx") ])
-      ];
-    };
     "org/gnome/desktop/interface" = {
       cursor-size = 48;
       cursor-theme = "Bibata-Modern-Ice";
       icon-theme = "Papirus-Dark";
       gtk-theme = "adw-gtk3-dark";
+    };
+    "org/gnome/desktop/input-sources" = {
+      sources = [ (lib.hm.gvariant.mkTuple [ "ibus" "hangul" ]) ];
+    };
+    "org/freedesktop/ibus/general" = {
+      preload-engines = [ "hangul" ];
+      engines-order = [ "hangul" ];
+      enable-by-default = true;
+      use-global-engine = true;
+      use-system-keyboard-layout = true;
+    };
+    "org/freedesktop/ibus/general/hotkey" = {
+      trigger = [];
+      triggers = [];
+      next-engine = [];
+      next-engine-in-menu = [];
+    };
+    "org/freedesktop/ibus/engine/hangul" = {
+      hangul-keyboard = "2";
+      initial-input-mode = "latin";
+      switch-keys = "Hangul,Shift+space";
     };
   };
 

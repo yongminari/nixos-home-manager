@@ -157,6 +157,26 @@ in
 
   wayland.systemd.target = "graphical-session.target";
 
+  # NixOS의 기본 IBus 자동 시작은 X11용 daemon 명령을 사용하므로 사용자 범위에서 가립니다.
+  xdg.configFile."autostart/ibus-daemon.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Hidden=true
+    '';
+  };
+
+  # IBus 1.5.32+의 Wayland input-method-v2 프런트엔드를 Niri 세션에서만 시작합니다.
+  xdg.configFile."autostart/ibus-wayland.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Name=IBus Wayland
+      Type=Application
+      Exec=${osConfig.i18n.inputMethod.package}/bin/ibus start --type wayland
+      OnlyShowIn=niri;
+      NoDisplay=true
+    '';
+  };
+
   # 터치패드 토글 스크립트 (랩탑일 경우에만 생성)
   xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf isLaptop {
     executable = true;

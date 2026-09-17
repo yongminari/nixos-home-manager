@@ -1,4 +1,4 @@
-{ inputs, pkgs, config, lib, ... }:
+{ inputs, pkgs, config, ... }:
 
 let
   lFramePreset = builtins.fromTOML (builtins.readFile ./noctalia/l-frame.toml);
@@ -48,13 +48,6 @@ in
     };
     Install = {
       WantedBy = [ "timers.target" ];
-    };
-  };
-
-  # Fcitx5 입력기 충돌로 인해 Qt6 기반 Noctalia의 키보드 입력이 먹통되는 현상 해결
-  systemd.user.services.noctalia = {
-    Service = {
-      Environment = [ "QT_IM_MODULE=" ];
     };
   };
 
