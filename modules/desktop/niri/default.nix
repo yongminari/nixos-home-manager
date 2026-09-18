@@ -188,10 +188,9 @@ in
 
     // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
     animations {
-      // 바운스가 짧고 빠르게 끝나도록 감쇠와 강성을 높입니다.
-      // 워크스페이스 전환에도 좌우 스크롤과 같은 탄성을 줍니다.
+      // 워크스페이스 전환은 다른 이동 애니메이션보다 천천히 재생합니다.
       workspace-switch {
-        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+        spring damping-ratio=0.5 stiffness=450 epsilon=0.0001
       }
       // 좌우 스크롤 끝에 눈에 띄는 탄성을 줍니다.
       horizontal-view-movement {
