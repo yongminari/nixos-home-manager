@@ -61,6 +61,7 @@ let
     extraConfig = "";
   };
   baseConfig = builtins.readFile ./config.kdl;
+  workspaceAnimation = "spring damping-ratio=0.5 stiffness=450 epsilon=0.0001";
 
   isLaptop = currentHost.deviceType == "laptop";
 
@@ -188,20 +189,33 @@ in
 
     // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
     animations {
-      // 워크스페이스 전환은 다른 이동 애니메이션보다 천천히 재생합니다.
+      // 창 열기·닫기를 제외한 모든 애니메이션의 속도감을 통일합니다.
       workspace-switch {
-        spring damping-ratio=0.5 stiffness=450 epsilon=0.0001
+        ${workspaceAnimation}
       }
-      // 좌우 스크롤 끝에 눈에 띄는 탄성을 줍니다.
       horizontal-view-movement {
-        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+        ${workspaceAnimation}
       }
-      // 창을 합치거나 분리할 때 이동과 크기 변경에 같은 탄성을 줍니다.
       window-movement {
-        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+        ${workspaceAnimation}
       }
       window-resize {
-        spring damping-ratio=0.5 stiffness=800 epsilon=0.0001
+        ${workspaceAnimation}
+      }
+      config-notification-open-close {
+        ${workspaceAnimation}
+      }
+      exit-confirmation-open-close {
+        ${workspaceAnimation}
+      }
+      screenshot-ui-open {
+        ${workspaceAnimation}
+      }
+      overview-open-close {
+        ${workspaceAnimation}
+      }
+      recent-windows-close {
+        ${workspaceAnimation}
       }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
