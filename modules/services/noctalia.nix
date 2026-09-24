@@ -143,6 +143,13 @@ in
       bar = lFramePreset.bar;
       shell = lFramePreset.shell;
 
+      # 알림음과 UI 사운드 활성화
+      audio = {
+        enable_sounds = true;
+        sound_volume = 0.5;
+        sound_theme = "freedesktop";
+      };
+
       # 테마 설정 (v5 규격)
       theme = {
         mode = "dark";
