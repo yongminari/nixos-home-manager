@@ -25,8 +25,8 @@
       # 타이틀바 비활성화
       hide_window_decorations = "yes";
 
-      # 오디오 벨 끄기
-      enable_audio_bell = "no";
+      # 오디오 벨 활성화
+      enable_audio_bell = "yes";
       
       # 창 닫을 때 확인 비활성화
       confirm_os_window_close = 0;
