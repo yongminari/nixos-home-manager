@@ -32,6 +32,7 @@
 
     # [4. services] 백그라운드 서비스
     ./modules/services/noctalia.nix
+    ./modules/services/codex-telegram.nix
   ];
 
   # --- [User Information] ---
