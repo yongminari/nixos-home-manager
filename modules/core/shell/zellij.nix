@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  mkZellijConfig = lockKey: themeName: ''
+  mkZellijConfig = themeName: ''
     theme "${themeName}"
     // 시스템 기본쉘(Bash)을 무시하고 Zsh를 강제로 사용하도록 설정
     default_shell "${pkgs.zsh}/bin/zsh"
@@ -14,8 +14,7 @@ let
 
     keybinds {
       shared_except "locked" {
-        ${if lockKey == "Ctrl g" then "" else "unbind \"Ctrl g\""}
-        bind "${lockKey}" { SwitchToMode "Locked"; }
+        bind "Ctrl g" { SwitchToMode "Locked"; }
         bind "Alt h" { MoveFocusOrTab "Left"; }
         bind "Alt l" { MoveFocusOrTab "Right"; }
         bind "Alt j" { MoveFocus "Down"; }
@@ -28,8 +27,7 @@ let
         bind "Ctrl x" { CloseFocus; SwitchToMode "Normal"; }
       }
       locked {
-        ${if lockKey == "Ctrl g" then "" else "unbind \"Ctrl g\""}
-        bind "${lockKey}" { SwitchToMode "Normal"; }
+        bind "Ctrl g" { SwitchToMode "Normal"; }
       }
     }
   '';
@@ -41,6 +39,6 @@ in
     enableBashIntegration = false;
   };
   
-  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "Ctrl g" "ayu_dark";
-  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "Ctrl Shift h" "iceberg-light";
+  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "ayu_dark";
+  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "iceberg-light";
 }
