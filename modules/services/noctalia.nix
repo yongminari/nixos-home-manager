@@ -146,7 +146,7 @@ in
       # 알림음과 UI 사운드 활성화
       audio = {
         enable_sounds = true;
-        sound_volume = 0.5;
+        sound_volume = 1.0;
         sound_theme = "freedesktop";
       };
 
