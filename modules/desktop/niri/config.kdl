@@ -12,7 +12,7 @@ window-rule {
     border {
         on
         width 0
-        inactive-color "#e5c07b60"
+        inactive-color "#31324460"
     }
 }
 
@@ -61,9 +61,20 @@ layout {
     focus-ring {
         off
     }
+
+    // Catppuccin Mocha: 활성 창은 Mauve, 비활성 창은 Surface 0.
+    border {
+        on
+        width 0
+        active-color "#cba6f7"
+        inactive-color "#31324460"
+        urgent-color "#f38ba8"
+    }
 }
 
 overview {
+    // Catppuccin Mocha Crust
+    backdrop-color "#11111b"
     workspace-shadow {
         off
     }

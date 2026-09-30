@@ -135,7 +135,7 @@ in
     systemd.enable = true;
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
     
-    # 기본 설정 (Matugen 기반으로 테마가 자동 생성되나 필요시 커스텀 가능)
+    # 기본 설정 (배경화면과 독립적인 Catppuccin 테마)
     settings = {
       # Noctalia Shell의 설정 인터페이스(GUI)를 통해 변경한 내용을 
       # 나중에 여기에 복사하여 영구적으로 유지할 수 있습니다.
@@ -154,7 +154,8 @@ in
       theme = {
         mode = "dark";
         source = "builtin";
-        builtin = "Ayu";
+        # 내장 Catppuccin 팔레트의 dark 모드는 Mocha입니다.
+        builtin = "Catppuccin";
       };
 
       # 배경화면 설정 (v5 규격)
