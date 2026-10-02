@@ -16,8 +16,8 @@
 
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
-      # 공식 바이너리 캐시(Cachix)를 사용하기 위해 nixpkgs follows 관계를 끊습니다.
-      # 이렇게 해야 빌드 해시가 개발팀의 빌드와 일치하여 컴파일 없이 즉시 바이너리를 다운로드합니다.
+      # 시스템 Mesa와 glibc ABI를 맞춰 EGL 드라이버 로딩 실패를 방지합니다.
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     sops-nix = {

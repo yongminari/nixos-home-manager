@@ -164,8 +164,11 @@ in
         directory = "~/Pictures/Wallpapers/Black";
         transition = [
           "fade"
-          "pixelate"
-          "blur"
+          "wipe"
+          "disc"
+          "stripes"
+          "zoom"
+          "honeycomb"
         ];
         transition_duration = 1500;
         transition_on_startup = true;
