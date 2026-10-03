@@ -39,6 +39,6 @@ in
     enableBashIntegration = false;
   };
   
-  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "catppuccin-mocha";
-  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "catppuccin-latte";
+  xdg.configFile."zellij/config.kdl".text = mkZellijConfig "everforest-dark";
+  xdg.configFile."zellij/remote.kdl".text = mkZellijConfig "everforest-light";
 }
