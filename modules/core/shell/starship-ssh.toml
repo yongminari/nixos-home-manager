@@ -1,37 +1,100 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Zellij의 Everforest에 맞춘 차분한 색상과 화살표 구분자.
+palette = "everforest"
+
 format = """
-[░▒▓](#e3a3d2)\
-[ 󰆍 ](bg:#e3a3d2 fg:#090c0c)\
-[](bg:#f076c0 fg:#e3a3d2)\
+[ 󰆍 SSH ](fg:ink bg:accent)\
+$username\
+$hostname\
+[](fg:accent bg:directory_bg)\
 $directory\
-[](fg:#f076c0 bg:#60395d)\
+[](fg:directory_bg bg:git_bg)\
 $git_branch\
 $git_status\
-[](fg:#60395d bg:#362134)\
+[](fg:git_bg bg:runtime_bg)\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:#362134 bg:#301d2d)\
+[](fg:runtime_bg bg:time_bg)\
 $time\
-[ ](fg:#301d2d)\
+[ ](fg:time_bg)\
 \n$character"""
 
+[palettes.everforest]
+accent = "#e69875"
+secondary = "#d699b6"
+ink = "#2d353b"
+text = "#d3c6aa"
+muted = "#9da9a0"
+directory_bg = "#514045"
+git_bg = "#343f44"
+runtime_bg = "#2d353b"
+time_bg = "#272e33"
+error = "#e67e80"
+
+[username]
+show_always = true
+style_user = "fg:ink bg:accent"
+style_root = "bold fg:ink bg:error"
+format = '[$user@]($style)'
+
+[hostname]
+ssh_only = false
+trim_at = ""
+style = "fg:ink bg:accent"
+format = '[$hostname ]($style)'
+
 [directory]
-style = "fg:#e3e5e5 bg:#f076c0"
+style = "fg:text bg:directory_bg"
 format = "[ $path ]($style)"
 truncation_length = 5
+truncate_to_repo = false
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
 
 [git_branch]
-style = "bg:#60395d"
-format = '[[ $symbol $branch ](fg:#f076c0 bg:#60395d)]($style)'
+symbol = ""
+style = "fg:secondary bg:git_bg"
+format = '[ $symbol $branch ]($style)'
 
 [git_status]
-style = "bg:#60395d"
-format = '[[($all_status$ahead_behind )](fg:#f076c0 bg:#60395d)]($style)'
+style = "fg:secondary bg:git_bg"
+format = '[($all_status$ahead_behind )]($style)'
+
+[nodejs]
+symbol = ""
+style = "fg:secondary bg:runtime_bg"
+format = '[ $symbol ($version) ]($style)'
+
+[rust]
+symbol = ""
+style = "fg:secondary bg:runtime_bg"
+format = '[ $symbol ($version) ]($style)'
+
+[golang]
+symbol = ""
+style = "fg:secondary bg:runtime_bg"
+format = '[ $symbol ($version) ]($style)'
+
+[php]
+symbol = ""
+style = "fg:secondary bg:runtime_bg"
+format = '[ $symbol ($version) ]($style)'
 
 [time]
 disabled = false
-style = "bg:#301d2d"
-format = '[[  $time ](fg:#cba0c5 bg:#301d2d)]($style)'
+time_format = "%R"
+style = "fg:muted bg:time_bg"
+format = '[  $time ]($style)'
+
+[character]
+success_symbol = "[❯](accent)"
+error_symbol = "[❯](error)"
+vimcmd_symbol = "[❮](secondary)"
