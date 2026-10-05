@@ -1,0 +1,9 @@
+# 최상위 설정: [tui] 등 섹션보다 위에 배치
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+
+[tui]
+notifications = true
+notification_method = "osc9"
+notification_condition = "always"
+alternate_screen = "never"
