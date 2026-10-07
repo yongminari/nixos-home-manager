@@ -56,12 +56,12 @@
         let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
         let is_kitty = ($env.TERM? == "xterm-kitty") or ($env.TERM_PROGRAM? == "kitty")
         if (not $is_ssh) and (not $in_multiplexer) and $is_ghostty and ($args | length) > 0 {
-          ^ghostty +ssh ...$args
+          ^ssh-session ghostty +ssh ...$args
         } else if (not $is_ssh) and (not $in_multiplexer) and $is_kitty and ($args | length) > 0 {
-          ^kitty +kitten ssh ...$args
+          ^ssh-session kitty +kitten ssh ...$args
         } else {
           with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
-            ^ssh ...$args
+            ^ssh-session ssh ...$args
           }
         }
       }

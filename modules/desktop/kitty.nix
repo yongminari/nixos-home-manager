@@ -49,6 +49,9 @@
 
       # 설정 파일 실시간 리로드 (기존 ctrl+shift+f5 -> ctrl+shift+,)
       map ctrl+shift+, load_config_file
+
+      # SSH 연결 단절 후 키보드/터미널 모드 수동 복구
+      map ctrl+shift+delete clear_terminal reset active
     '';
     themeFile = "ayu";
   };

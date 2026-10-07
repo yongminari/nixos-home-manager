@@ -7,8 +7,8 @@
     lt = "eza --tree --level=2 --long --icons --git";
     cat = "bat";
     # Ghostty를 유지하면서 SSH 호환성을 챙기는 가장 현대적인 방법
-    gssh = "ghostty +ssh";
-    kssh = "kitty +kitten ssh";
+    gssh = "ssh-session ghostty +ssh";
+    kssh = "ssh-session kitty +kitten ssh";
     # Qt Wayland compatibility fix
     wireshark = "env QT_QPA_PLATFORM=xcb wireshark";
 
@@ -19,6 +19,16 @@
     vim = "nvim";
     zj = "zellij";
     tocb = "wl-copy";
+  };
+
+  # 응답 없는 SSH 연결을 약 30초 후 정리합니다 (터미널 복구는 ssh-session 담당).
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings."*" = {
+      ServerAliveInterval = 15;
+      ServerAliveCountMax = 2;
+    };
   };
 
   # Starship 프롬프트 (모든 쉘 통합)
@@ -93,6 +103,11 @@
   # 공통 CLI 패키지
   home.packages = with pkgs; [
     python3
+    (writeShellApplication {
+      name = "ssh-session";
+      runtimeInputs = [ coreutils ncurses openssh ];
+      text = builtins.readFile ./ssh-session.sh;
+    })
   ];
 
   # Starship SSH 설정 파일 연결

@@ -50,11 +50,11 @@ try_alias cat bat
 # Ghostty 또는 Kitty 사용 시 terminfo 자동 주입 시도 (중첩 SSH 및 Zellij/Tmux 멀티플렉서 환경은 제외)
 function ssh() {
   if [[ -z "$ZELLIJ" && -z "$TMUX" ]] && ! is_ssh && [[ "$TERM" == "xterm-ghostty" || "$TERM_PROGRAM" == "Ghostty" ]]; then
-    ghostty +ssh "$@"
+    command ssh-session ghostty +ssh "$@"
   elif [[ -z "$ZELLIJ" && -z "$TMUX" ]] && ! is_ssh && [[ "$TERM" == "xterm-kitty" || "$TERM_PROGRAM" == "kitty" ]]; then
-    kitty +kitten ssh "$@"
+    command ssh-session kitty +kitten ssh "$@"
   else
-    TERM=xterm-256color COLORTERM=truecolor command ssh "$@"
+    TERM=xterm-256color COLORTERM=truecolor command ssh-session ssh "$@"
   fi
 }
 
