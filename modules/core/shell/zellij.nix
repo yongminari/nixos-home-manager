@@ -13,8 +13,9 @@ let
     copy_on_select true
 
     keybinds {
+      unbind "Ctrl g"
       shared_except "locked" {
-        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "Ctrl Shift h" { SwitchToMode "Locked"; }
         bind "Alt h" { MoveFocusOrTab "Left"; }
         bind "Alt l" { MoveFocusOrTab "Right"; }
         bind "Alt j" { MoveFocus "Down"; }
@@ -27,7 +28,7 @@ let
         bind "Ctrl x" { CloseFocus; SwitchToMode "Normal"; }
       }
       locked {
-        bind "Ctrl g" { SwitchToMode "Normal"; }
+        bind "Ctrl Shift h" { SwitchToMode "Normal"; }
       }
     }
   '';
