@@ -10,7 +10,9 @@ let
     STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/fetch-wallhaven"
     HISTORY_FILE="$STATE_DIR/seen-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
-    API_URL="https://wallhaven.cc/api/v1/search?categories=111&purity=100&colors=000000&sorting=random"
+    API_URL="https://wallhaven.cc/api/v1/search?purity=100&colors=000000&sorting=random"
+    # 장원영은 Wallhaven에서 검색 결과가 있는 wonyoung 키워드를 사용합니다.
+    SEARCH_TOPICS=(nature night sky kpop karina wonyoung)
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
@@ -39,12 +41,29 @@ let
     trap '${pkgs.coreutils}/bin/rm -f "$DOWNLOAD_FILE"' EXIT
 
     for _ in $(${pkgs.coreutils}/bin/seq 1 "$MAX_ATTEMPTS"); do
+      TOPIC=$(printf '%s\n' "''${SEARCH_TOPICS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
+      # 풍경은 사진 태그를 필수로, 연예인은 People 카테고리로 제한합니다.
+      case "$TOPIC" in
+        nature|night|sky)
+          CATEGORIES=100
+          QUERY="+photography +$TOPIC"
+          ;;
+        *)
+          CATEGORIES=001
+          QUERY="+$TOPIC"
+          ;;
+      esac
+      QUERY="$QUERY -anime -illustration -\"digital art\" -\"AI art\""
+
       RESPONSE=$(${pkgs.curl}/bin/curl \
         --fail \
         --location \
         --silent \
         --show-error \
         --retry 3 \
+        --get \
+        --data-urlencode "categories=$CATEGORIES" \
+        --data-urlencode "q=$QUERY" \
         "$API_URL") || continue
 
       while IFS=$'\t' read -r IMAGE_ID IMAGE_URL; do
@@ -89,7 +108,7 @@ let
 
         # 검증을 통과한 새 이미지만 현재 실행 중인 Noctalia에 적용합니다.
         ${config.programs.noctalia.package}/bin/noctalia msg wallpaper-set "$FILEPATH"
-        echo "Applied $FILEPATH (mean luminance: $MEAN_LUMINANCE)"
+        echo "Applied $FILEPATH (topic: $TOPIC, mean luminance: $MEAN_LUMINANCE)"
         exit 0
       done < <(${pkgs.jq}/bin/jq -r '.data[]? | [.id, .path] | @tsv' <<< "$RESPONSE")
     done
