@@ -3,7 +3,6 @@
 {
   imports = [
     ./containers.nix
-    ./kanata
   ];
 
   # --- [1. Boot & System Engine] ---
@@ -177,8 +176,8 @@
   };
   system.stateVersion = "26.11";
 
-  # --- [8. Keyboard Remapping (Kanata)] ---
-  # Moved to modules/core/kanata/default.nix
+  # --- [8. QMK Keyboard Firmware] ---
+  hardware.keyboard.qmk.enable = true;
 
   # --- [9. Systemd Timeout Optimization] ---
   systemd.settings.Manager = {

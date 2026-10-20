@@ -28,7 +28,6 @@
 
     # [Keyboard Development]
     qmk             # QMK Firmware CLI
-    vial            # Vial GUI for keyboard configuration
   ];
 
   # Codex와 Antigravity는 각 업스트림의 최신 버전을 ~/.local/bin에 설치합니다.

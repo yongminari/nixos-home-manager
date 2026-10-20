@@ -96,7 +96,6 @@
     shellAliases = {
       g  = "git";
       v  = "nvim";
-      keymap = "bat ~/nixos-home-manager/docs/keyboard-layout.md";
     };
   };
 }
