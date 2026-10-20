@@ -19,6 +19,7 @@
     # [2. dev] 개발 환경
     ./modules/dev/git.nix
     ./modules/dev/dev-tools.nix
+    ./modules/dev/codex.nix
     ./modules/dev/neovim.nix
     ./modules/dev/containers.nix
 
