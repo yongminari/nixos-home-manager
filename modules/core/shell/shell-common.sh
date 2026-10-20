@@ -79,8 +79,4 @@ if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode && command -v zellij &>/
   fi
 fi
 
-# [GitLab CLI Configuration]
-if [[ -f /run/secrets/gitlab_token ]]; then
-  export GITLAB_TOKEN=$(cat /run/secrets/gitlab_token)
-  export GITLAB_HOST="192.168.0.230"
-fi
+# GitLab credentials are managed per host in the sops-rendered glab config.
