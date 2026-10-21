@@ -2,6 +2,10 @@
 # 빈 작업 공간에서는 바를 표시하고, 창과 겹치면 자동으로 숨깁니다.
 # 둥근 바와 패널에 투명도와 부드러운 그림자를 함께 사용합니다.
 
+[accessibility]
+# 컨트롤센터·런처를 포함한 바 이외 UI의 크기를 1.5배로 표시합니다.
+ui_scale = 1.5
+
 [shell]
 corner_radius_scale = 1.25
 
@@ -16,6 +20,8 @@ session_placement = "floating"
 wallpaper_placement = "floating"
 wallpaper_position = "center"
 transparency_mode = "glass"
+# 바 기준 floating 패널의 간격을 넓혀 상단 패널을 조금 아래에 표시합니다.
+floating_offset = 32
 borders = true
 shadow = true
 

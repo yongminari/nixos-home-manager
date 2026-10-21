@@ -161,6 +161,7 @@ in
       # 별도 TOML 프리셋에서 L-frame과 floating panel 구성을 불러옵니다.
       bar = lFramePreset.bar;
       shell = lFramePreset.shell;
+      accessibility = lFramePreset.accessibility;
 
       # 알림음과 UI 사운드 활성화
       audio = {
