@@ -8,6 +8,9 @@
       size = 12;
     };
     settings = {
+      # 영문 고정폭 글꼴을 유지하고 한글은 잘풀리는 오늘체로 표시합니다.
+      symbol_map = "U+3131-U+318E,U+AC00-U+D7A3 Jalpullineunoneul";
+
       # 쉘 설정 (zsh)
       shell = "${pkgs.zsh}/bin/zsh";
       

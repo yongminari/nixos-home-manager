@@ -16,6 +16,7 @@
       # [Font]
       font-family = [
         "Maple Mono NF"
+        "Jalpullineunoneul"
         "D2Coding ligature"
       ];
       font-size = 12;
