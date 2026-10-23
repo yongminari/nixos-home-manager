@@ -3,6 +3,7 @@
 {
   imports = [
     ./containers.nix
+    ../services/tailscale.nix
   ];
 
   # --- [1. Boot & System Engine] ---
