@@ -58,6 +58,16 @@ function ssh() {
   fi
 }
 
+# [Zellij SSH]
+# 사용법: zellij-ssh [SSH 옵션] 사용자@호스트
+function zellij-ssh() {
+  if (( $# == 0 )); then
+    echo 'Usage: zellij-ssh [ssh options] user@host' >&2
+    return 1
+  fi
+  ssh -t "$@" 'zsh -ic zellij'
+}
+
 # [Zellij Wrapper]
 function zellij() {
   if is_ssh; then

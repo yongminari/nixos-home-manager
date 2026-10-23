@@ -66,6 +66,15 @@
         }
       }
 
+      # [Zellij SSH]
+      # 사용법: zellij-ssh [SSH 옵션] 사용자@호스트
+      def --wrapped zellij-ssh [...args: string] {
+        if ($args | is-empty) {
+          error make { msg: "Usage: zellij-ssh [ssh options] user@host" }
+        }
+        ssh ...(["-t"] ++ $args ++ ["zsh -ic zellij"])
+      }
+
       # [Zellij Wrapper]
       def --wrapped zellij [...args] {
         let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
