@@ -38,9 +38,10 @@
       cursor-text = "cell-foreground";
 
       # [Cursor & Effect Shaders]
-      # 화면 전체 오로라 위에 기존 물결·잔상과 커서 발광을 순서대로 합성합니다.
+      # 은은한 Hexglitch 배경과 Splatter 빛 위에 물결·잔상·둥근 페이드 커서를 합성합니다.
       custom-shader = [
-        "${config.home.homeDirectory}/.config/ghostty/shaders/ambient_aurora.glsl"
+        "${config.home.homeDirectory}/.config/ghostty/shaders/hexglitch_background.glsl"
+        "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_splatter.glsl"
         # -- A. 화면 전체 및 테두리 이펙트 (원하는 것 하나만 주석 해제하여 사용 추천) --
         # "${config.home.homeDirectory}/.config/ghostty/shaders/aurora.glsl" # 오로라 테두리 네온 효과
         # "${config.home.homeDirectory}/.config/ghostty/shaders/bettercrt.glsl" # 깔끔한 레트로 CRT 필터
@@ -53,7 +54,7 @@
       ];
 
       # [Shader Animation Performance Tune]
-      # 포커스된 창에서는 입력이 없어도 오로라와 발광 애니메이션을 계속 재생합니다.
+      # 포커스된 창에서는 입력이 없어도 배경과 발광 애니메이션을 계속 재생합니다.
       custom-shader-animation = true;
 
       # [Shell Integration]
@@ -121,6 +122,8 @@
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop";
 
   # [Ghostty Cursor & Effect Shaders 자동 배포]
+  home.file.".config/ghostty/shaders/hexglitch_background.glsl".source = ./shaders/hexglitch_background.glsl;
+  home.file.".config/ghostty/shaders/cursor_splatter.glsl".source = ./shaders/cursor_splatter.glsl;
   home.file.".config/ghostty/shaders/ambient_aurora.glsl".source = ./shaders/ambient_aurora.glsl;
   home.file.".config/ghostty/shaders/cursor_glow.glsl".source = ./shaders/cursor_glow.glsl;
   home.file.".config/ghostty/shaders/ripple_cursor.glsl".source = ./shaders/ripple_cursor.glsl;
