@@ -3,6 +3,8 @@ const float DURATION = 0.25;               // How long the ripple animates (seco
 const float MAX_RADIUS = 0.05;             // Max radius in normalized coords (0.5 = 1/4 screen height)
 const float RING_THICKNESS = 0.02;             // Ring width in normalized coords
 const float CURSOR_WIDTH_CHANGE_THRESHOLD = 0.5; // Triggers ripple if cursor width changes by this fraction
+const float CURSOR_MOVE_THRESHOLD = 1.0;   // Trigger a ripple on each single-cell move
+const float SOURCE_RIPPLE_THRESHOLD = 3.0; // Also contract a ripple at the source for longer moves
 vec4 COLOR = vec4(0.35, 0.36, 0.44, 1.0); // change to iCurrentCursorColor for your cursor's color
 const float BLUR = 3.0;                    // Blur level in pixels
 const float ANIMATION_START_OFFSET = 0.0;        // Start the ripple slightly progressed (0.0 - 1.0)
@@ -81,6 +83,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     vec4 previousCursor = vec4(normalize(iPreviousCursor.xy, 1.), normalize(iPreviousCursor.zw, 0.));
 
     vec2 centerCC = currentCursor.xy - (currentCursor.zw * offsetFactor);
+    vec2 centerCP = previousCursor.xy - (previousCursor.zw * offsetFactor);
 
     float cellWidth = max(currentCursor.z, previousCursor.z); // width of the 'block' cursor
     
@@ -89,13 +92,21 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     float widthThresholdNorm = cellWidth * CURSOR_WIDTH_CHANGE_THRESHOLD;
     float isModeChange = step(widthThresholdNorm, widthChange);
 
+    // Use cursor origins so a shape change alone does not count as movement.
+    // Cursor dimensions approximate cell size (exact for single-cell block cursors).
+    vec2 cellSize = max(max(iCurrentCursor.zw, iPreviousCursor.zw), vec2(1.0));
+    vec2 movementInCells = (iCurrentCursor.xy - iPreviousCursor.xy) / cellSize;
+    float movementDistance = length(movementInCells);
+    float isMove = step(CURSOR_MOVE_THRESHOLD, movementDistance);
+    float isLargeMove = step(SOURCE_RIPPLE_THRESHOLD, movementDistance);
+
 
     // ANIMATION
     float rippleProgress = (iTime - iTimeCursorChange) / DURATION + ANIMATION_START_OFFSET;
     // don't clamp yet; we need to know if it's > 1.0 (finished)
      float isAnimating = 1.0 - step(1.0, rippleProgress); // progress < 1.0 ? 1.0: 0.0
      
-     if (isModeChange > 0.0 && isAnimating > 0.0) {
+     if (max(isModeChange, isMove) > 0.0 && isAnimating > 0.0) {
         // Apply easing to progress
         // float easedProgress = rippleProgress;
         // float easedProgress = easeOutQuad(rippleProgress);
@@ -124,6 +135,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         // Antialias (1-pixel width in normalized coords)
         float antiAliasSize = normalize(vec2(BLUR, BLUR), 0.0).x;
         float ripple = (1.0 - smoothstep(-antiAliasSize, antiAliasSize, sdfRing)) * fade;
+
+        // Longer moves pair an expanding destination ring with a contracting source ring.
+        if (isLargeMove > 0.0) {
+            float sourceRadius = (1.0 - easedProgress) * MAX_RADIUS;
+            float sourceDist = distance(vu, centerCP);
+            float sourceSdfRing = abs(sourceDist - sourceRadius) - RING_THICKNESS * 0.5;
+            float sourceRipple = (1.0 - smoothstep(-antiAliasSize, antiAliasSize, sourceSdfRing)) * fade;
+            ripple = max(ripple, sourceRipple);
+        }
         
         // Apply ripple effect
         fragColor = mix(fragColor, COLOR, ripple * COLOR.a);
