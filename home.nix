@@ -45,7 +45,7 @@
   home.sessionVariables = lib.mkMerge [
     {
       NIXOS_OZONE_WL = "1"; # Wayland 호환성 (Chromium/Electron 등)
-      TERMINAL = "kitty"; # 기본 터미널 설정
+      TERMINAL = "ghostty"; # 기본 터미널 설정
 
       # [Qt & Wayland Stability]
       QT_QPA_PLATFORM = "wayland;xcb";
