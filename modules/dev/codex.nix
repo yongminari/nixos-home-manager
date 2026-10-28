@@ -19,12 +19,18 @@ in
   home.file.".codex/AGENTS.md".text = ''
     # Personal Codex instructions
 
-    ## English learning
+    ## English Communication and Learning
 
-    - Whenever I write a message in English, begin your response with a corrected, natural version of my English, preserving my intended meaning.
-    - Briefly explain one or two useful corrections so I can improve my English. Keep this feedback concise and supportive.
-    - If my English is already natural and correct, say so briefly instead of inventing corrections.
-    - Then answer my question or carry out my request as usual; English feedback must not replace the actual task.
+    - Always communicate with me in English.
+    - Answer my request first, then place any English feedback at the very end of the final response so it is easy to find after long outputs.
+    - Briefly correct my English only if there are meaningful grammar or expression issues.
+    - Preserve my original technical intent and terminology.
+    - Include my original sentence, the corrected sentence, and a brief explanation of its intended meaning in English, labeled Original, Corrected, and Meaning.
+    - Explain at most one or two important corrections.
+    - Do not rewrite sentences that are already clear and natural.
+    - Distinguish grammatical errors from optional stylistic improvements.
+    - Keep corrections concise and never let them interrupt the main development task.
+    - Complete the requested development task normally before giving English feedback.
     - For messages mixing Korean and English, correct only the English prose. Do not treat code, commands, paths, logs, or quoted source material as my English writing.
     - Give feedback once per user message, without repeating it in every progress update.
   '';
