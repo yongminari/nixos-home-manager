@@ -43,8 +43,8 @@
         # "${config.home.homeDirectory}/.config/ghostty/shaders/bettercrt.glsl" # 깔끔한 레트로 CRT 필터
         # "${config.home.homeDirectory}/.config/ghostty/shaders/crt.glsl" # 강한 빈티지 CRT 곡률/스캔라인 필터
 
-        # -- B. 커서 이펙트 (기존 물결 및 트레일 효과) --
-        "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
+        # -- B. 커서 이펙트 (이동 거리에 비례하는 잔상) --
+        # "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
         "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl"
       ];
 

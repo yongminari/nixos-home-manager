@@ -5,85 +5,16 @@ vec3 sRGBToLinear(vec3 c) {
 
 // --- CONFIGURATION ---
 vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a); // for custom color: vec4(0.2, 0.6, 1.0, 0.5); (wrap in sRGBToLinear for correct brightness)
-const float DURATION = 0.25; // in seconds
-const float MAX_TRAIL_LENGTH = 0.2;
-const float THRESHOLD_MIN_DISTANCE = 0.5; // min distance to show trail (units of cursor width)
-const float BLUR = 2.0; // blur size in pixels (for antialiasing)
+const float DURATION = 0.18; // seconds; keep long jumps visible without lingering
+const float TRAIL_DISTANCE_RATIO = 1.0; // initial length relative to cursor travel, independent of window size
+const float TRAIL_OPACITY = 0.35;
+const float THRESHOLD_MIN_DISTANCE = 0.5; // units of cursor width
+const float BLUR = 2.0; // antialiasing in pixels
 
-// --- CONSTANTS for easing functions ---
-const float PI = 3.14159265359;
-const float C1_BACK = 1.70158;
-const float C2_BACK = C1_BACK * 1.525;
-const float C3_BACK = C1_BACK + 1.0;
-const float C4_ELASTIC = (2.0 * PI) / 3.0;
-const float C5_ELASTIC = (2.0 * PI) / 4.5;
-const float SPRING_STIFFNESS = 9.0;
-const float SPRING_DAMPING = 0.9;
-
-// --- EASING FUNCTIONS ---
-
-// // Linear
-// float ease(float x) {
-//     return x;
-// }
-
-// // EaseOutQuad
-// float ease(float x) {
-//     return 1.0 - (1.0 - x) * (1.0 - x);
-// }
-
-// // EaseOutCubic
-// float ease(float x) {
-//     return 1.0 - pow(1.0 - x, 3.0);
-// }
-
-
-// // EaseOutQuart
-// float ease(float x) {
-//     return 1.0 - pow(1.0 - x, 4.0);
-// }
-
-// // EaseOutQuint
-// float ease(float x) {
-//     return 1.0 - pow(1.0 - x, 5.0);
-// }
-
-// // EaseOutSine
-// float ease(float x) {
-//     return sin((x * PI) / 2.0);
-// }
-
-// // EaseOutExpo
-// float ease(float x) {
-//     return x == 1.0 ? 1.0 : 1.0 - pow(2.0, -10.0 * x);
-// }
-
-// Constant acceleration from rest: the trailing edge covers x squared of its path.
-// Offset stays nonnegative, so the trail never overshoots the real cursor.
+// Ease-out motion: the trailing edge catches up quickly, then settles gently.
 float trailOffset(float x, float initialLength) {
-    return initialLength * (1.0 - x * x);
+    return initialLength * (1.0 - x) * (1.0 - x);
 }
-
-// // EaseOutBack
-// float ease(float x) {
-//     return 1.0 + C3_BACK * pow(x - 1.0, 3.0) + C1_BACK * pow(x - 1.0, 2.0);
-// }
-
-// // EaseOutElastic
-// float ease(float x) {
-//     return x == 0.0 ? 0.0
-//          : x == 1.0 ? 1.0
-//                     : pow(2.0, -10.0 * x) * sin((x * 10.0 - 0.75) * C4_ELASTIC) + 1.0;
-// }
-
-// Parametric Spring
-// float ease(float x) {
-//     x = clamp(x, 0.0, 1.0);
-//     float decay = exp(-SPRING_DAMPING * SPRING_STIFFNESS * x);
-//     float freq = sqrt(SPRING_STIFFNESS * (1.0 - SPRING_DAMPING * SPRING_DAMPING));
-//     float osc = cos(freq * 6.283185 * x) + (SPRING_DAMPING * sqrt(SPRING_STIFFNESS) / freq) * sin(freq * 6.283185 * x);
-//     return 1.0 - decay * osc;
-// }
 
 float getSdfRectangle(in vec2 p, in vec2 xy, in vec2 b)
 {
@@ -171,9 +102,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
      if (lineLength > minDist && progress < 1.0) {
          // ANIMATION logic
         
-        // Keep the front at the real cursor while the trailing edge accelerates toward it.
+        // Keep the front at the real cursor; scale the initial trail to the actual move.
         float head_eased = 1.0;
-        float initialLength = min(lineLength, MAX_TRAIL_LENGTH);
+        float initialLength = lineLength * TRAIL_DISTANCE_RATIO;
         float tail_eased = 1.0 - trailOffset(progress, initialLength) / lineLength;
 
         // detect straight moves
@@ -218,9 +149,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         // -- FINAL SELECTING AND DRAWING --
         float sdfTrail = mix(sdfTrail_diag, sdfTrail_rect, isStraightMove);
         
-        vec4 trail = TRAIL_COLOR;
-        float trailAlpha = antialising(sdfTrail);
-        newColor = mix(newColor, trail, trailAlpha);
+        // Fade toward the trailing edge and over time, preserving text underneath.
+        vec2 trailVector = head_center - tail_center;
+        float alongTrail = clamp(dot(vu - tail_center, trailVector)
+            / max(dot(trailVector, trailVector), 1e-12), 0.0, 1.0);
+        float spatialFade = smoothstep(0.0, 1.0, alongTrail);
+        float timeFade = 1.0 - progress;
+        float trailAlpha = antialising(sdfTrail) * TRAIL_OPACITY
+            * TRAIL_COLOR.a * spatialFade * timeFade;
+        newColor.rgb = mix(newColor.rgb, TRAIL_COLOR.rgb, trailAlpha);
 
         // punch hole
         newColor = mix(newColor, fragColor, step(sdfCurrentCursor, 0.));
