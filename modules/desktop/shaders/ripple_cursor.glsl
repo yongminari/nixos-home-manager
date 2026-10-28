@@ -2,7 +2,7 @@
 const float DURATION = 0.25;               // How long the ripple animates (seconds)
 const float MAX_RADIUS = 0.05;             // Max radius in normalized coords (0.5 = 1/4 screen height)
 const float RING_THICKNESS = 0.02;             // Ring width in normalized coords
-const float CURSOR_WIDTH_CHANGE_THRESHOLD = 0.5; // Triggers ripple if cursor width changes by this fraction
+const float CURSOR_SIZE_CHANGE_THRESHOLD = 0.5; // Triggers rectangle ripple if either dimension changes by this fraction
 const float CURSOR_MOVE_THRESHOLD = 1.0;   // Trigger a ripple on each single-cell move
 const float SOURCE_RIPPLE_THRESHOLD = 3.0; // Also contract a ripple at the source for longer moves
 vec4 COLOR = vec4(0.35, 0.36, 0.44, 1.0); // change to iCurrentCursorColor for your cursor's color
@@ -85,16 +85,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     vec2 centerCC = currentCursor.xy - (currentCursor.zw * offsetFactor);
     vec2 centerCP = previousCursor.xy - (previousCursor.zw * offsetFactor);
 
-    float cellWidth = max(currentCursor.z, previousCursor.z); // width of the 'block' cursor
-    
-    // check for significant width change
-    float widthChange = abs(currentCursor.z - previousCursor.z);
-    float widthThresholdNorm = cellWidth * CURSOR_WIDTH_CHANGE_THRESHOLD;
-    float isModeChange = step(widthThresholdNorm, widthChange);
+    // Detect block/bar/underline changes in either dimension.
+    vec2 cursorSize = max(max(iCurrentCursor.zw, iPreviousCursor.zw), vec2(1.0));
+    vec2 sizeChange = abs(iCurrentCursor.zw - iPreviousCursor.zw) / cursorSize;
+    float isModeChange = step(CURSOR_SIZE_CHANGE_THRESHOLD, max(sizeChange.x, sizeChange.y));
 
     // Use cursor origins so a shape change alone does not count as movement.
     // Cursor dimensions approximate cell size (exact for single-cell block cursors).
-    vec2 cellSize = max(max(iCurrentCursor.zw, iPreviousCursor.zw), vec2(1.0));
+    vec2 cellSize = cursorSize;
     vec2 movementInCells = (iCurrentCursor.xy - iPreviousCursor.xy) / cellSize;
     float movementDistance = length(movementInCells);
     float isMove = step(CURSOR_MOVE_THRESHOLD, movementDistance);
@@ -131,13 +129,23 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         float dist = distance(vu, centerCC);
         
         float sdfRing = abs(dist - rippleRadius) - RING_THICKNESS * 0.5;
+
+        // Size changes use only a rectangular ring, even when the cursor also moves.
+        if (isModeChange > 0.0) {
+            vec2 blockSize = normalize(cursorSize, 0.0);
+            vec2 aspect = blockSize / max(blockSize.x, blockSize.y);
+            vec2 halfSize = blockSize * 0.5 + aspect * rippleRadius;
+            vec2 q = abs(vu - centerCC) - halfSize;
+            float sdfRectangle = length(max(q, vec2(0.0))) + min(max(q.x, q.y), 0.0);
+            sdfRing = abs(sdfRectangle) - RING_THICKNESS * 0.5;
+        }
         
         // Antialias (1-pixel width in normalized coords)
         float antiAliasSize = normalize(vec2(BLUR, BLUR), 0.0).x;
         float ripple = (1.0 - smoothstep(-antiAliasSize, antiAliasSize, sdfRing)) * fade;
 
         // Longer moves pair an expanding destination ring with a contracting source ring.
-        if (isLargeMove > 0.0) {
+        if (isLargeMove > 0.0 && isModeChange == 0.0) {
             float sourceRadius = (1.0 - easedProgress) * MAX_RADIUS;
             float sourceDist = distance(vu, centerCP);
             float sourceSdfRing = abs(sourceDist - sourceRadius) - RING_THICKNESS * 0.5;
