@@ -4,7 +4,6 @@ vec3 sRGBToLinear(vec3 c) {
 }
 
 // --- CONFIGURATION ---
-vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a); // for custom color: vec4(0.2, 0.6, 1.0, 0.5); (wrap in sRGBToLinear for correct brightness)
 const float DURATION = 0.5; // seconds; keep the cursor trail visible longer
 const float TRAIL_DISTANCE_RATIO = 1.0; // initial length relative to cursor travel, independent of window size
 const float TRAIL_OPACITY = 0.35;
@@ -76,6 +75,8 @@ vec2 getRectangleCenter(vec4 rectangle) {
 
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord){
+    // Native cursor opacity is zero because cursor_glow.glsl draws the fading cursor.
+    vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), 1.0);
     #if !defined(WEB)
     fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
     #endif

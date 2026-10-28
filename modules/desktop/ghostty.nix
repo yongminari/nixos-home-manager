@@ -32,7 +32,10 @@
 
       # [Cursor]
       cursor-style = "block";
-      cursor-style-blink = true;
+      # 커서와 발광의 페이드는 cursor_glow.glsl에서 함께 처리합니다.
+      cursor-style-blink = false;
+      cursor-opacity = 0.0;
+      cursor-text = "cell-foreground";
 
       # [Cursor & Effect Shaders]
       # 화면 전체 오로라 위에 기존 물결·잔상과 커서 발광을 순서대로 합성합니다.
