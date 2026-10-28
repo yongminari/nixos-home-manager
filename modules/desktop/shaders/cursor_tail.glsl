@@ -5,7 +5,7 @@ vec3 sRGBToLinear(vec3 c) {
 
 // --- CONFIGURATION ---
 vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a); // for custom color: vec4(0.2, 0.6, 1.0, 0.5); (wrap in sRGBToLinear for correct brightness)
-const float DURATION = 0.18; // seconds; keep long jumps visible without lingering
+const float DURATION = 0.5; // seconds; keep the cursor trail visible longer
 const float TRAIL_DISTANCE_RATIO = 1.0; // initial length relative to cursor travel, independent of window size
 const float TRAIL_OPACITY = 0.35;
 const float THRESHOLD_MIN_DISTANCE = 0.5; // units of cursor width
