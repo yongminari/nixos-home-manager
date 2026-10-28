@@ -35,9 +35,9 @@
       cursor-style-blink = true;
 
       # [Cursor & Effect Shaders]
-      # 여러 셰이더를 체이닝하여 동시에 쓸 수 있지만, 화면 전체 셰이더와 커서 셰이더를 과도하게 조합하면 
-      # GPU 부하가 늘어나 출력이 씹히거나 느려질 수 있습니다.
+      # 화면 전체 오로라 위에 기존 물결·잔상과 커서 발광을 순서대로 합성합니다.
       custom-shader = [
+        "${config.home.homeDirectory}/.config/ghostty/shaders/ambient_aurora.glsl"
         # -- A. 화면 전체 및 테두리 이펙트 (원하는 것 하나만 주석 해제하여 사용 추천) --
         # "${config.home.homeDirectory}/.config/ghostty/shaders/aurora.glsl" # 오로라 테두리 네온 효과
         # "${config.home.homeDirectory}/.config/ghostty/shaders/bettercrt.glsl" # 깔끔한 레트로 CRT 필터
@@ -46,12 +46,12 @@
         # -- B. 커서 이펙트 (물결 및 이동 거리에 비례하는 잔상) --
         "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
         "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl"
+        "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_glow.glsl"
       ];
 
       # [Shader Animation Performance Tune]
-      # "always"로 두면 백그라운드에서도 GPU를 지속 점유하여 터미널 렌더링 지연(출력 리프레시 밀림) 및
-      # 종료 시 행(hang)을 유발하므로 비활성화(기본값: 창 포커스 시에만 렌더링)하는 것을 권장합니다.
-      # custom-shader-animation = "always";
+      # 포커스된 창에서는 입력이 없어도 오로라와 발광 애니메이션을 계속 재생합니다.
+      custom-shader-animation = true;
 
       # [Shell Integration]
       shell-integration = "detect";
@@ -118,6 +118,8 @@
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop";
 
   # [Ghostty Cursor & Effect Shaders 자동 배포]
+  home.file.".config/ghostty/shaders/ambient_aurora.glsl".source = ./shaders/ambient_aurora.glsl;
+  home.file.".config/ghostty/shaders/cursor_glow.glsl".source = ./shaders/cursor_glow.glsl;
   home.file.".config/ghostty/shaders/ripple_cursor.glsl".source = ./shaders/ripple_cursor.glsl;
   home.file.".config/ghostty/shaders/cursor_tail.glsl".source = ./shaders/cursor_tail.glsl;
   home.file.".config/ghostty/shaders/aurora.glsl".source = "${inputs.ghostty-aurora}/aurora.glsl";
