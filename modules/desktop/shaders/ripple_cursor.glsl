@@ -1,5 +1,5 @@
 // CONFIGURATION
-const float DURATION = 0.15;               // How long the ripple animates (seconds)
+const float DURATION = 0.25;               // How long the ripple animates (seconds)
 const float MAX_RADIUS = 0.05;             // Max radius in normalized coords (0.5 = 1/4 screen height)
 const float RING_THICKNESS = 0.02;             // Ring width in normalized coords
 const float CURSOR_WIDTH_CHANGE_THRESHOLD = 0.5; // Triggers ripple if cursor width changes by this fraction

@@ -5,9 +5,9 @@ vec3 sRGBToLinear(vec3 c) {
 
 // --- CONFIGURATION ---
 vec4 TRAIL_COLOR = vec4(sRGBToLinear(iCurrentCursorColor.rgb), iCurrentCursorColor.a); // for custom color: vec4(0.2, 0.6, 1.0, 0.5); (wrap in sRGBToLinear for correct brightness)
-const float DURATION = 0.09; // in seconds
+const float DURATION = 0.25; // in seconds
 const float MAX_TRAIL_LENGTH = 0.2;
-const float THRESHOLD_MIN_DISTANCE = 1.5; // min distance to show trail (units of cursor width)
+const float THRESHOLD_MIN_DISTANCE = 0.5; // min distance to show trail (units of cursor width)
 const float BLUR = 2.0; // blur size in pixels (for antialiasing)
 
 // --- CONSTANTS for easing functions ---
@@ -58,9 +58,10 @@ const float SPRING_DAMPING = 0.9;
 //     return x == 1.0 ? 1.0 : 1.0 - pow(2.0, -10.0 * x);
 // }
 
-// EaseOutCirc
-float ease(float x) {
-    return sqrt(1.0 - pow(x - 1.0, 2.0));
+// Constant acceleration from rest: the trailing edge covers x squared of its path.
+// Offset stays nonnegative, so the trail never overshoots the real cursor.
+float trailOffset(float x, float initialLength) {
+    return initialLength * (1.0 - x * x);
 }
 
 // // EaseOutBack
@@ -96,7 +97,7 @@ float getSdfRectangle(in vec2 p, in vec2 xy, in vec2 b)
 float seg(in vec2 p, in vec2 a, in vec2 b, inout float s, float d) {
     vec2 e = b - a;
     vec2 w = p - a;
-    vec2 proj = a + e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    vec2 proj = a + e * clamp(dot(w, e) / max(dot(e, e), 1e-12), 0.0, 1.0);
     float segd = dot(p - proj, p - proj);
     d = min(d, segd);
 
@@ -165,25 +166,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 	
      vec4 newColor = vec4(fragColor);
 	
-     float minDist = currentCursor.w * THRESHOLD_MIN_DISTANCE;
+     float minDist = currentCursor.z * THRESHOLD_MIN_DISTANCE;
      float progress = clamp((iTime - iTimeCursorChange) / DURATION, 0.0, 1.0);
-     if (lineLength > minDist) {
+     if (lineLength > minDist && progress < 1.0) {
          // ANIMATION logic
         
-        float head_eased = 0.0;
-        float tail_eased = 0.0;
-
-        float tail_delay_factor = MAX_TRAIL_LENGTH / lineLength;
-
-        float isLongMove = step(MAX_TRAIL_LENGTH, lineLength);
-
-        float head_eased_short = ease(progress);
-        float tail_eased_short = ease(smoothstep(tail_delay_factor, 1.0, progress));
-        float head_eased_long = 1.0;
-        float tail_eased_long = ease(progress);
-
-        head_eased = mix(head_eased_long, head_eased_short, isLongMove);
-        tail_eased = mix(tail_eased_long, tail_eased_short, isLongMove);
+        // Keep the front at the real cursor while the trailing edge accelerates toward it.
+        float head_eased = 1.0;
+        float initialLength = min(lineLength, MAX_TRAIL_LENGTH);
+        float tail_eased = 1.0 - trailOffset(progress, initialLength) / lineLength;
 
         // detect straight moves
         vec2 delta_abs = abs(centerCC - centerCP); 
@@ -198,7 +189,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         vec2 head_pos_tl = mix(previousCursor.xy, currentCursor.xy, head_eased);
         vec2 tail_pos_tl = mix(previousCursor.xy, currentCursor.xy, tail_eased);
 
-        float isTopRightLeading = determineIfTopRightIsLeading(currentCursor.xy, previousCursor.xy);
+        float isTopRightLeading = determineIfTopRightIsLeading(head_pos_tl, tail_pos_tl);
         float isBottomLeftLeading = 1.0 - isTopRightLeading;
         
         // v0, v1 : "front" of the trail (head)
