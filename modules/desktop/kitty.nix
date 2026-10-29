@@ -3,6 +3,8 @@
 {
   programs.kitty = {
     enable = true;
+    # Home Manager가 생성하는 셸 초기화에서도 막대 커서 전환을 비활성화합니다.
+    shellIntegration.mode = "no-rc no-cursor";
     font = {
       name = "Maple Mono NF";
       size = 12;
@@ -27,7 +29,6 @@
 
       # 유휴 커서는 Kitty가 그리며, 셸 통합이 블록을 막대 커서로 바꾸지 않게 합니다.
       cursor_shape = "block";
-      shell_integration = "enabled no-cursor";
 
       # 커서 깜빡임 애니메이션 (fade in/out 효과)
       cursor_blink_interval = "0.5 ease-in-out";

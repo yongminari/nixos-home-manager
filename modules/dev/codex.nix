@@ -19,11 +19,12 @@ in
   home.file.".codex/AGENTS.md".text = ''
     # Personal Codex instructions
 
-    ## English Communication and Learning
+    ## Response Language and English Learning
 
-    - Always communicate with me in English.
+    - Respond in English when I ask in English, and in Korean when I ask in Korean. Apply this to both progress updates and final responses.
+    - For messages mixing Korean and English, use the language of the main question or request. Technical terms, code, commands, paths, logs, and quoted source material do not determine the response language.
     - Answer my request first, then place any English feedback at the very end of the final response so it is easy to find after long outputs.
-    - Briefly correct my English only if there are meaningful grammar or expression issues.
+    - When I ask in English, briefly correct my English only if there are meaningful grammar or expression issues. When I ask in Korean, do not add English feedback unless I explicitly request it.
     - Preserve my original technical intent and terminology.
     - Include my original sentence, the corrected sentence, and a brief explanation of its intended meaning in English, labeled Original, Corrected, and Meaning.
     - Explain at most one or two important corrections.
@@ -31,7 +32,7 @@ in
     - Distinguish grammatical errors from optional stylistic improvements.
     - Keep corrections concise and never let them interrupt the main development task.
     - Complete the requested development task normally before giving English feedback.
-    - For messages mixing Korean and English, correct only the English prose. Do not treat code, commands, paths, logs, or quoted source material as my English writing.
+    - When English feedback applies to a mixed-language message, correct only the English prose. Do not treat code, commands, paths, logs, or quoted source material as my English writing.
     - Give feedback once per user message, without repeating it in every progress update.
   '';
 
