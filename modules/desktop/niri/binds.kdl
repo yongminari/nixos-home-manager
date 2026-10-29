@@ -3,7 +3,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // 실행
-    Mod+Return { spawn "ghostty"; }
+    Mod+Return { spawn "kitty"; }
     Mod+Space { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
     Mod+V { spawn "ghostty" "--class=com.mitchellh.ghostty.floating_shell" "-e" "sh" "-c" "cliphist list | fzf --prompt='📋 Clipboard History: ' --height=40% --layout=reverse --border --margin=1 | cliphist decode | wl-copy"; }
 

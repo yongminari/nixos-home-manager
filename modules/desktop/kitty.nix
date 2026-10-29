@@ -16,11 +16,18 @@
       
       # 윈도우 레이아웃
       window_padding_width = 8;
+
+      # Ghostty GLSL을 Slang으로 포팅한 배경·스플래터·커서 물결·잔상 효과.
+      custom_shaders = "ghostty-effects";
       
       # 커서 흔적 효과 (Cursor Trail)
-      cursor_trail = 3;
+      cursor_trail = 1;
       cursor_trail_decay = "0.2 0.7";
-      cursor_trail_start_threshold = 1;
+      cursor_trail_start_threshold = 0;
+
+      # 유휴 커서는 Kitty가 그리며, 셸 통합이 블록을 막대 커서로 바꾸지 않게 합니다.
+      cursor_shape = "block";
+      shell_integration = "enabled no-cursor";
 
       # 커서 깜빡임 애니메이션 (fade in/out 효과)
       cursor_blink_interval = "0.5 ease-in-out";
@@ -57,5 +64,10 @@
       map ctrl+shift+delete clear_terminal reset active
     '';
     themeFile = "ayu";
+  };
+
+  home.file.".config/kitty/shaders" = {
+    source = ./shaders/kitty;
+    recursive = true;
   };
 }

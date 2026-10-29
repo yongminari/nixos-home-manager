@@ -78,9 +78,9 @@ function zellij() {
 }
 
 # [Zellij Auto-start]
-# 로컬 Ghostty에서만 자동 실행합니다. ZELLIJ_AUTO_START=0으로 우회할 수 있습니다.
+# 로컬 Ghostty와 Kitty에서 자동 실행합니다. ZELLIJ_AUTO_START=0으로 우회할 수 있습니다.
 # exec를 사용하지 않아 Zellij 종료 후 일반 셸로 돌아옵니다.
-if [[ $- == *i* && "$TERM" == "xterm-ghostty" && -z "$ZELLIJ" && -z "$TMUX" && "${ZELLIJ_AUTO_START:-1}" != "0" ]] \
+if [[ $- == *i* && ( "$TERM" == "xterm-ghostty" || "$TERM" == "xterm-kitty" ) && -z "$ZELLIJ" && -z "$TMUX" && "${ZELLIJ_AUTO_START:-1}" != "0" ]] \
   && ! is_ssh && ! is_vscode && command -v zellij &>/dev/null; then
   parent_proc=$(ps -p $PPID -o comm= 2>/dev/null)
   if [[ "$parent_proc" != "zellij" ]]; then

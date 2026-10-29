@@ -23,6 +23,8 @@
 
       # [Window & Visuals]
       window-decoration = "none";
+      window-padding-x = 12;
+      window-padding-y = 12;
       theme = "Ayu";
       background-opacity = 1.0;
 

@@ -1,0 +1,16 @@
+# Keep the background moving while focused, as in the Ghostty configuration.
+startgroup
+    animation_start os-window-focus-in | user-activity
+    animation_stop os-window-focus-out
+    animation_step 16
+    shaders hexglitch-background
+endgroup
+
+# Subscribing to cursor-trail-move replaces Kitty's built-in trail rendering.
+# Cursor geometry is unavailable after cursor-trail-stop; never retain stale positions.
+startgroup
+    animation_start cursor-trail-move
+    animation_stop cursor-trail-stop | os-window-focus-out
+    animation_step 16
+    shaders cursor-splatter ripple-cursor cursor-tail
+endgroup
