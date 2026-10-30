@@ -18,7 +18,7 @@ from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
 
 
-DURATION_US = 1_200_000
+DURATION_US = 1_000_000
 EFFECTS = ("splatter", "fire", "aurora")
 SHADER_DIR = Path(__file__).with_name("monitor-effects")
 

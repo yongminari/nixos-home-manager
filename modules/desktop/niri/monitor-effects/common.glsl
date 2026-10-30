@@ -30,11 +30,13 @@ float fbm(vec2 p) {
 
 // GTK composites premultiplied alpha. Keep the rest of the desktop transparent.
 vec4 light(vec3 color, float alpha, vec2 uv) {
-    float envelope = smoothstep(0.0, 0.16, progress)
-                   * (1.0 - smoothstep(0.45, 1.0, progress));
+    // One second total: fade in for 0.5 s, then fade out for 0.5 s.
+    float envelope = smoothstep(0.0, 0.5, progress)
+                   * (1.0 - smoothstep(0.5, 1.0, progress));
     float edge = smoothstep(0.0, 0.025, uv.x)
                * (1.0 - smoothstep(0.975, 1.0, uv.x))
                * (1.0 - smoothstep(0.97, 1.0, uv.y));
-    alpha = clamp(alpha * envelope * edge, 0.0, 0.88);
+    // Clamp before fading so overlapping light never clips the fade into a plateau.
+    alpha = clamp(alpha * edge, 0.0, 1.0) * 0.60 * envelope;
     return vec4(color * alpha, alpha);
 }
