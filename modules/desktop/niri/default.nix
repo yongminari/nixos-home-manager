@@ -1,69 +1,11 @@
-{ config, pkgs, lib, inputs, osConfig, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
-  hostname = osConfig.networking.hostName or "";
-  
-  # 호스트별 메타데이터 및 설정
-  hostRegistry = {
-    galaxy-book = {
-      scale = "1.0";
-      deviceType = "laptop";
-      outputs = null;
-      extraConfig = "";
-    };
-    ai-x1-pro = {
-      scale = "1.0";
-      deviceType = "desktop";
-      outputs = {
-        left = "Hexium Ltd. 40LGD5KGM 0000000000000";
-        right = "Samsung Electric Company SAMSUNG Unknown";
-      };
-      extraConfig = ''
-        output "Hexium Ltd. 40LGD5KGM 0000000000000" {
-            mode "5120x2160@120"
-            scale 1.25
-            position x=0 y=0
-        }
-        output "Samsung Electric Company SAMSUNG Unknown" {
-            off
-            mode "3840x2160@60"
-            scale 1.25
-            position x=4096 y=0
-        }
-      '';
-    };
-    nxtp-office-desktop = {
-      scale = "1.0";
-      deviceType = "desktop";
-      outputs = {
-        left = "DP-2";
-        right = "DP-3";
-      };
-      # 모니터 좌우 배치 변경: DP-2(왼쪽), DP-3(오른쪽)
-      # 깜빡임 이슈 해결을 위해 주사율을 120Hz로 하향 조정
-      extraConfig = ''
-        output "DP-2" {
-            mode "2560x1440@120"
-            position x=0 y=0
-        }
-        output "DP-3" {
-            mode "2560x1440@120"
-            position x=2560 y=0
-        }
-      '';
-    };
-  };
-
-  currentHost = hostRegistry.${hostname} or {
-    scale = "1.0";
-    deviceType = "desktop";
-    outputs = null;
-    extraConfig = "";
-  };
+  currentHost = config.local.desktop;
   baseConfig = builtins.readFile ./config.kdl;
   workspaceAnimation = "spring damping-ratio=0.5 stiffness=450 epsilon=0.0001";
 
-  isLaptop = currentHost.deviceType == "laptop";
+  isLaptop = currentHost.isLaptop;
 
   outputSelector = side:
     if currentHost.outputs == null then ""
@@ -157,6 +99,15 @@ in
   ];
 
   wayland.systemd.target = "graphical-session.target";
+
+  # 쓰기 가능한 상태 파일은 최초 활성화 때만 생성하고 이후 토글 상태를 보존합니다.
+  home.activation.initializeNiriTouchpad = lib.mkIf isLaptop (
+    lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      run ${pkgs.bash}/bin/bash ${../../../scripts/initialize-niri-touchpad.sh} \
+        ${lib.escapeShellArg "${config.xdg.configHome}/niri/touchpad-control.kdl"} \
+        ${./touchpad-default.kdl}
+    ''
+  );
 
   # 터치패드 토글 스크립트 (랩탑일 경우에만 생성)
   xdg.configFile."niri/toggle-touchpad.sh" = lib.mkIf isLaptop {

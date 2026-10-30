@@ -20,7 +20,8 @@ const float CURSOR_SPLAT_SIZE = 0.18;  // Cursor splatter base size
 const float CURSOR_BLOOM = 0.18;        // Extra size when typing
 const float CURSOR_IDLE_ALPHA = 0.15;  // Splatter visibility when idle
 const float CURSOR_ACTIVE_ALPHA = 0.8; // Splatter visibility when typing
-const float HEAT_FADE = 3.0;           // Seconds for typing heat to fade
+const float ACTIVITY_HOLD = 1.0;       // Hold after the last cursor movement
+const float ACTIVITY_FADE = 1.0;       // Then fade out smoothly
 
 // Rotation matrix to avoid box-aligned fractal artifacts
 const mat3 M = mat3(
@@ -115,7 +116,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     // --- Typing activity ---
     float timeSinceType = iTime - iTimeCursorChange;
-    float heat = (1.0 - smoothstep(0.05, HEAT_FADE, max(timeSinceType, 0.0)));
+    float activity = 1.0 - smoothstep(ACTIVITY_HOLD, ACTIVITY_HOLD + ACTIVITY_FADE, max(timeSinceType, 0.0));
+    if (activity <= 0.0) return;
+    float heat = 1.0; // Keep the bloom size stable; fade its opacity instead.
 
     // --- Cursor positions (pixel space) ---
     vec2 curPos = cursorCenter(iCurrentCursor);
@@ -168,9 +171,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // Slightly boost when actively typing
     visibility *= 1.0 + heat * 0.3;
 
-    // Match cursor_glow.glsl: 1.6-second fade, 0.2-second hold, 8% minimum.
-    float elapsed = max(iTime - max(iTimeCursorChange, iTimeFocus) - 0.2, 0.0);
-    float fade = mix(0.08, 1.0, 0.5 + 0.5 * cos(elapsed * 6.28318530718 / 1.6));
-    visibility *= fade;
+    // One second at full intensity, followed by a one-second eased fade.
+    visibility *= activity;
     fragColor = vec4(mix(terminal.rgb, paint, paintA * visibility * terminal.a), terminal.a);
 }

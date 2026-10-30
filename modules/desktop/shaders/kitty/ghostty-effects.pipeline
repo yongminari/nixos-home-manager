@@ -1,3 +1,5 @@
+textures a persist
+
 # Keep the background moving while focused, as in the Ghostty configuration.
 startgroup
     animation_start os-window-focus-in | user-activity
@@ -12,5 +14,32 @@ startgroup
     animation_start cursor-trail-move
     animation_stop cursor-trail-stop | os-window-focus-out
     animation_step 16
-    shaders cursor-splatter ripple-cursor cursor-tail
+    shaders ripple-cursor cursor-tail
+endgroup
+
+# Independent paint lifetime. Cache cursor geometry, never a rendered frame.
+# Repeat the events so every pass restarts its
+# timer on each move (attached groups in Kitty 0.49 do not resync on restart).
+
+startgroup
+    animation_start cursor-trail-move
+    animation_stop 2000 | os-window-focus-out | window-focus-out | tab-change
+    animation_step 16
+    output_texture a
+    shaders splatter-state
+endgroup
+
+startgroup
+    animation_start cursor-trail-move
+    animation_stop 2000 | os-window-focus-out | window-focus-out | tab-change
+    animation_step 16
+    output_texture persist
+    shaders splatter-store
+endgroup
+
+startgroup
+    animation_start cursor-trail-move
+    animation_stop 2000 | os-window-focus-out | window-focus-out | tab-change
+    animation_step 16
+    shaders cursor-splatter
 endgroup

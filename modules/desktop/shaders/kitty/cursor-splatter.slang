@@ -1,6 +1,6 @@
 #language slang 2026
 // Port of ../cursor_splatter.glsl. Preserve the Ghostty effect's math and tuning.
-// Kitty colors are already linear RGB. Cursor effects run only while trail data is valid.
+// Animate from cached cursor geometry, independently of blink and trail expiry.
 import kitty_custom_shader_types;
 
 static float2 iResolution;
@@ -38,7 +38,7 @@ static const float CURSOR_SPLAT_SIZE = 0.18;  // Cursor splatter base size
 static const float CURSOR_BLOOM = 0.18;        // Extra size when typing
 static const float CURSOR_IDLE_ALPHA = 0.15;  // Splatter visibility when idle
 static const float CURSOR_ACTIVE_ALPHA = 0.8; // Splatter visibility when typing
-static const float HEAT_FADE = 3.0;           // Seconds for typing heat to fade
+// The pipeline timer applies a 1-second hold and 1-second fade.
 
 // Rotation matrix to avoid box-aligned fractal artifacts
 static const float3x3 M = float3x3(
@@ -133,7 +133,7 @@ void mainImage(out float4 fragColor, in float2 fragCoord) {
 
     // --- Typing activity ---
     float timeSinceType = iTime - iTimeCursorChange;
-    float heat = (1.0 - smoothstep(0.05, HEAT_FADE, max(timeSinceType, 0.0)));
+    float heat = 1.0; // Keep the bloom size stable; fade its opacity instead.
 
     // --- Cursor positions (pixel space) ---
     float2 curPos = cursorCenter(iCurrentCursor);
@@ -186,10 +186,8 @@ void mainImage(out float4 fragColor, in float2 fragCoord) {
     // Slightly boost when actively typing
     visibility *= 1.0 + heat * 0.3;
 
-    // Match cursor_glow.glsl: 1.6-second fade, 0.2-second hold, 8% minimum.
-    float elapsed = max(iTime - max(iTimeCursorChange, iTimeFocus) - 0.2, 0.0);
-    float fade = lerp(0.08, 1.0, 0.5 + 0.5 * cos(elapsed * 6.28318530718 / 1.6));
-    visibility *= fade;
+    // Keep the procedural flow running; fade only its contribution to the frame.
+    visibility *= 1.0 - smoothstep(1.0, 2.0, timeSinceType);
     fragColor = float4(lerp(terminal.rgb, paint, paintA * visibility * terminal.a), terminal.a);
 }
 
@@ -197,19 +195,23 @@ public float4 fragment_main(float4 color, KittyTextures t, KittyCustomShaderData
     iResolution = float2(d.viewport_size_pixels);
     iTime = d.timestamp;
     inputColor = color;
-    // No stale geometry: Kitty clears these fields after its cursor trail stops.
-    if (d.cursor_trail_state == 0.0 || d.cursor_color.a <= 0.0) return color;
-    float4 e = d.cursor_trail_edge;
-    float4 p = d.cursor_trail_prev_edge;
-    if (e.y <= e.x || e.z <= e.w || p.y <= p.x || p.z <= p.w) return color;
+    // Only positions are retained. Time, drift, palette and fractal detail
+    // continue to advance on every frame, including throughout the fade.
+    float3 first = t.a.Sample(float2(1.0 / 6.0, 0.5)).rgb;
+    float3 second = t.a.Sample(float2(0.5, 0.5)).rgb;
+    float3 third = t.a.Sample(float2(5.0 / 6.0, 0.5)).rgb;
+    float4 e = float4(first, second.x);
+    float4 p = float4(second.yz, third.xy);
+    if (e.y <= e.x || e.z <= e.w) return color;
     iCurrentCursor = float4(e.x, e.z, e.y - e.x, e.z - e.w) * iResolution.xyxy;
     iPreviousCursor = float4(p.x, p.z, p.y - p.x, p.z - p.w) * iResolution.xyxy;
     iCurrentCursorColor = d.cursor_color;
-    iTimeCursorChange = d.cursor_trail_change_time;
+    // This timer survives trail expiry and restarts on every cursor movement.
+    iTimeCursorChange = iTime - 2.0 * t.animation_progress;
     iTimeFocus = iTimeCursorChange;
     iFocus = 1;
     iCursorVisible = 1;
     float4 result;
     mainImage(result, t.pos * iResolution);
-    return float4(result.rgb, color.a);
+    return result;
 }

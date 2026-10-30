@@ -1,16 +1,9 @@
-{ config, pkgs, inputs, osConfig ? {}, ... }:
+{ config, pkgs, ... }:
 
 {
   home.packages = with pkgs; [
-    (if (osConfig.networking.hostName or "") == "ai-x1-pro" then
-      (google-chrome.override {
-        commandLineArgs = [
-          "--ozone-platform=wayland"
-          "--enable-features=WaylandWindowDecorations"
-        ];
-      })
-     else
-      google-chrome)
+    (if config.local.desktop.chromeArgs == [] then google-chrome else
+      google-chrome.override { commandLineArgs = config.local.desktop.chromeArgs; })
     obsidian
     geeqie
     libreoffice

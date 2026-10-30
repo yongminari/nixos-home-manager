@@ -1,7 +1,7 @@
-{ config, lib, osConfig, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
-  isLaptop = (osConfig.networking.hostName or "") == "galaxy-book";
+  isLaptop = config.local.desktop.isLaptop;
 
   niri-focus-saver = pkgs.writeShellApplication {
     name = "niri-focus-saver";

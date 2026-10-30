@@ -65,7 +65,7 @@
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
               home-manager.extraSpecialArgs = { inherit inputs username; };
-              home-manager.users.${username} = import ./home.nix;
+              home-manager.users.${username}.imports = [ ./home.nix (./hosts + "/${hostName}/home.nix") ];
             })
           ];
         };
@@ -76,9 +76,14 @@
             inherit inputs username;
             osConfig = self.nixosConfigurations.${hostName}.config;
           };
-          modules = [ ./home.nix ];
+          modules = [ ./home.nix (./hosts + "/${hostName}/home.nix") ];
         };
     in {
+      checks.${system} = import ./checks {
+        inherit self hostNames username;
+        pkgs = self.nixosConfigurations.nxtp-office-desktop.pkgs;
+      };
+
       # NixOS 시스템 설정 (sudo nixos-rebuild switch --flake .#galaxy-book)
       nixosConfigurations = builtins.listToAttrs (map (hostName: {
         name = hostName;

@@ -23,6 +23,8 @@
     ./modules/dev/neovim.nix
     ./modules/dev/containers.nix
 
+    ./modules/desktop/host-options.nix
+
     # [3. desktop] UI 및 데스크탑 앱
     ./modules/desktop/niri
     ./modules/desktop/hypridle.nix

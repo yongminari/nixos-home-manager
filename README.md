@@ -38,14 +38,15 @@ nixos-home-manager/
 ├── flake.nix              # NixOS와 Home Manager 통합 엔트리포인트
 ├── home.nix               # 모든 호스트의 공통 사용자 설정
 ├── hosts/
-│   └── <hostname>/        # 호스트별 시스템 및 하드웨어 설정
+│   └── <hostname>/        # 시스템·하드웨어 설정 및 home.nix의 화면·노트북 설정
 ├── modules/
 │   ├── core/              # 공통 NixOS, 셸, 테마, 컨테이너 기반 설정
 │   ├── desktop/           # Niri, 터미널, 데스크톱 앱
 │   ├── dev/               # 개발 도구와 Neovim
 │   ├── hardware/          # 장치별 하드웨어 모듈
 │   └── services/          # Noctalia, WireGuard, 호스트별 서비스
-├── scripts/               # 사용자 도구 업데이트 스크립트
+├── checks/                # 생성된 설정·초기화·셸 스크립트 검증
+├── scripts/               # 사용자 도구 업데이트 및 초기화 스크립트
 └── docs/                  # 운영 및 장치별 참고 문서
 ```
 
@@ -70,8 +71,8 @@ cd ~/nixos-home-manager
     ```bash
     cp /etc/nixos/hardware-configuration.nix ./hosts/<new-hostname>/
     ```
-3.  **설정 파일 생성:** 기존 호스트의 `configuration.nix`를 복사한 뒤, `networking.hostName`을 새 이름으로 수정합니다.
-4.  **Flake 등록:** `flake.nix`의 `nixosConfigurations` 섹션에 새 호스트 정의를 추가합니다.
+3.  **설정 파일 생성:** 기존 호스트의 `configuration.nix`와 `home.nix`를 복사한 뒤 호스트 이름, 하드웨어, 화면 배치, `local.desktop.isLaptop`을 수정합니다. 회사 CA는 필요한 경우에만 `modules/core/company-ca.nix`를 임포트합니다.
+4.  **Flake 등록:** `flake.nix`의 `hostNames` 목록에 새 호스트 이름을 추가합니다.
 
 ### 3. 시스템 적용 (첫 빌드 시)
 Flake를 사용하여 시스템 엔진과 모든 유저 설정을 한 번에 적용합니다.
@@ -82,6 +83,13 @@ sudo nixos-rebuild switch --flake .#<hostname>
 ```
 
 ---
+## 검증 및 복구
+
+- `nix flake check --no-update-lock-file`: 세 호스트의 NixOS·독립 Home Manager 평가, 생성된 Niri 설정, 터치패드 초기화·상태 보존, 셸 스크립트를 검사합니다.
+- `nh home build .` / `nh os build .`: 현재 호스트의 실제 빌드를 검증합니다. 설정을 적용하지 않습니다.
+- 사용자 변경과 시스템 변경의 적용·롤백 범위: [docs/nh.md](docs/nh.md)
+- 새 설치에서의 비밀키·데이터 복구: [docs/secrets-guide.md](docs/secrets-guide.md)
+
 ## 🛠️ Management Guide
 
 이 프로젝트는 더 나은 사용자 경험을 위해 **`nh` (Nix Helper)**를 사용합니다. 
@@ -131,11 +139,11 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 | **`Super + N`** | Noctalia 알림 및 컨트롤 센터 토글 |
 | **`Super + Shift + W`** | Wallhaven 무작위 배경화면 가져오기 (`fetch-wallhaven`) |
 | **`Super + Q`** | 현재 창 닫기 |
-| **`Super + Shift + R`** | 설정 리로드 |
 | **`Super + 1~9`** | 워크스페이스 이동 |
 | **`Super + Ctrl + H`** | 왼쪽 모니터 활성화/비활성화 |
 | **`Super + Ctrl + L`** | 오른쪽 모니터 활성화/비활성화 |
-| **`Super + Shift + S`** | 화면 캡처 및 편집 (**Swappy**) |
+| **`Shift + Print`** | 영역 캡처 및 편집 (**Swappy**) |
+| **`Print`** | 전체 화면 캡처 및 편집 (**Swappy**) |
 
 ### 🛠️ Git TUI (GitUI)
 - **`Ctrl + h / l`**: 메인 탭 전환 (Home_env style)

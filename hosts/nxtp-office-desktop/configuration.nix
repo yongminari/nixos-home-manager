@@ -4,6 +4,8 @@
   imports = [ 
     ./hardware-configuration.nix 
     ../../modules/core/nixos-base.nix
+    ../../modules/desktop/nixos-desktop.nix
+    ../../modules/core/company-ca.nix
     ../../modules/core/sops.nix
   ];
 

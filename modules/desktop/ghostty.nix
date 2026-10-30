@@ -29,7 +29,7 @@
       background-opacity = 1.0;
 
       # [Process & Shutdown Tune]
-      # 마지막 창이 닫힐 때 확실하게 프로세스를 종료하여 종료 시 systemd hang(2분 대기) 현상을 방지합니다.
+      # 마지막 창이 닫히면 Ghostty 본체를 종료합니다. 자식 scope 종료 정책은 아래에서 별도로 관리합니다.
       quit-after-last-window-closed = true;
 
       # [Cursor]
@@ -118,6 +118,15 @@
       ];
     };
   };
+
+  # Ghostty의 터미널별 transient scope에만 적용합니다 (systemd의 하이픈 prefix drop-in).
+  # 대화형 Zsh는 SIGTERM을 무시하므로 연결 종료를 알리는 SIGHUP도 전달합니다.
+  # 종료 로그에서 Zellij/Patina가 남은 사례가 있어 최종 대기는 이 scope에만 10초로 제한합니다.
+  xdg.configFile."systemd/user/app-ghostty-surface-.scope.d/50-shutdown.conf".text = ''
+    [Scope]
+    SendSIGHUP=yes
+    TimeoutStopSec=10s
+  '';
 
   # [GNOME 런처 인식 문제 해결]
   home.file.".local/share/applications/com.mitchellh.ghostty.desktop".source = 

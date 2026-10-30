@@ -107,7 +107,10 @@ let
         ${pkgs.coreutils}/bin/mv "$DOWNLOAD_FILE" "$FILEPATH"
 
         # 검증을 통과한 새 이미지만 현재 실행 중인 Noctalia에 적용합니다.
-        ${config.programs.noctalia.package}/bin/noctalia msg wallpaper-set "$FILEPATH"
+        if ! ${config.programs.noctalia.package}/bin/noctalia msg wallpaper-set "$FILEPATH"; then
+          echo "Failed to apply wallpaper: $FILEPATH" >&2
+          exit 1
+        fi
         echo "Applied $FILEPATH (topic: $TOPIC, mean luminance: $MEAN_LUMINANCE)"
         exit 0
       done < <(${pkgs.jq}/bin/jq -r '.data[]? | [.id, .path] | @tsv' <<< "$RESPONSE")
@@ -128,7 +131,9 @@ in
   systemd.user.services.fetch-wallhaven = {
     Unit = {
       Description = "Automatically fetch a new wallpaper from Wallhaven";
-      After = [ "graphical-session.target" ];
+      After = [ "noctalia.service" ];
+      Requisite = [ "niri-session.target" "noctalia.service" ];
+      PartOf = [ "niri-session.target" ];
     };
     Service = {
       ExecStart = "${fetchWallhaven}/bin/fetch-wallhaven";
@@ -139,13 +144,14 @@ in
   systemd.user.timers.fetch-wallhaven = {
     Unit = {
       Description = "Timer to automatically fetch a new wallpaper from Wallhaven";
+      PartOf = [ "niri-session.target" ];
     };
     Timer = {
       OnActiveSec = "5sec";       # 타이머 활성화 후 첫 배경화면을 즉시 검색
       OnUnitActiveSec = "30min"; # 이후 30분마다 실행
     };
     Install = {
-      WantedBy = [ "timers.target" ];
+      WantedBy = [ "niri-session.target" ];
     };
   };
 

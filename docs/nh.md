@@ -59,3 +59,26 @@ nh home switch ~/nixos-home-manager
 ```bash
 nh os build ~/nixos-home-manager#ai-x1-pro
 ```
+
+## 적용 경로와 롤백 범위
+
+- `ns`: 현재 호스트의 시스템과 통합 Home Manager를 함께 적용합니다. GPU, 방화벽, 시스템 서비스, SOPS 비밀값, OS 환경 변수 변경은 이 경로를 사용합니다.
+- `hms`: 현재 호스트의 독립 Home Manager만 적용합니다. 사용자 설정만 바꿀 때 사용합니다. `osConfig`는 저장소의 선언을 읽으며, 그 OS 설정이 이미 실행 중이라는 보장은 없습니다.
+- 두 경로는 같은 공통·호스트별 Home Manager 모듈을 사용하지만 프로필과 세대는 별도로 관리됩니다. 통합 경로는 `useUserPackages = true`로 시스템 사용자 패키지를 설치합니다.
+- 통합 경로의 기존 파일 백업 확장자는 `backup`입니다. 독립 경로에서 충돌 파일을 백업하려면 `nh home switch . -b backup`을 사용하고, 같은 이름의 이전 백업이 있는지 확인합니다.
+- 시스템 롤백은 이후 독립 `hms`로 적용한 파일과 사용자 데이터를 함께 되돌리는 기능이 아닙니다. 복구할 저장소 리비전을 선택한 뒤 필요한 적용 경로를 다시 실행합니다.
+- `stateVersion`은 패키지 버전 번호가 아닙니다. 업데이트나 리팩토링을 이유로 올리지 않습니다.
+
+## 변경 검증
+
+```bash
+git add .
+git diff --cached --check
+nix flake check --no-update-lock-file
+nh home build .
+nh os build .
+```
+
+검사가 끝나면 변경 범위에 맞게 `hms` 또는 `ns`로 적용합니다. Niri 설정은 자동으로 다시 읽으며, 입력기·세션 환경 변경은 로그아웃/로그인이 필요할 수 있습니다. 다른 호스트의 실제 적용은 해당 호스트에서 실행합니다.
+
+노트북의 `touchpad-control.kdl`은 최초 Home Manager 활성화 시 쓰기 가능한 파일로 생성합니다. 이후 활성화는 기존 켜짐/꺼짐 상태를 보존합니다.
