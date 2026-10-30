@@ -43,3 +43,11 @@ startgroup
     animation_step 16
     shaders cursor-splatter
 endgroup
+
+# Shift the fully composited frame; never feed shifted pixels into splatter state.
+startgroup
+    animation_start cursor-trail-move
+    animation_stop 180 | cursor-trail-stop | os-window-focus-out | window-focus-out | tab-change
+    animation_step 16
+    shaders screen-shake
+endgroup

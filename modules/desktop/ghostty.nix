@@ -53,6 +53,8 @@
         "${config.home.homeDirectory}/.config/ghostty/shaders/ripple_cursor.glsl"
         "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl"
         "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_glow.glsl"
+        # 최종 합성 화면에 짧고 약한 타이핑 흔들림을 적용합니다.
+        "${config.home.homeDirectory}/.config/ghostty/shaders/screen_shake.glsl"
       ];
 
       # [Shader Animation Performance Tune]
@@ -139,6 +141,7 @@
   home.file.".config/ghostty/shaders/cursor_glow.glsl".source = ./shaders/cursor_glow.glsl;
   home.file.".config/ghostty/shaders/ripple_cursor.glsl".source = ./shaders/ripple_cursor.glsl;
   home.file.".config/ghostty/shaders/cursor_tail.glsl".source = ./shaders/cursor_tail.glsl;
+  home.file.".config/ghostty/shaders/screen_shake.glsl".source = ./shaders/screen_shake.glsl;
   home.file.".config/ghostty/shaders/aurora.glsl".source = "${inputs.ghostty-aurora}/aurora.glsl";
   home.file.".config/ghostty/shaders/bettercrt.glsl".source = "${inputs.ghostty-shaders}/bettercrt.glsl";
   home.file.".config/ghostty/shaders/crt.glsl".source = "${inputs.ghostty-shaders}/crt.glsl";

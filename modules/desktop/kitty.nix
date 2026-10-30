@@ -19,7 +19,7 @@
       # 윈도우 레이아웃
       window_padding_width = 8;
 
-      # Ghostty GLSL을 Slang으로 포팅한 배경·스플래터·커서 물결·잔상 효과.
+      # Ghostty GLSL을 Slang으로 포팅한 배경·스플래터·커서 물결·잔상·화면 흔들림 효과.
       custom_shaders = "ghostty-effects";
       
       # 커서 흔적 효과 (Cursor Trail)
