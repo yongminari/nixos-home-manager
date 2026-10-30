@@ -22,6 +22,7 @@ static const float RING_THICKNESS = 0.02;             // Ring width in normalize
 static const float CURSOR_SIZE_CHANGE_THRESHOLD = 0.5; // Triggers rectangle ripple if either dimension changes by this fraction
 static const float CURSOR_MOVE_THRESHOLD = 1.0;   // Trigger a ripple on each single-cell move
 static const float SOURCE_RIPPLE_THRESHOLD = 3.0; // Also contract a ripple at the source for longer moves
+static const float MOVEMENT_EPSILON = 0.001;     // Cell units: tolerate UV-to-pixel rounding at exact cell boundaries
 static const float4 COLOR = float4(0.35, 0.36, 0.44, 1.0); // change to iCurrentCursorColor for your cursor's color
 static const float BLUR = 3.0;                    // Blur level in pixels
 static const float ANIMATION_START_OFFSET = 0.0;        // Start the ripple slightly progressed (0.0 - 1.0)
@@ -110,8 +111,9 @@ void mainImage(out float4 fragColor, in float2 fragCoord){
     float2 cellSize = cursorSize;
     float2 movementInCells = (iCurrentCursor.xy - iPreviousCursor.xy) / cellSize;
     float movementDistance = length(movementInCells);
-    float isMove = step(CURSOR_MOVE_THRESHOLD, movementDistance);
-    float isLargeMove = step(SOURCE_RIPPLE_THRESHOLD, movementDistance);
+    // Kitty's normalized edges can reconstruct a one-cell move as slightly less than 1.0.
+    float isMove = step(CURSOR_MOVE_THRESHOLD - MOVEMENT_EPSILON, movementDistance);
+    float isLargeMove = step(SOURCE_RIPPLE_THRESHOLD - MOVEMENT_EPSILON, movementDistance);
 
 
     // ANIMATION
