@@ -9,10 +9,12 @@ binds {
 
     // 창 관리
     Mod+Q { close-window; }
+    Mod+O hotkey-overlay-title="Overview 열기/닫기" { toggle-overview; }
     Mod+Shift+E { spawn "wlogout"; }
 
     // 플로팅 관리
     Mod+W { toggle-window-floating; }
+    Mod+Shift+Space hotkey-overlay-title="플로팅/타일링 포커스 전환" { switch-focus-between-floating-and-tiling; }
     Mod+Alt+Space { focus-floating; }
     Mod+Alt+Shift+Space { focus-tiling; }
 
