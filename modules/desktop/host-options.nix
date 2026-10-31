@@ -6,7 +6,7 @@
     windowAnimation = lib.mkOption {
       type = lib.types.enum [ "smoke" "genie" ];
       default = "smoke";
-      description = "Niri window opening and closing shader.";
+      description = "Niri window closing shader (windows open with the smoke shader).";
     };
     isLaptop = lib.mkOption {
       type = lib.types.bool;

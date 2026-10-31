@@ -145,7 +145,7 @@ in
 
     ${baseConfig}
 
-    // 호스트별 창 열기·닫기 셰이더를 사용합니다.
+    // 창은 진한 연기 효과로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
     animations {
       // 창 열기·닫기를 제외한 모든 애니메이션의 속도감을 통일합니다.
       workspace-switch {
@@ -175,10 +175,17 @@ in
       recent-windows-close {
         ${workspaceAnimation}
       }
+      window-open {
+        duration-ms 1000
+        curve "linear"
+        custom-shader r#"
+          ${builtins.readFile ./smoke-open.glsl}
+        "#
+      }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
           ${if currentHost.windowAnimation == "genie" then ''
-            duration-ms ${if action == "open" then "650" else "750"}
+            duration-ms 750
             curve "linear"
           '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
           custom-shader r#"
@@ -186,12 +193,12 @@ in
               ${builtins.readFile ./genie.glsl}
               vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {
                   return genie_color(coords_geo, size_geo,
-                      ${if action == "open" then "1.0 - niri_clamped_progress" else "niri_clamped_progress"}, 1.0);
+                      niri_clamped_progress, 1.0);
               }
             '' else builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
           "#
         }
-      '') (if currentHost.adaptiveGenieClose then [ "open" ] else [ "open" "close" ])}
+      '') (if currentHost.adaptiveGenieClose then [ ] else [ "close" ])}
     }
     ${lib.optionalString currentHost.adaptiveGenieClose ''
     include "genie-close.kdl"
