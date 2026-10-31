@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   programs.kitty = {
@@ -20,7 +20,7 @@
       window_padding_width = 8;
 
       # Ghostty GLSL을 Slang으로 포팅한 배경·스플래터·커서 물결·잔상·화면 흔들림 효과.
-      custom_shaders = "ghostty-effects";
+      custom_shaders = if config.local.desktop.textChangeEffect then "content-response" else "ghostty-effects";
       
       # 커서 흔적 효과 (Cursor Trail)
       cursor_trail = 1;
@@ -70,5 +70,44 @@
   home.file.".config/kitty/shaders" = {
     source = ./shaders/kitty;
     recursive = true;
+  };
+
+  # Kitty 0.49의 persist 버퍼는 파이프라인 간에도 공유됩니다.
+  # 원본 전경 기록과 커서 좌표를 한 버퍼에 보관해 기존 효과와 충돌하지 않게 합니다.
+  home.file.".config/kitty/shaders/content-response.pipeline" = lib.mkIf config.local.desktop.textChangeEffect {
+    text = ''
+      textures a b persist
+
+      startgroup
+          animation_step 0
+          output_texture a
+          shaders content-detect
+      endgroup
+      startgroup
+          animation_step 0
+          output_texture b
+          shaders content-state
+      endgroup
+      startgroup
+          animation_step 0
+          output_texture persist
+          shaders content-store
+      endgroup
+      startgroup
+          animation_step 0
+          shaders content-soften
+      endgroup
+    '' + lib.replaceStrings
+      [ "textures a persist" "shaders splatter-state" ''
+        startgroup
+            animation_start cursor-trail-move
+            animation_stop 2000 | os-window-focus-out | window-focus-out | tab-change
+            animation_step 16
+            output_texture persist
+            shaders splatter-store
+        endgroup
+      '' ]
+      [ "" "shaders content-cursor-state" "" ]
+      (builtins.readFile ./shaders/kitty/ghostty-effects.pipeline);
   };
 }
