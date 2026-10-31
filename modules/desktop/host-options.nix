@@ -2,9 +2,6 @@
 
 {
   options.local.desktop = {
-    textChangeEffect = (lib.mkEnableOption "Brief Kitty foreground softening after large content changes") // {
-      default = true;
-    };
     adaptiveGenieClose = lib.mkEnableOption "Predict the next focus direction for the Niri close shortcut";
     windowAnimation = lib.mkOption {
       type = lib.types.enum [ "smoke" "genie" ];
