@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, lib, username, ... }:
 
 {
   imports = [
@@ -32,7 +32,7 @@
     shell = pkgs.zsh; 
   };
 
-  # nh 4.4.2 invokes sudo env USER=... for these local activation steps.
+  # nh 4.4.2 invokes sudo env USER=... for local activation and clean all.
   # Keep this in sync with NH_PRESERVE_ENV in system-utils.nix. Do not allow
   # arbitrary env arguments: they could execute unrelated commands as root.
   # Applying user-built NixOS configurations still grants full system control.
@@ -47,6 +47,12 @@
         }
         {
           command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+nix build --no-link --profile /nix/var/nix/profiles/system /nix/store/[a-z0-9]{32}-nixos-system-[^/ ]+$";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          # clean all re-executes this exact nh binary as root; allow its flags,
+          # but not other nh subcommands or arbitrary executables.
+          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+${lib.escapeRegex "${pkgs.nh-unwrapped}/bin/nh"} clean all( .*)?$";
           options = [ "NOPASSWD" ];
         }
       ];
