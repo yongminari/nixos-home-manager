@@ -32,6 +32,27 @@
     shell = pkgs.zsh; 
   };
 
+  # nh 4.4.2 invokes sudo env USER=... for these local activation steps.
+  # Keep this in sync with NH_PRESERVE_ENV in system-utils.nix. Do not allow
+  # arbitrary env arguments: they could execute unrelated commands as root.
+  # Applying user-built NixOS configurations still grants full system control.
+  security.sudo.extraRules = [
+    {
+      users = [ username ];
+      runAs = "root";
+      commands = [
+        {
+          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+/nix/store/[a-z0-9]{32}-nixos-system-[^/ ]+/bin/switch-to-configuration (test|boot)$";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+nix build --no-link --profile /nix/var/nix/profiles/system /nix/store/[a-z0-9]{32}-nixos-system-[^/ ]+$";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   # --- [4. System Services & Utilities] ---
   hardware.enableAllFirmware = true; 
   hardware.enableRedistributableFirmware = true; 

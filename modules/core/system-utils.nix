@@ -106,6 +106,18 @@ in {
 
   programs.nh = {
     enable = true;
+    # Enforce this at execution time, including in existing shell sessions.
+    # The narrow sudo rules in nixos-base.nix depend on these env arguments.
+    package = pkgs.symlinkJoin {
+      name = "nh-local";
+      paths = [ pkgs.nh ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/nh \
+          --set NH_PRESERVE_ENV 0 \
+          --prefix PATH : ${lib.makeBinPath [ pkgs.coreutils ]}
+      '';
+    };
     flake = "${config.home.homeDirectory}/nixos-home-manager";
     clean.enable = false; # nix.gc 설정을 명시적으로 사용하므로 비활성화
     # clean.extraArgs = "--keep-since 4d --keep 3";
