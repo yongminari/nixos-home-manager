@@ -47,6 +47,9 @@ in {
     # --- [4. Cellular & Modem] ---
     networking.modemmanager.enable = true;
 
+    # Keep MBIM/QMI proxies alive while ModemManager disconnects the modem.
+    systemd.services.ModemManager.serviceConfig.KillMode = "mixed";
+
     networking.networkmanager.ensureProfiles.profiles = {
       "KT LTE" = {
         connection = {
