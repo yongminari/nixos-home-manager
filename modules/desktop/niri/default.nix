@@ -90,7 +90,7 @@ let
   };
 in
 {
-  imports = [ ./monitor-flash.nix ];
+  imports = [ ./monitor-flash.nix ./workspace-warp.nix ./adaptive-close.nix ];
 
   home.packages = with pkgs; [
     niri
@@ -138,7 +138,7 @@ in
 
     ${baseConfig}
 
-    // liixini/shaders의 smoke 효과를 원본 설정과 함께 사용합니다.
+    // 호스트별 창 열기·닫기 셰이더를 사용합니다.
     animations {
       // 창 열기·닫기를 제외한 모든 애니메이션의 속도감을 통일합니다.
       workspace-switch {
@@ -170,13 +170,25 @@ in
       }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
-          ${builtins.readFile "${inputs.niri-shaders}/smoke/config"}
+          ${if currentHost.windowAnimation == "genie" then ''
+            duration-ms ${if action == "open" then "650" else "750"}
+            curve "linear"
+          '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
           custom-shader r#"
-            ${builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
+            ${if currentHost.windowAnimation == "genie" then ''
+              ${builtins.readFile ./genie.glsl}
+              vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {
+                  return genie_color(coords_geo, size_geo,
+                      ${if action == "open" then "1.0 - niri_clamped_progress" else "niri_clamped_progress"}, 1.0);
+              }
+            '' else builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
           "#
         }
-      '') [ "open" "close" ]}
+      '') (if currentHost.adaptiveGenieClose then [ "open" ] else [ "open" "close" ])}
     }
+    ${lib.optionalString currentHost.adaptiveGenieClose ''
+    include "genie-close.kdl"
+    ''}
     
     input {
         keyboard {
@@ -192,5 +204,8 @@ in
     ''}
   '';
 
-  xdg.configFile."niri/binds.kdl".source = ./binds.kdl;
+  xdg.configFile."niri/binds.kdl".text = lib.replaceStrings
+    [ "Mod+Q { close-window; }" ]
+    [ (if currentHost.adaptiveGenieClose then ''Mod+Q { spawn "niri-adaptive-close"; }'' else "Mod+Q { close-window; }") ]
+    (builtins.readFile ./binds.kdl);
 }

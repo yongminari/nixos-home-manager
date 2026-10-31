@@ -2,6 +2,12 @@
 
 {
   options.local.desktop = {
+    adaptiveGenieClose = lib.mkEnableOption "Predict the next focus direction for the Niri close shortcut";
+    windowAnimation = lib.mkOption {
+      type = lib.types.enum [ "smoke" "genie" ];
+      default = "smoke";
+      description = "Niri window opening and closing shader.";
+    };
     isLaptop = lib.mkOption {
       type = lib.types.bool;
       description = "Whether this host uses laptop input and idle behavior.";
