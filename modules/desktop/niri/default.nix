@@ -92,6 +92,13 @@ in
 {
   imports = [ ./monitor-flash.nix ./workspace-warp.nix ./adaptive-close.nix ];
 
+  # 모든 장비에 공통 적용하며 호스트 설정에서 개별적으로 재정의할 수 있습니다.
+  local.desktop = {
+    workspaceWarp.enable = lib.mkDefault true;
+    windowAnimation = lib.mkDefault "genie";
+    adaptiveGenieClose = lib.mkDefault true;
+  };
+
   home.packages = with pkgs; [
     niri
     niri-output-toggle
