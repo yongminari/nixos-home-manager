@@ -110,10 +110,14 @@ in {
     # The narrow sudo rules in nixos-base.nix depend on these env arguments.
     package = pkgs.symlinkJoin {
       name = "nh-local";
+      # Home Manager uses the package version to select NH_FLAKE over FLAKE.
+      version = pkgs.nh.version;
       paths = [ pkgs.nh ];
       nativeBuildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
         wrapProgram $out/bin/nh \
+          --unset FLAKE \
+          --set-default NH_FLAKE ${lib.escapeShellArg config.programs.nh.flake} \
           --set NH_PRESERVE_ENV 0 \
           --prefix PATH : ${lib.makeBinPath [ pkgs.coreutils ]}
       '';
