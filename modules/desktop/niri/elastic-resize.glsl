@@ -86,8 +86,8 @@ vec4 resize_blur(sampler2D tex, mat3 geo_to_tex, vec3 geo, vec2 radius_geo, floa
 
 vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
     float p = niri_clamped_progress;
-    // 목표에 처음 도달한 뒤에는 휘어짐을 끝내고 창 전체가 함께 튕깁니다.
-    // 반동 중의 실제 크기로 변형량을 다시 계산하면 일부만 목표에 붙잡힙니다.
+    // 축소의 중앙 선행량은 목표에서 값·1차·2차 미분이 모두 0이 됩니다.
+    // 부분 변형에서 전체 스프링으로 위치·속도·가속도를 이어갑니다.
     if (p >= 1.0)
         return texture2D(niri_tex_next, (niri_geo_to_tex_next * coords_curr_geo).st);
 
@@ -103,16 +103,19 @@ vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
     // 확대: 중앙이 전체 변화의 35%까지 먼저 늘어나는 동안 모서리는 기다립니다.
     // 이후 모서리의 진행 속도가 중앙보다 빨라지며 95% 지점에서 따라잡습니다.
     float following = p * smoothstep(0.35, 0.95, p);
-    // 축소: 중앙은 전체 변화의 22% 지점까지 먼저 목표 크기에 도달합니다.
-    // 나머지는 Niri의 가속·감속 곡선을 따라 뒤늦게 합류합니다.
-    float pressing = max(p, smoothstep(0.0, 0.22, p));
+    // 축소: 중앙이 앞서되 목표에 먼저 멈추지 않고 끝부분과 함께 도착합니다.
+    // p + 3*p*(1-p)^3은 단조 증가하며 목표에서 기본 스프링의 속도로 합류합니다.
+    float remaining = 1.0 - p;
+    float center_lead = 3.0 * p * remaining * remaining * remaining;
+    float pressing = p + center_lead;
     vec2 local_progress = mix(vec2(pressing), vec2(following), growing);
     vec2 local_size = prev_size + delta * local_progress;
     // 크기 차이에서 윤곽을 계산하여 중앙이 목표보다 더 눌렸다가 펴지지 않게 합니다.
     vec2 bend = max(1.0 - local_size / size, vec2(0.0));
-    // 단일 축은 큰 폭의 축소도 중앙이 목표 크기까지 먼저 도달하게 합니다.
-    // 양 축이 함께 휘는 경우에만 역변환 안정성을 위한 제한을 강화합니다.
-    // 일괄 45% 제한은 최대→최소 전환 중 중앙이 멈칫하는 원인이 됩니다.
+    // 축소는 실제 렌더 크기에서 선행량만 빼서 픽셀 반올림에 의한 끝점 오차를 피합니다.
+    bend = mix(max(-delta * center_lead / size, vec2(0.0)), bend, growing);
+    // 단일 축의 중앙 선행 변형은 유지하고, 양 축이 함께 휘는 경우에만
+    // 역변환 안정성을 위한 제한을 강화합니다.
     float coupled = smoothstep(0.0, 0.2, min(bend.x, bend.y));
     bend = min(bend, vec2(mix(0.9, 0.45, coupled)));
     vec2 point = coords_curr_geo.xy - 0.5;

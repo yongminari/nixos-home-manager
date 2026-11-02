@@ -158,7 +158,7 @@ in
         ${workspaceAnimation}
       }
       window-resize {
-        // 중앙 우선 변형에 진단 전의 속도와 스프링 반동을 결합합니다.
+        // 중앙 우선 변형을 전체 스프링 반동으로 연결합니다.
         spring damping-ratio=0.5 stiffness=180 epsilon=0.0001
         custom-shader r#"
           ${builtins.readFile ./elastic-resize.glsl}
