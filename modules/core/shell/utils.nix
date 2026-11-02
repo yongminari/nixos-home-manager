@@ -34,6 +34,20 @@
   # Starship 프롬프트 (모든 쉘 통합)
   programs.starship = {
     enable = true;
+    # init embeds the first starship found in PATH, even when invoked by store path.
+    # ns removes hms's ~/.nix-profile package when useUserPackages is enabled.
+    package = pkgs.symlinkJoin {
+      name = "starship-stable-init";
+      version = pkgs.starship.version;
+      paths = [ pkgs.starship ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/starship \
+          --prefix PATH : ${lib.makeBinPath [ pkgs.starship ]}
+      '';
+      meta.mainProgram = "starship";
+      passthru = pkgs.starship.passthru;
+    };
     enableBashIntegration = true;
     enableZshIntegration = true;
     enableNushellIntegration = true;

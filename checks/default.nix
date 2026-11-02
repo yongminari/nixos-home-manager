@@ -8,6 +8,8 @@ let
       integrated = self.nixosConfigurations.${hostName}.config.home-manager.users.${username};
       configText = home.config.xdg.configFile."niri/config.kdl".text;
       configFile = pkgs.writeText "niri-${hostName}.kdl" configText;
+      genieClose = pkgs.writeText "genie-close-default.kdl"
+        (import ../modules/desktop/niri/genie-close-template.nix "1.0");
     in
     # Force standalone Home Manager evaluation as well as NixOS evaluation.
     builtins.seq home.activationPackage.drvPath (
@@ -18,6 +20,9 @@ let
         mkdir -p config
         cp ${configFile} config/config.kdl
         cp ${home.config.xdg.configFile."niri/binds.kdl".source} config/binds.kdl
+        ${lib.optionalString home.config.local.desktop.adaptiveGenieClose ''
+          cp ${genieClose} config/genie-close.kdl
+        ''}
         ${lib.optionalString home.config.local.desktop.isLaptop ''
           bash ${../scripts/initialize-niri-touchpad.sh} \
             config/touchpad-control.kdl ${../modules/desktop/niri/touchpad-default.kdl}
@@ -31,6 +36,15 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  starship-profile-switch = pkgs.runCommand "starship-profile-switch" {
+    nativeBuildInputs = [ pkgs.bash pkgs.zsh pkgs.nushell ];
+    starshipPackage = self.homeConfigurations."${username}@nxtp-office-desktop".config.programs.starship.package;
+    originalStarship = pkgs.starship;
+  } ''
+    bash ${./starship-profile-switch.sh}
+    touch "$out"
+  '';
+
   shell-scripts = pkgs.runCommand "shell-scripts" {
     nativeBuildInputs = [ pkgs.shellcheck ];
   } ''
