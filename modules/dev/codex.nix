@@ -25,6 +25,7 @@ in
     - For messages mixing Korean and English, use the language of the main question or request. Technical terms, code, commands, paths, logs, and quoted source material do not determine the response language.
     - Answer my request first, then place any English feedback at the very end of the final response so it is easy to find after long outputs.
     - When I ask in English, briefly correct my English only if there are meaningful grammar or expression issues. When I ask in Korean, do not add English feedback unless I explicitly request it.
+    - When English feedback applies but no meaningful corrections are needed, write "No correction needed." at the very end of the final response. In that case, omit the Original, Corrected, and Meaning labels.
     - Preserve my original technical intent and terminology.
     - Include my original sentence, the corrected sentence, and a brief explanation of its intended meaning in English, labeled Original, Corrected, and Meaning.
     - Explain at most one or two important corrections.
