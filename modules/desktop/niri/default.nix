@@ -147,7 +147,7 @@ in
 
     // 창은 진한 연기 효과로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
     animations {
-      // 창 열기·닫기를 제외한 모든 애니메이션의 속도감을 통일합니다.
+      // 이동 애니메이션의 속도감을 통일합니다.
       workspace-switch {
         ${workspaceAnimation}
       }
@@ -158,7 +158,11 @@ in
         ${workspaceAnimation}
       }
       window-resize {
-        ${workspaceAnimation}
+        // 중앙 우선 변형에 진단 전의 속도와 스프링 반동을 결합합니다.
+        spring damping-ratio=0.5 stiffness=180 epsilon=0.0001
+        custom-shader r#"
+          ${builtins.readFile ./elastic-resize.glsl}
+        "#
       }
       config-notification-open-close {
         ${workspaceAnimation}

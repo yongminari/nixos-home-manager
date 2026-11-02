@@ -2,12 +2,13 @@
 window-rule {
     geometry-corner-radius 28
     clip-to-geometry true
+    // resize 셰이더가 비운 부분 뒤에 사각형 배경이 남지 않도록 합니다.
+    draw-border-with-background false
 }
 
 window-rule {
     match is-active=false
     opacity 0.75
-    draw-border-with-background true
 
     border {
         on
