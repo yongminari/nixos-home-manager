@@ -11,8 +11,8 @@ let
     HISTORY_FILE="$STATE_DIR/seen-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
     API_URL="https://wallhaven.cc/api/v1/search?purity=100&colors=000000&sorting=random"
-    # 장원영은 Wallhaven에서 검색 결과가 있는 wonyoung 키워드를 사용합니다.
-    SEARCH_TOPICS=(nature night sky kpop karina wonyoung)
+    # 특정 그룹이나 멤버 이름 없이 K-pop 여성 아티스트 전체를 검색합니다.
+    SEARCH_TOPICS=(nature night sky kpop)
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
@@ -42,7 +42,7 @@ let
 
     for _ in $(${pkgs.coreutils}/bin/seq 1 "$MAX_ATTEMPTS"); do
       TOPIC=$(printf '%s\n' "''${SEARCH_TOPICS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
-      # 풍경은 사진 태그를 필수로, 연예인은 People 카테고리로 제한합니다.
+      # 풍경은 사진 태그를 필수로, 걸그룹/여성 아이돌은 여성 태그를 필수로 제한합니다.
       case "$TOPIC" in
         nature|night|sky)
           CATEGORIES=100
@@ -50,7 +50,7 @@ let
           ;;
         *)
           CATEGORIES=001
-          QUERY="+$TOPIC"
+          QUERY="+$TOPIC +women -men -boy -boys"
           ;;
       esac
       QUERY="$QUERY -anime -illustration -\"digital art\" -\"AI art\""
