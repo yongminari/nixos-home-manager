@@ -213,6 +213,13 @@ in
         };
       };
 
+      # 잠금 직전의 화면을 캡처하고 블러와 틴트로 내용을 가립니다.
+      lockscreen = {
+        blurred_desktop = true;
+        blur_intensity = 0.2;
+        tint_intensity = 0.3;
+      };
+
       # 오버뷰 배경화면에도 아주 약한 블러만 적용합니다.
       backdrop = {
         enabled = true;
