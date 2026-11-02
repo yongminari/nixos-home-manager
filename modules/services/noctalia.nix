@@ -132,8 +132,8 @@ in
     Unit = {
       Description = "Automatically fetch a new wallpaper from Wallhaven";
       After = [ "noctalia.service" ];
-      Requisite = [ "niri-session.target" "noctalia.service" ];
-      PartOf = [ "niri-session.target" ];
+      Requisite = [ "graphical-session.target" "noctalia.service" ];
+      PartOf = [ "graphical-session.target" ];
     };
     Service = {
       ExecStart = "${fetchWallhaven}/bin/fetch-wallhaven";
@@ -144,14 +144,14 @@ in
   systemd.user.timers.fetch-wallhaven = {
     Unit = {
       Description = "Timer to automatically fetch a new wallpaper from Wallhaven";
-      PartOf = [ "niri-session.target" ];
+      PartOf = [ "graphical-session.target" ];
     };
     Timer = {
       OnActiveSec = "5sec";       # 타이머 활성화 후 첫 배경화면을 즉시 검색
       OnUnitActiveSec = "30min"; # 이후 30분마다 실행
     };
     Install = {
-      WantedBy = [ "niri-session.target" ];
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 
