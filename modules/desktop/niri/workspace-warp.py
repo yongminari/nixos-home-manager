@@ -1,19 +1,19 @@
-"""워크스페이스·활성 열 전환 시 Noctalia 배경을 짧게 휘었다가 복원합니다."""
+"""워크스페이스·활성 열 전환 시 배경을 휘고, 모니터 포커스 전환 시 파문을 표시합니다."""
 
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 
 import cairo
-from PIL import Image, ImageOps
 from monitor_flash import (
-    EffectArea, MonitorFlash, VERTEX_SHADER, Gdk, Gio, GLib, Gtk, LayerShell,
-    GL, compileProgram, compileShader,
+    ImageEffectArea, FocusTracker, MonitorFlash, Gdk, GLib, Gtk, LayerShell,
 )
 
 DURATION_US = 950_000
+RIPPLE_DURATION_US = 1_400_000
 
 
 class WorkspaceTracker:
@@ -92,82 +92,30 @@ class WorkspaceTracker:
         return output, (0, -1) if current["idx"] > previous["idx"] else (0, 1)
 
 
-class WarpArea(EffectArea):
-    def __init__(self, wallpaper, direction, on_error):
-        super().__init__("warp", on_error)
-        self.wallpaper = wallpaper
-        self.direction = direction
-        self.texture = None
-
-    def setup(self, _area):
-        self.make_current()
-        if self.get_error() is not None:
-            self.on_error(self.get_error())
-            return
-        try:
-            self.vao = GL.glGenVertexArrays(1)
-            GL.glBindVertexArray(self.vao)
-            self.program = compileProgram(
-                compileShader(VERTEX_SHADER, GL.GL_VERTEX_SHADER),
-                compileShader(Path(__file__).with_name("workspace-warp.glsl").read_text(),
-                              GL.GL_FRAGMENT_SHADER),
-            )
-            self.resolution_location = GL.glGetUniformLocation(self.program, "resolution")
-            self.progress_location = GL.glGetUniformLocation(self.program, "progress")
-            with Image.open(self.wallpaper) as source:
-                picture = ImageOps.exif_transpose(source).convert("RGBA")
-                limit = min(4096, int(GL.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE)))
-                picture.thumbnail((limit, limit))
-                width, height = picture.size
-                pixels = picture.tobytes()
-            self.texture = GL.glGenTextures(1)
-            GL.glActiveTexture(GL.GL_TEXTURE0)
-            GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
-            for setting in (GL.GL_TEXTURE_MIN_FILTER, GL.GL_TEXTURE_MAG_FILTER):
-                GL.glTexParameteri(GL.GL_TEXTURE_2D, setting, GL.GL_LINEAR)
-            for setting in (GL.GL_TEXTURE_WRAP_S, GL.GL_TEXTURE_WRAP_T):
-                GL.glTexParameteri(GL.GL_TEXTURE_2D, setting, GL.GL_CLAMP_TO_EDGE)
-            GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height,
-                            0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixels)
-            GL.glUseProgram(self.program)
-            GL.glUniform1i(GL.glGetUniformLocation(self.program, "wallpaper"), 0)
-            GL.glUniform2f(GL.glGetUniformLocation(self.program, "image_size"), width, height)
-            GL.glUniform2f(GL.glGetUniformLocation(self.program, "direction"), *self.direction)
-            GL.glUseProgram(0)
-        except Exception as error:
-            self.on_error(error)
-        finally:
-            GL.glBindVertexArray(0)
-
-    def render_effect(self, area, context):
-        if self.texture is not None:
-            GL.glActiveTexture(GL.GL_TEXTURE0)
-            GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
-        return super().render_effect(area, context)
-
-    def cleanup(self, area):
-        self.make_current()
-        if self.get_error() is None and self.texture is not None:
-            GL.glDeleteTextures([self.texture])
-        self.texture = None
-        super().cleanup(area)
-
-
 class WorkspaceWarp(MonitorFlash):
-    def __init__(self, preview=None, direction=(0, -1)):
-        super().__init__("warp", preview=preview)
+    def __init__(self, preview=None, direction=(0, -1), effect="warp"):
+        super().__init__(effect, preview=preview)
         self.set_application_id("local.niri.WorkspaceWarp")
         self.tracker = WorkspaceTracker()
+        self.focus_tracker = FocusTracker()
+        self.warp_enabled = os.environ.get("NIRI_WORKSPACE_WARP", "1") == "1"
+        self.ripple_enabled = os.environ.get("NIRI_WALLPAPER_RIPPLE", "1") == "1"
         self.direction = direction
 
     def handle_event(self, event):
+        output = self.focus_tracker.update(event)
         transition = self.tracker.update(event)
-        if transition is not None:
+        if output is not None and self.ripple_enabled and not self.tracker.overview:
+            self.flash(output, "ripple")
+        elif transition is not None and self.warp_enabled:
             output, self.direction = transition
-            self.flash(output)
+            self.flash(output, "warp")
         return GLib.SOURCE_REMOVE
 
     def flash(self, output, effect=None):
+        effect = effect or self.effect
+        duration_us = RIPPLE_DURATION_US if effect == "ripple" else DURATION_US
+        self.duration_us = duration_us
         monitors = Gdk.Display.get_default().get_monitors()
         monitor = next((m for m in monitors if m.get_connector() == output), None)
         if monitor is None:
@@ -198,7 +146,9 @@ class WorkspaceWarp(MonitorFlash):
                      LayerShell.Edge.LEFT, LayerShell.Edge.RIGHT):
             LayerShell.set_anchor(window, edge, True)
         window.connect("realize", lambda w: w.get_surface().set_input_region(cairo.Region()))
-        area = WarpArea(wallpaper, self.direction, self.render_failed)
+        shader = "wallpaper-ripple.glsl" if effect == "ripple" else "workspace-warp.glsl"
+        area = ImageEffectArea(wallpaper, Path(__file__).with_name(shader),
+                               self.render_failed, self.direction)
         window.set_child(area)
         state = {"start": None}
 
@@ -206,7 +156,7 @@ class WorkspaceWarp(MonitorFlash):
             now = clock.get_frame_time()
             if state["start"] is None:
                 state["start"] = now
-            progress = (now - state["start"]) / DURATION_US
+            progress = (now - state["start"]) / duration_us
             if progress >= 1:
                 window.destroy()
                 if self.window is window:
@@ -223,6 +173,8 @@ class WorkspaceWarp(MonitorFlash):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preview", action="store_true", help="현재 모니터에서 한 번 재생")
+    parser.add_argument("--effect", choices=("warp", "ripple"), default="warp",
+                        help="미리 볼 배경 효과")
     parser.add_argument("--direction", choices=("up", "down", "left", "right"), default="up",
                         help="배경이 끌려가는 방향")
     args = parser.parse_args()
@@ -231,6 +183,6 @@ if __name__ == "__main__":
         output = json.loads(subprocess.check_output(
             ["niri", "msg", "--json", "focused-output"], text=True))["name"]
     directions = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
-    app = WorkspaceWarp(output, directions[args.direction])
+    app = WorkspaceWarp(output, directions[args.direction], args.effect)
     status = app.run([sys.argv[0]])
     sys.exit(1 if app.failed else status)

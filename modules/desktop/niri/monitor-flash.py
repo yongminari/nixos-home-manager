@@ -1,5 +1,6 @@
-"""Niri 모니터 전환 효과. --demo로 세 효과를 비교할 수 있습니다."""
+"""Niri 모니터 전환 효과. --demo로 효과를 비교할 수 있습니다."""
 
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -16,10 +17,11 @@ gi.require_version("Gtk4LayerShell", "1.0")
 from gi.repository import Gdk, Gio, GLib, Gtk, Gtk4LayerShell as LayerShell
 from OpenGL import GL
 from OpenGL.GL.shaders import compileProgram, compileShader
+from PIL import Image, ImageOps
 
 
 DURATION_US = 1_000_000
-EFFECTS = ("splatter", "fire", "aurora")
+EFFECTS = ("screen-ripple", "splatter", "fire", "aurora")
 SHADER_DIR = Path(__file__).with_name("monitor-effects")
 
 VERTEX_SHADER = """#version 300 es
@@ -101,6 +103,69 @@ class EffectArea(Gtk.GLArea):
         return True
 
 
+class ImageEffectArea(EffectArea):
+    def __init__(self, picture, shader, on_error, direction=(0, 0), texture_limit=4096):
+        super().__init__("image", on_error)
+        self.picture = picture
+        self.shader = shader
+        self.texture_limit = texture_limit
+        self.direction = direction
+        self.texture = None
+
+    def setup(self, _area):
+        self.make_current()
+        if self.get_error() is not None:
+            self.on_error(self.get_error())
+            return
+        try:
+            self.vao = GL.glGenVertexArrays(1)
+            GL.glBindVertexArray(self.vao)
+            self.program = compileProgram(
+                compileShader(VERTEX_SHADER, GL.GL_VERTEX_SHADER),
+                compileShader(self.shader.read_text(),
+                              GL.GL_FRAGMENT_SHADER),
+            )
+            self.resolution_location = GL.glGetUniformLocation(self.program, "resolution")
+            self.progress_location = GL.glGetUniformLocation(self.program, "progress")
+            with Image.open(self.picture) as source:
+                picture = ImageOps.exif_transpose(source).convert("RGBA")
+                limit = min(self.texture_limit, int(GL.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE)))
+                picture.thumbnail((limit, limit))
+                width, height = picture.size
+                pixels = picture.tobytes()
+            self.texture = GL.glGenTextures(1)
+            GL.glActiveTexture(GL.GL_TEXTURE0)
+            GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+            for setting in (GL.GL_TEXTURE_MIN_FILTER, GL.GL_TEXTURE_MAG_FILTER):
+                GL.glTexParameteri(GL.GL_TEXTURE_2D, setting, GL.GL_LINEAR)
+            for setting in (GL.GL_TEXTURE_WRAP_S, GL.GL_TEXTURE_WRAP_T):
+                GL.glTexParameteri(GL.GL_TEXTURE_2D, setting, GL.GL_CLAMP_TO_EDGE)
+            GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height,
+                            0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixels)
+            GL.glUseProgram(self.program)
+            GL.glUniform1i(GL.glGetUniformLocation(self.program, "wallpaper"), 0)
+            GL.glUniform2f(GL.glGetUniformLocation(self.program, "image_size"), width, height)
+            GL.glUniform2f(GL.glGetUniformLocation(self.program, "direction"), *self.direction)
+            GL.glUseProgram(0)
+        except Exception as error:
+            self.on_error(error)
+        finally:
+            GL.glBindVertexArray(0)
+
+    def render_effect(self, area, context):
+        if self.texture is not None:
+            GL.glActiveTexture(GL.GL_TEXTURE0)
+            GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
+        return super().render_effect(area, context)
+
+    def cleanup(self, area):
+        self.make_current()
+        if self.get_error() is None and self.texture is not None:
+            GL.glDeleteTextures([self.texture])
+        self.texture = None
+        super().cleanup(area)
+
+
 class FocusTracker:
     """초기 상태는 기억만 하고 실제 출력 변경에만 반응합니다."""
 
@@ -125,6 +190,8 @@ class FocusTracker:
 
 
 class MonitorFlash(Gtk.Application):
+    duration_us = DURATION_US
+
     def __init__(self, effect, preview=None, demo=False):
         super().__init__(application_id="local.niri.MonitorFlash", flags=Gio.ApplicationFlags.NON_UNIQUE)
         self.tracker = FocusTracker()
@@ -134,6 +201,7 @@ class MonitorFlash(Gtk.Application):
         self.preview = preview
         self.effect = effect
         self.demo = demo
+        self.capture_sequence = 0
         self.connect("activate", self.activate_flash)
         self.connect("shutdown", self.stop_reader)
 
@@ -160,7 +228,9 @@ class MonitorFlash(Gtk.Application):
         else:
             print(f"Preview: {effect}", flush=True)
             self.flash(self.preview, effect)
-            GLib.timeout_add(DURATION_US // 1000 + 650, self.next_preview)
+            # Capture is asynchronous; its preview timer starts after it arrives.
+            if effect != "screen-ripple":
+                GLib.timeout_add(self.duration_us // 1000 + 650, self.next_preview)
         return GLib.SOURCE_REMOVE
 
     def render_failed(self, error):
@@ -184,6 +254,7 @@ class MonitorFlash(Gtk.Application):
         return GLib.SOURCE_REMOVE
 
     def stop_reader(self, _app):
+        self.capture_sequence += 1
         if self.window is not None:
             self.window.destroy()
             self.window = None
@@ -198,6 +269,53 @@ class MonitorFlash(Gtk.Application):
         return GLib.SOURCE_REMOVE
 
     def flash(self, output, effect=None):
+        effect = effect or self.effect
+        self.capture_sequence += 1
+        sequence = self.capture_sequence
+        if self.window is not None:
+            self.window.destroy()
+            self.window = None
+        self.duration_us = 1_400_000 if effect == "screen-ripple" else DURATION_US
+        if effect == "screen-ripple":
+            # Let the compositor remove our old overlay before taking a new image.
+            GLib.timeout_add(50, self.capture_screen, output, sequence)
+        else:
+            self.show_effect(output, effect)
+
+    def capture_screen(self, output, sequence):
+        if sequence != self.capture_sequence:
+            return GLib.SOURCE_REMOVE
+
+        def capture():
+            try:
+                # PPM avoids PNG compression latency. No file or cursor is captured.
+                picture = subprocess.check_output(
+                    ["grim", "-t", "ppm", "-o", output, "-"],
+                    stderr=subprocess.PIPE, timeout=2,
+                )
+                GLib.idle_add(self.capture_ready, output, sequence, picture, None)
+            except (OSError, subprocess.SubprocessError) as error:
+                GLib.idle_add(self.capture_ready, output, sequence, None, str(error))
+
+        threading.Thread(target=capture, daemon=True).start()
+        return GLib.SOURCE_REMOVE
+
+    def capture_ready(self, output, sequence, picture, error):
+        # A newer focus change wins even if an older capture finishes last.
+        if sequence != self.capture_sequence:
+            return GLib.SOURCE_REMOVE
+        if error is not None:
+            if self.preview is not None:
+                self.render_failed(error)
+            else:
+                print(f"monitor-flash: skipping screen capture: {error}", file=sys.stderr)
+            return GLib.SOURCE_REMOVE
+        self.show_effect(output, "screen-ripple", BytesIO(picture))
+        if self.preview is not None:
+            GLib.timeout_add(self.duration_us // 1000 + 650, self.next_preview)
+        return GLib.SOURCE_REMOVE
+
+    def show_effect(self, output, effect, picture=None):
         monitors = Gdk.Display.get_default().get_monitors()
         monitor = next(
             (m for i in range(monitors.get_n_items())
@@ -225,15 +343,20 @@ class MonitorFlash(Gtk.Application):
             LayerShell.set_anchor(window, edge, True)
         # 입력 영역을 비워 뒤쪽 창으로 마우스 입력이 그대로 전달되게 합니다.
         window.connect("realize", lambda w: w.get_surface().set_input_region(cairo.Region()))
-        area = EffectArea(effect or self.effect, self.render_failed)
+        if effect == "screen-ripple":
+            area = ImageEffectArea(picture, Path(__file__).with_name("wallpaper-ripple.glsl"),
+                                   self.render_failed, texture_limit=16384)
+        else:
+            area = EffectArea(effect, self.render_failed)
         window.set_child(area)
         state = {"start": None}
+        duration_us = self.duration_us
 
         def tick(_area, clock):
             now = clock.get_frame_time()
             if state["start"] is None:
                 state["start"] = now
-            progress = (now - state["start"]) / DURATION_US
+            progress = (now - state["start"]) / duration_us
             if progress >= 1:
                 window.destroy()
                 if self.window is window:
@@ -253,11 +376,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--effect", choices=EFFECTS,
-                        default=os.environ.get("NIRI_MONITOR_EFFECT", "splatter"))
+                        default=os.environ.get("NIRI_MONITOR_EFFECT", "screen-ripple"))
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--preview", nargs="?", const="", metavar="OUTPUT",
                       help="효과를 한 번 표시 (출력 생략 시 현재 모니터)")
-    mode.add_argument("--demo", action="store_true", help="현재 모니터에서 세 효과를 순서대로 표시")
+    mode.add_argument("--demo", action="store_true", help="현재 모니터에서 모든 효과를 순서대로 표시")
     args = parser.parse_args()
     if args.demo or args.preview == "":
         try:

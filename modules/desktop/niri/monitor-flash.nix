@@ -2,7 +2,7 @@
 
 let
   cfg = config.local.desktop.monitorFlash;
-  python = pkgs.python3.withPackages (ps: [ ps.pygobject3 ps.pycairo ps.pyopengl ps.numpy ]);
+  python = pkgs.python3.withPackages (ps: [ ps.pygobject3 ps.pycairo ps.pyopengl ps.numpy ps.pillow ]);
   monitorFlash = pkgs.stdenvNoCC.mkDerivation {
     pname = "niri-monitor-flash";
     version = "2.0";
@@ -12,13 +12,14 @@ let
     installPhase = ''
       mkdir -p $out/bin $out/share/niri-monitor-flash
       cp ${./monitor-flash.py} $out/share/niri-monitor-flash/main.py
+      cp ${./wallpaper-ripple.glsl} $out/share/niri-monitor-flash/wallpaper-ripple.glsl
       cp -r ${./monitor-effects} $out/share/niri-monitor-flash/monitor-effects
       makeWrapper ${python}/bin/python3 $out/bin/niri-monitor-flash \
         --add-flags $out/share/niri-monitor-flash/main.py \
         --set GSK_RENDERER gl \
         --set PYOPENGL_PLATFORM egl \
         --set NIRI_MONITOR_EFFECT ${lib.escapeShellArg cfg.effect} \
-        --prefix PATH : ${pkgs.niri}/bin \
+        --prefix PATH : ${lib.makeBinPath [ pkgs.niri pkgs.grim ]} \
         --prefix LD_PRELOAD : ${pkgs.gtk4-layer-shell}/lib/libgtk4-layer-shell.so
     '';
   };
@@ -31,9 +32,14 @@ in
       description = "Show a brief shader effect when focus moves to another Niri monitor.";
     };
     effect = lib.mkOption {
-      type = lib.types.enum [ "splatter" "fire" "aurora" ];
-      default = "splatter";
-      description = "Monitor focus effect; preview all three with niri-monitor-flash --demo.";
+      type = lib.types.enum [ "screen-ripple" "splatter" "fire" "aurora" ];
+      default = "screen-ripple";
+      description = "Monitor focus effect; screen-ripple distorts an in-memory screenshot. Preview with niri-monitor-flash --demo.";
+    };
+    wallpaperRipple = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Also ripple the Noctalia wallpaper on monitor focus changes, except in screen-ripple mode which already includes it.";
     };
   };
 
