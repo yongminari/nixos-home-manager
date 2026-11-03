@@ -12,7 +12,7 @@ let
     installPhase = ''
       mkdir -p $out/bin $out/share/niri-monitor-flash
       cp ${./monitor-flash.py} $out/share/niri-monitor-flash/main.py
-      cp ${./wallpaper-ripple.glsl} $out/share/niri-monitor-flash/wallpaper-ripple.glsl
+      cp ${./screen-drop.glsl} $out/share/niri-monitor-flash/screen-drop.glsl
       cp -r ${./monitor-effects} $out/share/niri-monitor-flash/monitor-effects
       makeWrapper ${python}/bin/python3 $out/bin/niri-monitor-flash \
         --add-flags $out/share/niri-monitor-flash/main.py \
@@ -34,12 +34,12 @@ in
     effect = lib.mkOption {
       type = lib.types.enum [ "screen-ripple" "splatter" "fire" "aurora" ];
       default = "screen-ripple";
-      description = "Monitor focus effect; screen-ripple distorts an in-memory screenshot. Preview with niri-monitor-flash --demo.";
+      description = "Monitor focus effect; screen-ripple refracts an in-memory screenshot with a large circular pulse for 0.5 seconds. Preview with niri-monitor-flash --demo.";
     };
     wallpaperRipple = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Also ripple the Noctalia wallpaper on monitor focus changes, except in screen-ripple mode which already includes it.";
+      description = "Also ripple the Noctalia wallpaper on monitor focus changes, except in screen-ripple mode.";
     };
   };
 

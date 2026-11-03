@@ -275,7 +275,7 @@ class MonitorFlash(Gtk.Application):
         if self.window is not None:
             self.window.destroy()
             self.window = None
-        self.duration_us = 1_400_000 if effect == "screen-ripple" else DURATION_US
+        self.duration_us = {"screen-ripple": 500_000}.get(effect, DURATION_US)
         if effect == "screen-ripple":
             # Let the compositor remove our old overlay before taking a new image.
             GLib.timeout_add(50, self.capture_screen, output, sequence)
@@ -344,7 +344,7 @@ class MonitorFlash(Gtk.Application):
         # 입력 영역을 비워 뒤쪽 창으로 마우스 입력이 그대로 전달되게 합니다.
         window.connect("realize", lambda w: w.get_surface().set_input_region(cairo.Region()))
         if effect == "screen-ripple":
-            area = ImageEffectArea(picture, Path(__file__).with_name("wallpaper-ripple.glsl"),
+            area = ImageEffectArea(picture, Path(__file__).with_name("screen-drop.glsl"),
                                    self.render_failed, texture_limit=16384)
         else:
             area = EffectArea(effect, self.render_failed)
