@@ -10,6 +10,7 @@
     ../../modules/services/wireguard-client.nix
     ../../modules/services/local-ai.nix
     ../../modules/hardware/printing.nix
+    ../../modules/hardware/nvidia-egpu-led.nix
   ];
 
   networking.hostName = "ai-x1-pro";
