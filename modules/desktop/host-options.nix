@@ -34,8 +34,8 @@
     };
     chromeArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "Host-specific Chrome command-line arguments.";
+      default = [ "--ozone-platform=x11" ];
+      description = "Chrome command-line arguments; defaults to XWayland on all hosts.";
     };
   };
 }

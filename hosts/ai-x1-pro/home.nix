@@ -22,6 +22,4 @@
       }
     '';
   };
-
-  local.desktop.chromeArgs = [ "--ozone-platform=wayland" "--enable-features=WaylandWindowDecorations" ];
 }

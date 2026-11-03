@@ -4,8 +4,6 @@
   local.desktop = {
     scale = "1.0";
     isLaptop = false;
-    # GPU 가속을 유지하면서 Wayland에서 발생하는 Chrome 페이지 깜빡임을 우회합니다.
-    chromeArgs = [ "--ozone-platform=x11" ];
     outputs = {
       left = "DP-2";
       right = "DP-3";
