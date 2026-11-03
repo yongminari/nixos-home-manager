@@ -1,4 +1,4 @@
-"""Niri 모니터 전환 효과. --demo로 효과를 비교할 수 있습니다."""
+"""Niri 모니터 전환·창 열기/닫기 효과. --demo로 효과를 비교할 수 있습니다."""
 
 from io import BytesIO
 import json
@@ -189,12 +189,55 @@ class FocusTracker:
         return output if previous is not None and previous != output else None
 
 
+class WindowLifecycleTracker:
+    """보이는 워크스페이스에서 창 열기/닫기를 감지하고 위치 갱신을 추적합니다."""
+
+    def __init__(self):
+        self.windows = {}
+        self.workspaces = {}
+        self.initialized = False
+
+    def update(self, event):
+        if "WorkspacesChanged" in event:
+            self.workspaces = {w["id"]: dict(w)
+                               for w in event["WorkspacesChanged"]["workspaces"]}
+        elif "WorkspaceActivated" in event:
+            current = self.workspaces.get(event["WorkspaceActivated"]["id"])
+            if current is not None:
+                for workspace in self.workspaces.values():
+                    if workspace.get("output") == current.get("output"):
+                        workspace["is_active"] = workspace["id"] == current["id"]
+        elif "WindowsChanged" in event:
+            self.windows = {w["id"]: w for w in event["WindowsChanged"]["windows"]}
+            self.initialized = True
+        elif "WindowClosed" in event:
+            window = self.windows.pop(event["WindowClosed"]["id"], None)
+            if self.initialized and window is not None:
+                return self.visible_output(window)
+        elif "WindowOpenedOrChanged" in event:
+            window = event["WindowOpenedOrChanged"]["window"]
+            is_new = window["id"] not in self.windows
+            self.windows[window["id"]] = window
+            if self.initialized and is_new:
+                return self.visible_output(window)
+        return None
+
+    def visible_output(self, window):
+        workspace = self.workspaces.get(window.get("workspace_id"))
+        if workspace and workspace["is_active"]:
+            return workspace.get("output")
+        return None
+
+
 class MonitorFlash(Gtk.Application):
     duration_us = DURATION_US
 
     def __init__(self, effect, preview=None, demo=False):
         super().__init__(application_id="local.niri.MonitorFlash", flags=Gio.ApplicationFlags.NON_UNIQUE)
         self.tracker = FocusTracker()
+        self.window_tracker = WindowLifecycleTracker()
+        self.window_open_enabled = os.environ.get("NIRI_WINDOW_OPEN_EFFECT", "1") == "1"
+        self.window_close_enabled = os.environ.get("NIRI_WINDOW_CLOSE_EFFECT", "1") == "1"
         self.window = None
         self.reader = None
         self.failed = False
@@ -264,11 +307,18 @@ class MonitorFlash(Gtk.Application):
 
     def handle_event(self, event):
         output = self.tracker.update(event)
+        window_output = self.window_tracker.update(event)
+        if window_output is not None and "WindowClosed" in event:
+            if self.window_close_enabled:
+                self.flash(window_output, "screen-ripple", reverse=True)
+            return GLib.SOURCE_REMOVE
+        if output is None and self.window_open_enabled:
+            output = window_output
         if output is not None:
             self.flash(output)
         return GLib.SOURCE_REMOVE
 
-    def flash(self, output, effect=None):
+    def flash(self, output, effect=None, reverse=False):
         effect = effect or self.effect
         self.capture_sequence += 1
         sequence = self.capture_sequence
@@ -278,11 +328,11 @@ class MonitorFlash(Gtk.Application):
         self.duration_us = {"screen-ripple": 500_000}.get(effect, DURATION_US)
         if effect == "screen-ripple":
             # Let the compositor remove our old overlay before taking a new image.
-            GLib.timeout_add(50, self.capture_screen, output, sequence)
+            GLib.timeout_add(50, self.capture_screen, output, sequence, reverse)
         else:
             self.show_effect(output, effect)
 
-    def capture_screen(self, output, sequence):
+    def capture_screen(self, output, sequence, reverse=False):
         if sequence != self.capture_sequence:
             return GLib.SOURCE_REMOVE
 
@@ -293,15 +343,15 @@ class MonitorFlash(Gtk.Application):
                     ["grim", "-t", "ppm", "-o", output, "-"],
                     stderr=subprocess.PIPE, timeout=2,
                 )
-                GLib.idle_add(self.capture_ready, output, sequence, picture, None)
+                GLib.idle_add(self.capture_ready, output, sequence, picture, None, reverse)
             except (OSError, subprocess.SubprocessError) as error:
-                GLib.idle_add(self.capture_ready, output, sequence, None, str(error))
+                GLib.idle_add(self.capture_ready, output, sequence, None, str(error), reverse)
 
         threading.Thread(target=capture, daemon=True).start()
         return GLib.SOURCE_REMOVE
 
-    def capture_ready(self, output, sequence, picture, error):
-        # A newer focus change wins even if an older capture finishes last.
+    def capture_ready(self, output, sequence, picture, error, reverse=False):
+        # A newer event wins even if an older capture finishes last.
         if sequence != self.capture_sequence:
             return GLib.SOURCE_REMOVE
         if error is not None:
@@ -310,12 +360,12 @@ class MonitorFlash(Gtk.Application):
             else:
                 print(f"monitor-flash: skipping screen capture: {error}", file=sys.stderr)
             return GLib.SOURCE_REMOVE
-        self.show_effect(output, "screen-ripple", BytesIO(picture))
+        self.show_effect(output, "screen-ripple", BytesIO(picture), reverse=reverse)
         if self.preview is not None:
             GLib.timeout_add(self.duration_us // 1000 + 650, self.next_preview)
         return GLib.SOURCE_REMOVE
 
-    def show_effect(self, output, effect, picture=None):
+    def show_effect(self, output, effect, picture=None, reverse=False):
         monitors = Gdk.Display.get_default().get_monitors()
         monitor = next(
             (m for i in range(monitors.get_n_items())
@@ -348,6 +398,7 @@ class MonitorFlash(Gtk.Application):
                                    self.render_failed, texture_limit=16384)
         else:
             area = EffectArea(effect, self.render_failed)
+        area.progress = 1.0 if reverse else 0.0
         window.set_child(area)
         state = {"start": None}
         duration_us = self.duration_us
@@ -362,7 +413,7 @@ class MonitorFlash(Gtk.Application):
                 if self.window is window:
                     self.window = None
                 return GLib.SOURCE_REMOVE
-            area.progress = progress
+            area.progress = 1.0 - progress if reverse else progress
             area.queue_render()
             return GLib.SOURCE_CONTINUE
 
