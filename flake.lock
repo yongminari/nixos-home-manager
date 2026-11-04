@@ -19,11 +19,11 @@
     "ghostty-shaders": {
       "flake": false,
       "locked": {
-        "lastModified": 1783927614,
-        "narHash": "sha256-WwiFYbzEgDux+Zu4qh4ZrYNHhIRKsMzzS9BrfUfokco=",
+        "lastModified": 1793726678,
+        "narHash": "sha256-ixShV7afxxD1k9+gCeLBTfsGGxHuNZjKM5OwAkdtiqw=",
         "owner": "0xhckr",
         "repo": "ghostty-shaders",
-        "rev": "85898f08fcf4a9274e418912098e99e00a5f8350",
+        "rev": "6b3e4d1c88e62989e5fa626a9fa59b4a8664ce6f",
         "type": "github"
       },
       "original": {
@@ -111,11 +111,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793676314,
-        "narHash": "sha256-/He0g2IYutiafqOvCkR0Nb4tdb9Cnn+gAIZ0hzECIMc=",
+        "lastModified": 1793752457,
+        "narHash": "sha256-a86NFhFjCr80wHaHaaYVRkFw0cW80dD/eQxf6ldawVE=",
         "owner": "noctalia-dev",
         "repo": "noctalia-shell",
-        "rev": "3c7e6343efac4cb683eb102374cccb210c05dc1c",
+        "rev": "234ff9af201d3e3e9ad7af32c980b8405459de49",
         "type": "github"
       },
       "original": {
