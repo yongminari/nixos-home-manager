@@ -9,6 +9,7 @@
     monitorOffTimeout = 900;
     monitorIdleRefresh = {
       enable = true;
+      blur = true;
       output = "Hexium Ltd. 40LGD5KGM 0000000000000";
     };
     scale = "1.0";

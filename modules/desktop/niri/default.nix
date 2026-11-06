@@ -2,7 +2,10 @@
 
 let
   currentHost = config.local.desktop;
-  baseConfig = builtins.readFile ./config.kdl;
+  baseConfig = if currentHost.monitorIdleRefresh.blur then
+    lib.replaceStrings [ (builtins.readFile ./blur-default.kdl) ]
+      [ "include \"idle-blur.kdl\"\n" ] (builtins.readFile ./config.kdl)
+    else builtins.readFile ./config.kdl;
   workspaceAnimation = "spring damping-ratio=0.5 stiffness=450 epsilon=0.0001";
 
   isLaptop = currentHost.isLaptop;
@@ -144,6 +147,15 @@ in
     ${currentHost.extraConfig}
 
     ${baseConfig}
+    ${lib.optionalString currentHost.monitorIdleRefresh.blur ''
+      layer-rule {
+        match namespace="^niri-idle-blur$"
+        background-effect {
+          blur true
+          xray false
+        }
+      }
+    ''}
 
     // 창은 진한 연기 효과로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
     animations {

@@ -11,7 +11,7 @@ import time
 
 
 class IdleRefresh:
-    def __init__(self, runtime, session, target, niri, wake_delay=6):
+    def __init__(self, runtime, session, target, niri, wake_delay=6, systemctl=None):
         self.directory = Path(runtime) / "niri-idle-refresh"
         self.directory.mkdir(mode=0o700, exist_ok=True)
         self.state_path = self.directory / "state.json"
@@ -19,6 +19,7 @@ class IdleRefresh:
         self.target = target
         self.niri = niri
         self.wake_delay = wake_delay
+        self.systemctl = systemctl
 
     @contextmanager
     def locked(self):
@@ -65,6 +66,15 @@ class IdleRefresh:
     def set_mode(self, output, mode):
         self.msg("output", output["name"], "mode", self.mode_name(mode))
 
+    def blur(self, enabled):
+        if self.systemctl:
+            # Cosmetic failure must never prevent waking the display.
+            try:
+                subprocess.run([self.systemctl, "--user", "start" if enabled else "stop",
+                                "niri-idle-blur.service"], check=True, timeout=5)
+            except (subprocess.SubprocessError, OSError) as error:
+                print(f"idle-refresh: blur unavailable: {error}", flush=True)
+
     def prepare(self):
         with self.locked():
             if self.read() is not None:
@@ -88,6 +98,7 @@ class IdleRefresh:
             self.write(state)
             if original != low:
                 self.set_mode(output, low)
+            self.blur(True)
             print("idle-refresh: prepared", self.mode_name(low), flush=True)
 
     def off(self):
@@ -107,6 +118,7 @@ class IdleRefresh:
 
     def resume(self):
         with self.locked():
+            self.blur(False)
             state = self.read()
             if state is None:
                 return
@@ -145,6 +157,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--niri", required=True)
     parser.add_argument("--target", required=True)
+    parser.add_argument("--systemctl")
     parser.add_argument("action", choices=("prepare", "off", "resume"))
     args = parser.parse_args()
     runtime = os.environ.get("XDG_RUNTIME_DIR")
@@ -152,7 +165,7 @@ def main():
     if not runtime or not session:
         return
     os.umask(0o077)
-    controller = IdleRefresh(runtime, session, args.target, args.niri)
+    controller = IdleRefresh(runtime, session, args.target, args.niri, systemctl=args.systemctl)
     getattr(controller, args.action)()
 
 

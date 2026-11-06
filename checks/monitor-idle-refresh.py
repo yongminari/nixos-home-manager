@@ -101,6 +101,31 @@ class RefreshTest(unittest.TestCase):
         self.controller.off()
         self.assertEqual(self.calls, [])
 
+    def test_blur_is_removed_before_wake_even_on_duplicate_resume(self):
+        events = []
+        original_msg = self.controller.msg
+        def msg(*args):
+            if args[0] == "action":
+                events.append(args[1])
+            return original_msg(*args)
+        self.controller.msg = msg
+        self.controller.blur = lambda enabled: events.append("blur-on" if enabled else "blur-off")
+        self.controller.prepare()
+        self.controller.off()
+        self.controller.resume()
+        self.controller.resume()
+        self.assertEqual(events, ["blur-on", "power-off-monitors", "blur-off",
+                                  "power-on-monitors", "blur-off"])
+
+    def test_blur_failure_does_not_prevent_wake(self):
+        self.controller.systemctl = "systemctl"
+        with patch.object(module.subprocess, "run", side_effect=OSError("unavailable")):
+            self.controller.prepare()
+            self.controller.off()
+            self.controller.resume()
+        self.assertEqual(self.current, 2)
+        self.assertIn(("action", "power-on-monitors"), self.calls)
+
     def test_already_low_refresh_stays_low(self):
         self.current = 0
         self.controller.prepare()

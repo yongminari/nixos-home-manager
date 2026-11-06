@@ -7,7 +7,8 @@ let
   niri-idle-refresh = pkgs.writeShellScriptBin "niri-idle-refresh" ''
     exec ${pkgs.python3}/bin/python3 ${./monitor-idle-refresh.py} \
       --niri ${pkgs.niri}/bin/niri \
-      --target ${lib.escapeShellArg idleRefresh.output} "$@"
+      --target ${lib.escapeShellArg idleRefresh.output} \
+      ${lib.optionalString idleRefresh.blur "--systemctl ${pkgs.systemd}/bin/systemctl"} "$@"
   '';
   refreshCommand = "${niri-idle-refresh}/bin/niri-idle-refresh";
 
@@ -117,6 +118,8 @@ let
   };
 in
 {
+  imports = [ ./idle-blur.nix ];
+
   assertions = [
     {
       assertion = !idleRefresh.enable || (offTimeout != null && offTimeout > 15 && idleRefresh.output != "");

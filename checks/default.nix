@@ -27,7 +27,15 @@ let
           bash ${../scripts/initialize-niri-touchpad.sh} \
             config/touchpad-control.kdl ${../modules/desktop/niri/touchpad-default.kdl}
         ''}
+        ${lib.optionalString home.config.local.desktop.monitorIdleRefresh.blur ''
+          cp ${../modules/desktop/niri/blur-default.kdl} config/idle-blur.kdl
+          chmod u+w config/idle-blur.kdl
+        ''}
         niri validate --config config/config.kdl
+        ${lib.optionalString home.config.local.desktop.monitorIdleRefresh.blur ''
+          printf 'blur {\n passes 1\n offset 0.25\n}\n' > config/idle-blur.kdl
+          niri validate --config config/config.kdl
+        ''}
         touch "$out"
       ''
     );

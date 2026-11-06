@@ -3,6 +3,7 @@
 {
   options.local.desktop = {
     monitorIdleRefresh = {
+      blur = lib.mkEnableOption "Show a subtle blur while preparing idle monitor power-off";
       enable = lib.mkEnableOption "Lower refresh rate before automatic monitor power-off";
       output = lib.mkOption {
         type = lib.types.str;

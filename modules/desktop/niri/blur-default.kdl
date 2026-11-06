@@ -1,0 +1,4 @@
+blur {
+    passes 2
+    offset 1.0
+}
