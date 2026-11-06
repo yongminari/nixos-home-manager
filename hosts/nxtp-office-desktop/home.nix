@@ -1,6 +1,9 @@
 { ... }:
 
 {
+  # 컨트롤센터·런처 등 바 이외 Noctalia UI의 호스트별 배율입니다.
+  programs.noctalia.settings.accessibility.ui_scale = 1.25;
+
   # 이 호스트의 기존 NVIDIA 선택 정책을 유지합니다.
   home.sessionVariables = {
     LIBVA_DRIVER_NAME = "nvidia";

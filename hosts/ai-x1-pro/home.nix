@@ -1,6 +1,9 @@
 { ... }:
 
 {
+  # 컨트롤센터·런처 등 바 이외 Noctalia UI의 호스트별 배율입니다.
+  programs.noctalia.settings.accessibility.ui_scale = 1.5;
+
   # AMD/NVIDIA 혼합 구성: GLX/GBM/VA-API 공급자는 자동 선택합니다.
   # NVIDIA를 명시할 앱은 nvidia-offload로 실행합니다(GLX/Vulkan).
   # LIBVA_DRIVER_NAME 전역 지정은 AMD 영상 가속 선택까지 덮어씁니다.
