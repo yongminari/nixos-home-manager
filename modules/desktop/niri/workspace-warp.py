@@ -102,7 +102,7 @@ class WorkspaceWarp(MonitorFlash):
         self.warp_enabled = os.environ.get("NIRI_WORKSPACE_WARP", "1") == "1"
         self.ripple_enabled = os.environ.get("NIRI_WALLPAPER_RIPPLE", "1") == "1"
         self.direction = direction
-        self.horizontal_surfaces = {}
+        self.warp_surfaces = {}
         self.wallpapers = {}
         self.refreshing = False
         self.refresh_again = False
@@ -166,9 +166,9 @@ class WorkspaceWarp(MonitorFlash):
         if self.stopping:
             return GLib.SOURCE_REMOVE
         active = set(self.tracker.active)
-        for key in list(self.horizontal_surfaces):
+        for key in list(self.warp_surfaces):
             if key[0] not in active or wallpapers.get(key[0]) != key[1:4]:
-                self.horizontal_surfaces.pop(key)[0].destroy()
+                self.warp_surfaces.pop(key)[0].destroy()
         for output in list(self.wallpapers):
             if output not in active or wallpapers.get(output) is None:
                 del self.wallpapers[output]
@@ -178,7 +178,7 @@ class WorkspaceWarp(MonitorFlash):
                 continue
             if self.wallpapers.get(output) != identity:
                 self.wallpapers[output] = identity
-                for self.direction in ((-1, 0), (1, 0)):
+                for self.direction in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     self.flash(output, "warp", prepare=True)
         self.direction = direction
         if self.refresh_again:
@@ -206,9 +206,9 @@ class WorkspaceWarp(MonitorFlash):
         monitor = next((m for m in monitors if m.get_connector() == output), None)
         if monitor is None:
             return
-        horizontal = effect == "warp" and self.direction[0] != 0
+        reuse_surface = effect == "warp" and self.preview is None
         try:
-            if horizontal and self.preview is None:
+            if reuse_surface:
                 identity = self.wallpapers.get(output)
                 if identity is None:
                     self.refresh_wallpapers()
@@ -222,12 +222,12 @@ class WorkspaceWarp(MonitorFlash):
             print(f"workspace-warp: skipping transition: {error}", file=sys.stderr)
             return
         cache_key = (output, *identity, self.direction)
-        cached = self.horizontal_surfaces.get(cache_key) if horizontal else None
+        cached = self.warp_surfaces.get(cache_key) if reuse_surface else None
         if not prepare and self.window is not None:
             self.window.destroy()
             self.window = None
-        # 준비된 좌우 효과는 투명한 상태로 보관해 이미지/GL 초기화를 반복하지 않습니다.
-        for key, (saved_window, saved_area, saved_state) in list(self.horizontal_surfaces.items()):
+        # 준비된 상하좌우 효과는 투명한 상태로 보관해 이미지/GL 초기화를 반복하지 않습니다.
+        for key, (saved_window, saved_area, saved_state) in list(self.warp_surfaces.items()):
             if prepare:
                 continue
             saved_state["start"] = None
@@ -235,7 +235,7 @@ class WorkspaceWarp(MonitorFlash):
             saved_area.queue_render()
             if key[0] == output and key[1:4] != cache_key[1:4]:
                 saved_window.destroy()
-                del self.horizontal_surfaces[key]
+                del self.warp_surfaces[key]
         if cached is not None:
             window, area, state = cached
             state["start"] = None
@@ -245,7 +245,7 @@ class WorkspaceWarp(MonitorFlash):
                 area.add_tick_callback(state["tick"])
             return
         window = Gtk.Window(application=self)
-        if not horizontal:
+        if not reuse_surface:
             self.window = window
         window.add_css_class("monitor-flash")
         window.set_can_focus(False)
@@ -275,7 +275,7 @@ class WorkspaceWarp(MonitorFlash):
                 state["start"] = now
             progress = (now - state["start"]) / duration_us
             if progress >= 1:
-                if horizontal:
+                if reuse_surface:
                     area.progress = 1.0
                     area.queue_render()
                 else:
@@ -289,8 +289,8 @@ class WorkspaceWarp(MonitorFlash):
             return GLib.SOURCE_CONTINUE
 
         state["tick"] = tick
-        if horizontal:
-            self.horizontal_surfaces[cache_key] = (window, area, state)
+        if reuse_surface:
+            self.warp_surfaces[cache_key] = (window, area, state)
         if prepare:
             area.progress = 1.0
         else:
@@ -303,9 +303,9 @@ class WorkspaceWarp(MonitorFlash):
             GLib.source_remove(self.refresh_timer)
         if self.settings_monitor is not None:
             self.settings_monitor.cancel()
-        for window, _area, _state in self.horizontal_surfaces.values():
+        for window, _area, _state in self.warp_surfaces.values():
             window.destroy()
-        self.horizontal_surfaces.clear()
+        self.warp_surfaces.clear()
         super().stop_reader(app)
 
 
