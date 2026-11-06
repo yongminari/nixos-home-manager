@@ -11,7 +11,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelModules = [ "uinput" ];
 
   # --- [2. Locale & Timezone] ---
   time.timeZone = "Asia/Seoul";
@@ -29,7 +28,8 @@
   users.users.${username} = {
     isNormalUser = true;
     description = username;
-    extraGroups = [ "networkmanager" "wheel" "video" "input" "uinput" "audio" ];
+    # Niri uses logind session access; do not grant persistent raw input access.
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
     shell = pkgs.zsh; 
   };
 
@@ -83,13 +83,6 @@
     stdenv.cc.cc zlib fuse3 icu nss openssl curl expat
   ];
 
-  services.udev.extraRules = ''
-    KERNEL=="uinput", GROUP="uinput", MODE="0660", OPTIONS+="static_node=uinput"
-    KERNEL=="event*", NAME="input/%k", MODE="0660", GROUP="input"
-  '';
-  users.groups.uinput = {};
-  users.groups.input = {};
-
   # --- [5. System Policy] ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -113,5 +106,6 @@
   system.stateVersion = "26.11";
 
   # --- [6. QMK Keyboard Firmware] ---
+  # Firmware flashing uses QMK USB/hidraw rules, not input/uinput membership.
   hardware.keyboard.qmk.enable = true;
 }

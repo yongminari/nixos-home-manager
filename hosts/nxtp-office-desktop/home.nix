@@ -1,6 +1,13 @@
 { ... }:
 
 {
+  # 이 호스트의 기존 NVIDIA 선택 정책을 유지합니다.
+  home.sessionVariables = {
+    LIBVA_DRIVER_NAME = "nvidia";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    GBM_BACKEND = "nvidia-drm";
+  };
+
   local.desktop = {
     scale = "1.0";
     isLaptop = false;

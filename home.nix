@@ -53,11 +53,8 @@
       QT_QPA_PLATFORM = "wayland;xcb";
       QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
     }
-    # NVIDIA 그래픽 드라이버가 활성화된 호스트에서만 주입 (NVIDIA 전용 설정)
+    # Qt 렌더링 안정화는 유지하되 GPU 공급자 선택은 호스트별로 관리합니다.
     (lib.mkIf (lib.elem "nvidia" (osConfig.services.xserver.videoDrivers or [])) {
-      LIBVA_DRIVER_NAME = "nvidia";
-      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      GBM_BACKEND = "nvidia-drm";
       QSG_RHI_BACKEND = "opengl"; # Quickshell/Qt6 rendering fix for NVIDIA
     })
   ];

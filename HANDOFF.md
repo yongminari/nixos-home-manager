@@ -2,12 +2,13 @@
 
 ## 다음 작업 요약 (2026-11-06)
 
-- 조사·개선 후보: 공통 `input`·`uinput` 권한의 사용처, AI 호스트 전역 NVIDIA 환경 변수.
+- NVIDIA 환경 변수: AI 호스트 전역 GPU 공급자 강제 지정 제거. 재부팅·프로세스 환경·GPU 검사 및 사용자 화면·브라우저·영상 정상 확인 완료(하단 참고).
+- 입력 권한 정리: 공통 `input`·`uinput` 상시 권한 제거. 빌드·적용 및 재부팅 후 검증 상태는 아래 항목 참고.
 - 사용자 기능 확인 대기: D-Bus 파일 선택·화면 공유·키링 실제 사용, 프린터 실제 인쇄.
 - 다른 호스트 적용 대기: Galaxy Book·회사 데스크톱의 공통 PipeWire/D-Bus 수정, Galaxy Book의 프린터 변경. 각 호스트에서 `ns` 후 재부팅·검증하고 결과를 기록합니다.
 - AI 호스트 완료: PipeWire 충돌 해소, NVIDIA USB-C 오류 해소, 로컬 AI 제거. D-Bus 중복 경고는 재부팅 후 0건·API 응답 확인 완료.
 - 유지 결정: WireGuard 단일 장치 공유 접속, SSH 비밀번호 인증, Nix trusted-users. 정책 변경 요청이나 새로운 증거 없이 미해결 문제로 재등록하지 않습니다.
-- 현재 AI 호스트 부팅·적용 세대: `dmnfhr5h2p8wvmm293rxbcgxlqh51bz6`. 아래 이전 세대 표기는 검증 당시의 이력입니다.
+- 현재 AI 호스트 부팅·적용 세대: `8cwgcsyih1ms7624ikz4s6y8jq7ra51b`. 아래 이전 세대 표기는 검증 당시의 이력입니다.
 
 ## 재부팅 후 검증 결과 (2026-11-06 12:47 KST, ai-x1-pro)
 
@@ -68,8 +69,7 @@ lpstat -d
 
 | 번호 | 범위 | 항목 | 상태 |
 |---|---|---|---|
-| 9 | 공통 | 입력 장치 접근 권한 검토 | 개선 후보, 정책 결정 전 |
-| 10 | AI 호스트 | AMD/NVIDIA 혼합 환경의 전역 NVIDIA 변수 | 개선 후보, 장애 미확정 |
+| 9 | 공통 | 입력 장치 상시 접근 권한 제거 | AI 호스트 재부팅·입력 실사용 확인 완료, QMK 및 다른 호스트 검증 대기 |
 
 D-Bus 중복 이름 경고는 AI 호스트에서 수정·재부팅 후 0건 확인 완료. 실제 앱 기능 확인과 다른 호스트 적용만 남았습니다.
 
@@ -156,3 +156,47 @@ systemctl --user --failed --no-pager
 - 키링은 별도 사용자 systemd 서비스가 아닌 로그인 세션 프로세스로 실행 중이며 `org.freedesktop.secrets`·`org.gnome.keyring` 이름 소유 확인. Secret.Service Collections 조회 정상(키나 비밀값은 읽지 않음).
 - `home1`·`resolve1` 활성화 실패 경고는 이전 부팅에도 있었으며 해당 선택 서비스는 설치/활성화되지 않음. 이번 중복 제거 패치로 새로 발생한 현상은 아닙니다.
 - **상태:** AI 호스트 중복 경고 제거 및 서비스/API 검증 완료. 실제 앱의 파일 선택·화면 공유·저장된 인증정보 사용은 사용자 기능 확인 대기. 다른 두 호스트 적용은 미확인.
+
+## 입력 장치 권한 정리 (2026-11-06)
+
+- 범위: 세 호스트 공통 `modules/core/nixos-base.nix`.
+- 사용자 사용처: QMK 펌웨어 빌드·업로드. 과거 Kanata 사용 가능성이 있으나 현재 설정에는 Kanata가 없으며, 기존 권한 도입 원인은 확정하지 않음.
+- 수정: 사용자 `input`·`uinput` 추가 그룹, 수동 그룹 선언, `event*`·`uinput` 사용자 정의 udev 규칙, `uinput` 부팅 강제 로드 제거.
+- 유지: `hardware.keyboard.qmk.enable = true`와 QMK USB/hidraw 접근 규칙, NixOS 기본 입력 장치 규칙. `uinput` 모듈을 차단한 것은 아님.
+- 근거: AI 호스트 logind 세션 2의 CONTROLLER=:1.73이 Niri PID 2412이며, logind가 해당 세션의 입력 장치를 관리하는 것을 확인. 권한 제거 이후의 실제 로그인은 별도 검증 필요.
+- 검증: 세 호스트 평가에서 input/uinput 그룹·강제 로드·수동 규칙 제거 및 QMK 활성 유지 확인. `nix flake check --no-build`, AI 호스트 `nh os build .` 통과. 생성된 시스템의 `50-qmk.rules` 존재 확인.
+- 재부팅 검증 (2026-11-06 14:01 KST 부팅): 부팅·현재 시스템 모두 `y8frjh89jfjx0c7hvdcijawwcrlxxdrr`. 사용자 그룹에서 input/uinput 제거, 별도 udev 규칙·모듈 강제 로드 설정 제거, QMK 규칙 유지 확인. Niri 활성, 시스템·사용자 실패 서비스 0개. `/dev/uinput`은 root:root 0600으로 존재하지만 일반 사용자 쓰기 권한 없음. Niri가 logind 세션 제어자로 등록되어 입력 장치 FD를 보유함. 일반 사용자 프로세스의 event 장치 직접 읽기 권한 없음.
+- 사용자 확인 (2026-11-06): 재부팅 후 키보드·마우스·단축키 정상 동작 확인 완료. 입력 권한 축소의 AI 호스트 실사용 검증 완료. QMK는 다음 실제 펌웨어 작업에서 일반 사용자로 장치 접근·업로드 성공을 확인한 뒤 완료 처리. 검증을 위해 임의로 펌웨어를 플래시하지 않음.
+- 다른 호스트: 각 장치에서 `ns` 후 재부팅하여 그룹·입력 동작 확인. Galaxy Book은 터치패드도 확인.
+- 입력 문제가 발생하면 부팅 메뉴에서 이전 NixOS 세대로 복귀 가능.
+
+## NVIDIA 전역 환경 변수 조사 (2026-11-06)
+
+- 설정 변경 전 조사 단계. 현재 장애가 입증된 항목은 아님.
+- `home.nix`에서 NVIDIA 드라이버 활성 호스트 모두에 LIBVA_DRIVER_NAME=nvidia, __GLX_VENDOR_LIBRARY_NAME=nvidia, GBM_BACKEND=nvidia-drm, QSG_RHI_BACKEND=opengl 설정. AI 및 회사 데스크톱 대상이며 Galaxy Book 제외.
+- AI 호스트는 AMD 내장 GPU와 NVIDIA eGPU 혼합 구성이고 PRIME offload 활성. 현재 세션에 네 변수 모두 존재. Niri는 renderD129를 렌더 노드로 사용.
+- AMD radeonsi 및 NVIDIA VA-API 드라이버 모두 설치되어 있어 NVIDIA VA-API 드라이버 누락 문제는 아님.
+- `nvidia-offload` 래퍼가 필요한 GLX/PRIME 환경 변수를 이미 실행 대상에 지정함. 전역 GLX 강제는 앱별 GPU 선택 정책과 함께 검토할 후보.
+- 권장: AI 호스트에서 전역 GPU 공급자 강제를 줄이는 방향으로 단계별 비교 검증. QSG_RHI_BACKEND는 GPU 선택이 아니라 Qt 렌더링 API 선택이며 기존 Noctalia 안정화 목적이므로 별도로 취급. 회사 데스크톱은 실제 구성 확인 없이 함께 변경하지 않음.
+- 남은 조사: 변수 유무별 GLX/VA-API 동작 비교, Noctalia·브라우저 및 모니터 출력 확인. 아직 환경 변수 수정·적용하지 않음.
+
+## NVIDIA 환경 변수 정리 — 수정 및 프로세스별 비교 검증 (2026-11-06)
+
+- 위 조사 이후 사용자 승인으로 진행. 현재 장애 수리가 아닌 혼합 GPU 선택 정책 개선.
+- 수정: 공통 home.nix에서 LIBVA_DRIVER_NAME, __GLX_VENDOR_LIBRARY_NAME, GBM_BACKEND 제거. 회사 데스크톱의 동일 값은 해당 호스트 home.nix로 이동하여 기존 동작 유지. AI 호스트는 자동 선택, Galaxy Book 변화 없음. QSG_RHI_BACKEND=opengl은 기존 NVIDIA 호스트에서 유지.
+- 실제 비교: 고정 nixpkgs의 mesa-demos 9.0.0 / libva-utils 2.24.0을 임시 실행(영구 패키지 추가 없음). 현재 환경과 세 변수만 제거한 하위 프로세스를 비교했으며 실행 중인 세션 환경은 변경하지 않음.
+- GLX glxinfo -B 및 Wayland eglinfo -B -p wayland: 양쪽 모두 종료 코드 0, RTX 2070 SUPER 하드웨어 렌더러 유지.
+- vainfo --display drm --device /dev/dri/renderD128(AMD): 기존 환경은 NVIDIA NVDEC, 변수 제거 시 Mesa radeonsi AMD Radeon 890M 선택. 두 경우 초기화 성공. renderD129(NVIDIA)는 양쪽 모두 NVIDIA NVDEC 초기화 성공.
+- 한계: 드라이버 초기화·지원 프로필 조회 결과이며 실제 브라우저 영상 디코딩 처리량이나 전체 세션 재시작까지 검증한 것은 아님. 변수 제거 후에도 NVIDIA 출력·렌더링을 금지하지 않음.
+- 빌드·적용: `nix flake check` 전체 검사와 `nh os build .` 통과. 세 호스트 standalone Home Manager 평가도 의도한 변수값 확인. `nh os boot .` 성공, 다음 부팅 세대 `8cwgcsyih1ms7624ikz4s6y8jq7ra51b`. 현재 실행 세대는 `y8frjh89jfjx0c7hvdcijawwcrlxxdrr`로 유지. 통합 Home Manager는 다음 부팅 활성화 시 적용되므로 별도 hms는 실행하지 않음. 전체 세션은 재부팅 후 확인.
+- 재부팅 후 확인: systemctl --user show-environment와 Niri/Noctalia 프로세스 환경에서 세 변수 부재 및 QSG_RHI_BACKEND=opengl 유지, Niri 렌더 노드, 모니터 해상도·주사율, Noctalia UI·브라우저 영상·XWayland 앱 정상, 새 GPU 오류 및 실패 서비스 여부. 사용자 화면·영상 확인 후 완료 처리.
+- 다른 호스트: 회사 데스크톱 설정값을 보존했지만 실제 적용은 별도 진행. 이전 NixOS 부팅 세대가 복구 경로.
+
+## NVIDIA 환경 변수 재부팅 검증 (2026-11-06, 14:08 로그인)
+
+- AI 호스트 부팅·현재 시스템 모두 `8cwgcsyih1ms7624ikz4s6y8jq7ra51b`. NixOS 26.11.20261103.1d06008, 잠금 리비전과 공식 unstable 일치.
+- 사용자 systemd 환경과 실제 Niri/Noctalia 프로세스에서 LIBVA_DRIVER_NAME, __GLX_VENDOR_LIBRARY_NAME, GBM_BACKEND 부재 확인. QSG_RHI_BACKEND=opengl 유지.
+- Niri 활성, NVIDIA renderD129 렌더 노드 사용. DP-10 5120×2160@120Hz·배율 1.25 유지. HDMI-A-2는 기존 설정대로 비활성.
+- 새 세션에서 GLX 및 Wayland EGL 조회 모두 성공, RTX 2070 SUPER 하드웨어 렌더러. AMD renderD128 VA-API는 radeonsi/890M, NVIDIA renderD129는 NVDEC로 초기화 성공.
+- 시스템·사용자 실패 서비스 0개. 커널 로그에서 NVIDIA Xid, GPU hang/reset, AMD GPU timeout/error에 해당하는 오류 발견 없음.
+- 상태: **AI 호스트 완료.** 재부팅·환경·렌더링 초기화 검증 후 사용자가 Noctalia를 포함한 전체 동작, 브라우저와 영상 재생 모두 정상이라고 확인(2026-11-06). 10번 항목을 미해결 목록에서 제거. 실제 영상이 어느 GPU에서 하드웨어 디코딩되는지까지 측정한 것은 아니며, 이는 정상 재생 확인과 구분함.
