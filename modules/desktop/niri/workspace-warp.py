@@ -6,10 +6,11 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 
 import cairo
 from monitor_flash import (
-    ImageEffectArea, FocusTracker, MonitorFlash, Gdk, GLib, Gtk, LayerShell,
+    ImageEffectArea, FocusTracker, MonitorFlash, Gdk, Gio, GLib, Gtk, LayerShell,
 )
 
 DURATION_US = 950_000
@@ -101,10 +102,95 @@ class WorkspaceWarp(MonitorFlash):
         self.warp_enabled = os.environ.get("NIRI_WORKSPACE_WARP", "1") == "1"
         self.ripple_enabled = os.environ.get("NIRI_WALLPAPER_RIPPLE", "1") == "1"
         self.direction = direction
+        self.horizontal_surfaces = {}
+        self.wallpapers = {}
+        self.refreshing = False
+        self.refresh_again = False
+        self.stopping = False
+        self.refresh_timer = None
+        self.settings_monitor = None
+
+    def activate_flash(self, app):
+        super().activate_flash(app)
+        if self.preview is not None or not self.warp_enabled:
+            return
+        # Noctalia는 배경 변경을 settings.toml에 저장합니다. 디렉터리를 감시해
+        # 원자적 파일 교체도 감지하고, 파일 덮어쓰기/알림 누락은 주기적으로 확인합니다.
+        state_dir = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+        directory = Gio.File.new_for_path(str(state_dir / "noctalia"))
+        try:
+            self.settings_monitor = directory.monitor_directory(Gio.FileMonitorFlags.NONE, None)
+            self.settings_monitor.connect("changed", self.settings_changed)
+        except GLib.Error as error:
+            print(f"workspace-warp: settings monitor unavailable: {error}", file=sys.stderr)
+        self.refresh_timer = GLib.timeout_add_seconds(2, self.refresh_wallpapers)
+
+    def settings_changed(self, _monitor, file, other, _event):
+        if any(f is not None and f.get_basename() == "settings.toml" for f in (file, other)):
+            self.refresh_wallpapers()
+
+    def refresh_wallpapers(self):
+        if self.stopping:
+            return GLib.SOURCE_REMOVE
+        if self.refreshing:
+            self.refresh_again = True
+            return GLib.SOURCE_CONTINUE
+        self.refreshing = True
+        outputs = tuple(self.tracker.active)
+
+        def read():
+            wallpapers = {}
+            for output in outputs:
+                try:
+                    path = self.wallpaper_path(output)
+                    stamp = Path(path).stat()
+                    wallpapers[output] = (path, stamp.st_mtime_ns, stamp.st_size)
+                except (OSError, ValueError, subprocess.SubprocessError):
+                    wallpapers[output] = None
+            GLib.idle_add(self.prepare_wallpapers, wallpapers)
+
+        threading.Thread(target=read, daemon=True).start()
+        return GLib.SOURCE_CONTINUE
+
+    @staticmethod
+    def wallpaper_path(output):
+        path = subprocess.check_output(
+            ["noctalia", "msg", "wallpaper-get", output], text=True, timeout=1
+        ).strip()
+        if not Path(path).is_file():
+            raise ValueError("Noctalia did not return a wallpaper file")
+        return path
+
+    def prepare_wallpapers(self, wallpapers):
+        self.refreshing = False
+        if self.stopping:
+            return GLib.SOURCE_REMOVE
+        active = set(self.tracker.active)
+        for key in list(self.horizontal_surfaces):
+            if key[0] not in active or wallpapers.get(key[0]) != key[1:4]:
+                self.horizontal_surfaces.pop(key)[0].destroy()
+        for output in list(self.wallpapers):
+            if output not in active or wallpapers.get(output) is None:
+                del self.wallpapers[output]
+        direction = self.direction
+        for output, identity in wallpapers.items():
+            if output not in active or identity is None:
+                continue
+            if self.wallpapers.get(output) != identity:
+                self.wallpapers[output] = identity
+                for self.direction in ((-1, 0), (1, 0)):
+                    self.flash(output, "warp", prepare=True)
+        self.direction = direction
+        if self.refresh_again:
+            self.refresh_again = False
+            self.refresh_wallpapers()
+        return GLib.SOURCE_REMOVE
 
     def handle_event(self, event):
         output = self.focus_tracker.update(event)
         transition = self.tracker.update(event)
+        if "WorkspacesChanged" in event and self.warp_enabled:
+            self.refresh_wallpapers()
         if output is not None and self.ripple_enabled and not self.tracker.overview:
             self.flash(output, "ripple")
         elif transition is not None and self.warp_enabled:
@@ -112,7 +198,7 @@ class WorkspaceWarp(MonitorFlash):
             self.flash(output, "warp")
         return GLib.SOURCE_REMOVE
 
-    def flash(self, output, effect=None):
+    def flash(self, output, effect=None, prepare=False):
         effect = effect or self.effect
         duration_us = RIPPLE_DURATION_US if effect == "ripple" else DURATION_US
         self.duration_us = duration_us
@@ -120,19 +206,47 @@ class WorkspaceWarp(MonitorFlash):
         monitor = next((m for m in monitors if m.get_connector() == output), None)
         if monitor is None:
             return
+        horizontal = effect == "warp" and self.direction[0] != 0
         try:
-            wallpaper = subprocess.check_output(
-                ["noctalia", "msg", "wallpaper-get", output], text=True, timeout=1
-            ).strip()
-            if not Path(wallpaper).is_file():
-                raise ValueError("Noctalia did not return a wallpaper file")
+            if horizontal and self.preview is None:
+                identity = self.wallpapers.get(output)
+                if identity is None:
+                    self.refresh_wallpapers()
+                    return
+                wallpaper = identity[0]
+            else:
+                wallpaper = self.wallpaper_path(output)
+                stamp = Path(wallpaper).stat()
+                identity = (wallpaper, stamp.st_mtime_ns, stamp.st_size)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             print(f"workspace-warp: skipping transition: {error}", file=sys.stderr)
             return
-        if self.window is not None:
+        cache_key = (output, *identity, self.direction)
+        cached = self.horizontal_surfaces.get(cache_key) if horizontal else None
+        if not prepare and self.window is not None:
             self.window.destroy()
+            self.window = None
+        # 준비된 좌우 효과는 투명한 상태로 보관해 이미지/GL 초기화를 반복하지 않습니다.
+        for key, (saved_window, saved_area, saved_state) in list(self.horizontal_surfaces.items()):
+            if prepare:
+                continue
+            saved_state["start"] = None
+            saved_area.progress = 1.0
+            saved_area.queue_render()
+            if key[0] == output and key[1:4] != cache_key[1:4]:
+                saved_window.destroy()
+                del self.horizontal_surfaces[key]
+        if cached is not None:
+            window, area, state = cached
+            state["start"] = None
+            area.progress = 0.0
+            if not state["running"]:
+                state["running"] = True
+                area.add_tick_callback(state["tick"])
+            return
         window = Gtk.Window(application=self)
-        self.window = window
+        if not horizontal:
+            self.window = window
         window.add_css_class("monitor-flash")
         window.set_can_focus(False)
         LayerShell.init_for_window(window)
@@ -150,15 +264,23 @@ class WorkspaceWarp(MonitorFlash):
         area = ImageEffectArea(wallpaper, Path(__file__).with_name(shader),
                                self.render_failed, self.direction)
         window.set_child(area)
-        state = {"start": None}
+        state = {"start": None, "running": not prepare}
 
         def tick(_area, clock):
+            if area.progress >= 1.0:
+                state["running"] = False
+                return GLib.SOURCE_REMOVE
             now = clock.get_frame_time()
             if state["start"] is None:
                 state["start"] = now
             progress = (now - state["start"]) / duration_us
             if progress >= 1:
-                window.destroy()
+                if horizontal:
+                    area.progress = 1.0
+                    area.queue_render()
+                else:
+                    window.destroy()
+                state["running"] = False
                 if self.window is window:
                     self.window = None
                 return GLib.SOURCE_REMOVE
@@ -166,8 +288,25 @@ class WorkspaceWarp(MonitorFlash):
             area.queue_render()
             return GLib.SOURCE_CONTINUE
 
-        area.add_tick_callback(tick)
+        state["tick"] = tick
+        if horizontal:
+            self.horizontal_surfaces[cache_key] = (window, area, state)
+        if prepare:
+            area.progress = 1.0
+        else:
+            area.add_tick_callback(tick)
         window.present()
+
+    def stop_reader(self, app):
+        self.stopping = True
+        if self.refresh_timer is not None:
+            GLib.source_remove(self.refresh_timer)
+        if self.settings_monitor is not None:
+            self.settings_monitor.cancel()
+        for window, _area, _state in self.horizontal_surfaces.values():
+            window.destroy()
+        self.horizontal_surfaces.clear()
+        super().stop_reader(app)
 
 
 if __name__ == "__main__":
