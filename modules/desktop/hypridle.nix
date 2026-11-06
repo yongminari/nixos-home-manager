@@ -2,6 +2,14 @@
 
 let
   isLaptop = config.local.desktop.isLaptop;
+  idleRefresh = config.local.desktop.monitorIdleRefresh;
+  offTimeout = config.local.desktop.monitorOffTimeout;
+  niri-idle-refresh = pkgs.writeShellScriptBin "niri-idle-refresh" ''
+    exec ${pkgs.python3}/bin/python3 ${./monitor-idle-refresh.py} \
+      --niri ${pkgs.niri}/bin/niri \
+      --target ${lib.escapeShellArg idleRefresh.output} "$@"
+  '';
+  refreshCommand = "${niri-idle-refresh}/bin/niri-idle-refresh";
 
   niri-focus-saver = pkgs.writeShellApplication {
     name = "niri-focus-saver";
@@ -109,6 +117,14 @@ let
   };
 in
 {
+  assertions = [
+    {
+      assertion = !idleRefresh.enable || (offTimeout != null && offTimeout > 15 && idleRefresh.output != "");
+      message = "monitorIdleRefresh requires an output selector and monitorOffTimeout > 15.";
+    }
+  ];
+  home.packages = lib.optional idleRefresh.enable niri-idle-refresh;
+
   services.hypridle = {
     enable = true;
     settings = {
@@ -132,11 +148,20 @@ in
           timeout = 600;
           on-timeout = "loginctl lock-session";
         }
-        # [15분: 화면 끄기 (Power Off Monitors)]
+      ] ++ lib.optionals idleRefresh.enable [
         {
-          timeout = 900;
-          on-timeout = "${pkgs.niri}/bin/niri msg action power-off-monitors";
-          on-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+          timeout = offTimeout - 15;
+          on-timeout = "${refreshCommand} prepare";
+          on-resume = "${refreshCommand} resume";
+        }
+      ] ++ lib.optionals (offTimeout != null) [
+        # [호스트별 유휴 시간: 화면 끄기 (Power Off Monitors)]
+        {
+          timeout = offTimeout;
+          on-timeout = if idleRefresh.enable then "${refreshCommand} off"
+            else "${pkgs.niri}/bin/niri msg action power-off-monitors";
+          on-resume = if idleRefresh.enable then "${refreshCommand} resume"
+            else "${pkgs.niri}/bin/niri msg action power-on-monitors";
         }
       ];
     };

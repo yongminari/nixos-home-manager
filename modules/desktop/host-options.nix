@@ -2,6 +2,19 @@
 
 {
   options.local.desktop = {
+    monitorIdleRefresh = {
+      enable = lib.mkEnableOption "Lower refresh rate before automatic monitor power-off";
+      output = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Niri output name or make/model/serial selector for the idle refresh workaround.";
+      };
+    };
+    monitorOffTimeout = lib.mkOption {
+      type = lib.types.nullOr lib.types.ints.positive;
+      default = 900;
+      description = "Idle time in seconds before powering off monitors; null disables automatic monitor power-off.";
+    };
     adaptiveGenieClose = lib.mkEnableOption "Predict the next focus direction for the Niri close shortcut";
     windowAnimation = lib.mkOption {
       type = lib.types.enum [ "smoke" "genie" ];

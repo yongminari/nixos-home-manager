@@ -40,7 +40,8 @@
     modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    open = false; # Turing (RTX 2070 Super) 아키텍처는 proprietary 드라이버가 안정적임
+    # Open 모듈에서 화면 동작 확인. DP 복귀 지연은 Home Manager의 60Hz 전환으로 우회합니다.
+    open = true; # RTX 2070 SUPER (Turing)는 NVIDIA open 모듈 지원 대상
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 

@@ -36,6 +36,13 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  monitor-idle-refresh = pkgs.runCommand "monitor-idle-refresh" {
+    nativeBuildInputs = [ pkgs.python3 ];
+  } ''
+    python3 ${./monitor-idle-refresh.py} ${../modules/desktop/monitor-idle-refresh.py}
+    touch "$out"
+  '';
+
   starship-profile-switch = pkgs.runCommand "starship-profile-switch" {
     nativeBuildInputs = [ pkgs.bash pkgs.zsh pkgs.nushell ];
     starshipPackage = self.homeConfigurations."${username}@nxtp-office-desktop".config.programs.starship.package;
