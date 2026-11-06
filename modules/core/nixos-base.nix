@@ -3,6 +3,7 @@
 {
   imports = [
     ./containers.nix
+    ./dbus.nix
     ../services/tailscale.nix
   ];
 
@@ -67,6 +68,8 @@
     enable = true;
     settings = {
       PermitRootLogin = "no";
+      # 키 접속은 모든 접속 장치에서 확인했으며 개인키는 각 장치에 보관합니다.
+      # 새 장치의 공개키 등록을 위해 비밀번호 로그인도 의도적으로 유지합니다.
       PasswordAuthentication = true;
     };
   };
@@ -90,6 +93,8 @@
   # --- [5. System Policy] ---
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  # 개인 관리 계정의 Nix 작업 편의를 위해 관리자 수준의 신뢰 권한을 유지합니다.
+  # 사용자 결정: 현재 방식으로 사용하고 보안 요구가 바뀌면 sudo 정책과 함께 재검토합니다.
   nix.settings.trusted-users = [ "root" username ];
   nix.settings.substituters = [
     "https://cache.nixos.org"

@@ -76,6 +76,19 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     wireplumber.enable = true;
+
+    # GDM 종료 시 Xwayland 연결 해제 후 x11-bell이 충돌하는 문제 우회.
+    # NixOS의 로그인 화면 계정에만 적용하며 사용자 세션의 오디오는 유지합니다.
+    extraConfig.pipewire."90-gdm-disable-x11-bell" = {
+      "context.properties.rules" = [
+        {
+          matches = [
+            { "application.process.user" = "~^gdm-greeter(-[2-5])?$"; }
+          ];
+          actions.update-props."module.x11.bell" = false;
+        }
+      ];
+    };
   };
 
   services.upower.enable = true;

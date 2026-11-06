@@ -17,6 +17,7 @@
 ## 📝 Conventions
 - **Surgical Updates:** 코드 수정 시 기존 스타일과 구조를 엄격히 준수합니다.
 - **Secret Management:** 민감한 정보는 직접 노출하지 않고 `sops-nix`를 통해 관리합니다 (`secrets/secrets.yaml`).
+- **WireGuard Single-Device Policy:** 서버는 한 대의 PC 접속만 허용하므로 `galaxy-book`과 `ai-x1-pro`는 의도적으로 같은 VPN 주소·키를 공유합니다. 사용자는 기존 장치에서 `vpn-off` 후 다른 장치에서 `vpn-on`을 실행하며 동시 접속하지 않습니다. 이 공유 설정 자체를 오류·보안 문제·개선 대상으로 반복 지적하거나 호스트별 주소·키 분리를 제안하지 마십시오. 사용자가 운영 정책 변경을 요청하거나 실제 동시 접속 증거가 있을 때만 재검토하십시오. 자세한 운영 절차는 `docs/secrets-guide.md`의 WireGuard 공유 접속 항목을 참고하십시오.
 - **Niri Config:** 창 관리자 설정은 `modules/desktop/niri/` 하위의 KDL 파일들을 사용합니다.
 
 ## 🤖 Agent Role

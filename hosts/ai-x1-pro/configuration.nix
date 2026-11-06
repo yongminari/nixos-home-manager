@@ -8,7 +8,6 @@
     ../../modules/core/company-ca.nix
     ../../modules/core/sops.nix
     ../../modules/services/wireguard-client.nix
-    ../../modules/services/local-ai.nix
     ../../modules/hardware/printing.nix
   ];
 
@@ -16,11 +15,6 @@
   networking.networkmanager.enable = true;
   # Allow asymmetric return paths when Wi-Fi, Ethernet, or WireGuard overlap.
   networking.firewall.checkReversePath = "loose";
-  networking.firewall.allowedTCPPorts = [ 8080 ]; # Open WebUI
-
-  # --- [GPU Memory Optimization] ---
-  # 96GB RAM 중 64GB를 GPU가 활용할 수 있도록 설정 (GTT size)
-  boot.kernelParams = [ "amdgpu.gttsize=65536" ];
 
   # --- [절전 기능 비활성화] ---
   # 원격 접속 안정성을 위해 모든 형태의 절전을 끕니다.
@@ -31,6 +25,10 @@
   services.displayManager.gdm.autoSuspend = false;
 
   # --- [NVIDIA eGPU (Oculink) 설정] ---
+  # 이 카드에는 USB-C 포트가 없으며 c5:00.3의 UCSI 초기화가 시간 초과됩니다.
+  # GPU USB-C 제어용 드라이버만 차단합니다. NVIDIA 화면 출력·OCuLink PCIe는 유지합니다.
+  boot.blacklistedKernelModules = [ "i2c_nvidia_gpu" ];
+
   hardware.graphics = {
     enable = true;
     enable32Bit = true;

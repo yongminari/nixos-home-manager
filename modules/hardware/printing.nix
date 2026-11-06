@@ -29,36 +29,40 @@
     openFirewall = true;
   };
 
-  # DHCP 주소를 Avahi로 조회하여 Chrome에서도 보이는 영구 IPP 큐를 갱신
+  # ai-x1-pro와 galaxy-book에서만 사용하는 프린터입니다.
+  # 공유기에서 20:0B:74:CF:BB:D5에 192.168.45.173을 DHCP 예약했습니다.
+  # 부팅 시 영구 IPP 큐가 없거나 주소가 다른 경우에만 등록합니다.
+  # 기존 큐의 옵션과 사용자가 선택한 기본 프린터는 유지합니다.
   systemd.services.canon-mf667cx-printer = {
     description = "Configure Canon MF667Cx IPP Everywhere printer";
-    after = [ "network-online.target" "avahi-daemon.service" "cups.service" ];
-    wants = [ "network-online.target" "avahi-daemon.service" "cups.service" ];
-    path = [ pkgs.avahi pkgs.coreutils pkgs.cups ];
-    serviceConfig.Type = "oneshot";
-    script = ''
-      printer_address="$(avahi-resolve-host-name -4 Canon246c0c.local | cut -f2)"
-      test -n "$printer_address"
-
-      lpadmin \
-        -p Canon_MF660C_Series \
-        -D "Canon imageCLASS MF667Cx" \
-        -E \
-        -v "ipp://$printer_address:631/ipp/print" \
-        -m everywhere \
-        -o media=iso_a4_210x297mm
-      lpadmin -d Canon_MF660C_Series
-    '';
-  };
-
-  systemd.timers.canon-mf667cx-printer = {
-    description = "Refresh Canon MF667Cx DHCP address";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnActiveSec = "5s";
-      OnUnitActiveSec = "5min";
-      Persistent = true;
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" "cups.service" ];
+    wants = [ "network-online.target" "cups.service" ];
+    path = [ pkgs.cups ];
+    serviceConfig = {
+      Type = "oneshot";
+      TimeoutStartSec = "30s";
     };
+    script = ''
+      export LC_ALL=C
+      printer_name=Canon_MF660C_Series
+      printer_uri=ipp://192.168.45.173:631/ipp/print
+      current_device="$(lpstat -v "$printer_name" 2>/dev/null || true)"
+
+      if [ -z "$current_device" ]; then
+        # 최초 등록에는 프린터 연결이 필요합니다. 오프라인이었다면 연결 후
+        # sudo systemctl start canon-mf667cx-printer 로 다시 등록할 수 있습니다.
+        lpadmin -p "$printer_name" \
+          -D "Canon imageCLASS MF667Cx" \
+          -E -v "$printer_uri" -m everywhere -o media=iso_a4_210x297mm
+      elif [ "$current_device" != "device for $printer_name: $printer_uri" ]; then
+        lpadmin -p "$printer_name" -v "$printer_uri"
+      fi
+
+      if [ "$(lpstat -d)" = "no system default destination" ]; then
+        lpadmin -d "$printer_name"
+      fi
+    '';
   };
 
   # 스캐너 및 프린터를 사용할 수 있도록 유저를 그룹에 추가

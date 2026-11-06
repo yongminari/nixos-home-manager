@@ -1,0 +1,23 @@
+--- a/src/launch/launcher.c
++++ b/src/launch/launcher.c
+@@ -737,6 +737,20 @@
+                         if (r)
+                                 return error_trace(r);
+                 } else {
++                        /* NixOS profiles can expose the same service file through
++                         * several symlinks. Keep the first entry and its priority,
++                         * but still diagnose names claimed by different files. */
++                        _c_cleanup_(c_freep) char *previous_path = NULL;
++                        _c_cleanup_(c_freep) char *current_path = NULL;
++
++                        if (old_service->data && old_service->data->path) {
++                                previous_path = realpath(old_service->data->path, NULL);
++                                current_path = realpath(path, NULL);
++                                if (previous_path && current_path &&
++                                    strcmp(previous_path, current_path) == 0)
++                                        return 0;
++                        }
++
+                         log_append_here(&launcher->log, LOG_ERR, 0, DBUS_BROKER_CATALOG_SERVICE_INVALID);
+                         log_append_service_path(&launcher->log, path);
+                         log_append_service_name(&launcher->log, name);

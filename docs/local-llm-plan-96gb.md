@@ -1,3 +1,5 @@
+> 과거 계획 문서입니다. 2026-11-06 로컬 AI 서비스를 제거하기로 결정했으며 현재 구성 지침이 아닙니다. 제거 적용·데이터 보존 상태는 `HANDOFF.md`를 확인하세요.
+
 # 96GB Optimized Local LLM Infrastructure: Gemma 4
 
 This plan leverages the **96GB RAM** on the **AI X1 Pro** to host a high-performance, multi-session LLM environment using **Gemma 4**.
