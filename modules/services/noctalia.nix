@@ -168,6 +168,9 @@ in
       bar = lFramePreset.bar;
       shell = lFramePreset.shell;
 
+      # 현재 인터넷 회선의 공인 IP로 세 기기의 대략적인 위치를 자동으로 찾습니다.
+      location.auto_locate = true;
+
       # 알림음과 UI 사운드 활성화
       audio = {
         enable_sounds = true;

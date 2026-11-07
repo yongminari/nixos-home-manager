@@ -252,8 +252,9 @@ class WorkspaceWarp(MonitorFlash):
         LayerShell.init_for_window(window)
         LayerShell.set_namespace(window, "niri-workspace-warp")
         LayerShell.set_monitor(window, monitor)
-        # Noctalia 배경 위, 일반 창과 패널 아래에만 그립니다.
-        LayerShell.set_layer(window, LayerShell.Layer.BOTTOM)
+        # config.kdl의 place-within-backdrop은 BACKGROUND 레이어에만 적용됩니다.
+        # 워크스페이스와 함께 이동하지 않아야 화면 끝을 고정한 변형이 유지됩니다.
+        LayerShell.set_layer(window, LayerShell.Layer.BACKGROUND)
         LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.NONE)
         LayerShell.set_exclusive_zone(window, -1)
         for edge in (LayerShell.Edge.TOP, LayerShell.Edge.BOTTOM,

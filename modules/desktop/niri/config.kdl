@@ -34,6 +34,12 @@ layer-rule {
     place-within-backdrop true
 }
 
+// 변형 레이어도 화면에 고정하여 워크스페이스 이동 시 아래 배경이 드러나지 않게 합니다.
+layer-rule {
+    match namespace="^niri-workspace-warp$"
+    place-within-backdrop true
+}
+
 // 블러 강도는 전역 설정입니다. 배경 윤곽을 남기면서 부드럽게 흐립니다.
 blur {
     passes 2
