@@ -11,8 +11,8 @@ let
     HISTORY_FILE="$STATE_DIR/seen-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
     API_URL="https://wallhaven.cc/api/v1/search?purity=100&colors=000000&sorting=random"
-    # 특정 그룹이나 멤버 이름 없이 K-pop 여성 아티스트 전체를 검색합니다.
-    SEARCH_TOPICS=(nature night sky kpop)
+    # 풍경과 지정한 걸그룹 이름 중 하나를 선택해 검색합니다.
+    SEARCH_TOPICS=(nature night sky aespa ive illit "le sserafim" newjeans rescene)
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
@@ -50,7 +50,7 @@ let
           ;;
         *)
           CATEGORIES=001
-          QUERY="+$TOPIC +women -men -boy -boys"
+          QUERY="+\"$TOPIC\" +women -men -boy -boys"
           ;;
       esac
       QUERY="$QUERY -anime -illustration -\"digital art\" -\"AI art\""
