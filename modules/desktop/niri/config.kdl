@@ -1,3 +1,6 @@
+// XWayland 앱에 satellite의 별도 제목 표시줄이 붙지 않도록 합니다.
+prefer-no-csd
+
 // 창 규칙
 window-rule {
     geometry-corner-radius 28
