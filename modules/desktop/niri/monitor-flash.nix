@@ -36,7 +36,7 @@ in
     effect = lib.mkOption {
       type = lib.types.enum [ "screen-ripple" "splatter" "fire" "aurora" ];
       default = "screen-ripple";
-      description = "Monitor focus effect; screen-ripple refracts an in-memory screenshot with a large circular pulse for 0.5 seconds. Preview with niri-monitor-flash --demo.";
+      description = "Monitor focus effect; screen-ripple distorts only a single thick ring expanding from the center over 0.5 seconds. Preview with niri-monitor-flash --effect screen-ripple --preview.";
     };
     wallpaperRipple = lib.mkOption {
       type = lib.types.bool;
@@ -45,12 +45,12 @@ in
     };
     windowClose = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Show a reversed screen ripple when a window closes on a visible workspace.";
     };
     windowOpen = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Also show the selected monitor effect when a new window opens on a visible workspace.";
     };
   };

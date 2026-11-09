@@ -98,8 +98,8 @@ in
   # 모든 장비에 공통 적용하며 호스트 설정에서 개별적으로 재정의할 수 있습니다.
   local.desktop = {
     workspaceWarp.enable = lib.mkDefault true;
-    windowAnimation = lib.mkDefault "genie";
-    adaptiveGenieClose = lib.mkDefault true;
+    windowAnimation = lib.mkDefault "black-hole";
+    adaptiveGenieClose = lib.mkDefault false;
   };
 
   home.packages = with pkgs; [
@@ -157,7 +157,7 @@ in
       }
     ''}
 
-    // 창은 진한 연기 효과로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
+    // 창은 위에서 본 먼지 폭발로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
     animations {
       // 이동 애니메이션의 속도감을 통일합니다.
       workspace-switch {
@@ -195,17 +195,22 @@ in
         duration-ms 1000
         curve "linear"
         custom-shader r#"
-          ${builtins.readFile ./smoke-open.glsl}
+          ${builtins.readFile ./dust-explosion-open.glsl}
         "#
       }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
-          ${if currentHost.windowAnimation == "genie" then ''
+          ${if currentHost.windowAnimation == "black-hole" then ''
+            duration-ms 750
+            curve "linear"
+          '' else if currentHost.windowAnimation == "genie" then ''
             duration-ms 750
             curve "linear"
           '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
           custom-shader r#"
-            ${if currentHost.windowAnimation == "genie" then ''
+            ${if currentHost.windowAnimation == "black-hole" then
+              builtins.readFile ./black-hole-close.glsl
+            else if currentHost.windowAnimation == "genie" then ''
               ${builtins.readFile ./genie.glsl}
               vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {
                   return genie_color(coords_geo, size_geo,
