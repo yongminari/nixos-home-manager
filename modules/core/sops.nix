@@ -26,6 +26,7 @@
               192.168.0.230:
                 token: ${config.sops.placeholder.gitlab_token}
                 api_protocol: https
+                skip_tls_verify: true
               gitlab.com:
                 token: ${config.sops.placeholder.gitlab_personal_token}
                 api_protocol: https
