@@ -139,11 +139,17 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 | **`Super + N`** | Noctalia 알림 및 컨트롤 센터 토글 |
 | **`Super + Shift + W`** | Wallhaven 무작위 배경화면 가져오기 (`fetch-wallhaven`) |
 | **`Super + Q`** | 현재 창 닫기 |
+| **`Super + C`** | 현재 타일링 열 정렬 순환: 가운데 → 왼쪽 → 오른쪽 |
+| **`Super + Shift + C`** | 바로 가운데 정렬 |
 | **`Super + 1~9`** | 워크스페이스 이동 |
 | **`Super + Ctrl + H`** | 왼쪽 모니터 활성화/비활성화 |
 | **`Super + Ctrl + L`** | 오른쪽 모니터 활성화/비활성화 |
 | **`Shift + Print`** | 영역 캡처 및 편집 (**Swappy**) |
 | **`Print`** | 전체 화면 캡처 및 편집 (**Swappy**) |
+
+정렬 순환은 창 크기·타일 순서를 유지한 채 화면의 스크롤 위치를 바꿉니다. 이미 가운데에 있으면 왼쪽부터 이동하며, 같은 열에 쌓인 창들은 함께 움직입니다. 다른 열로 포커스를 옮기면 기존 자동 가운데 정렬이 적용됩니다. 플로팅·전체 화면·정렬할 여유가 없는 너비에서는 순환하지 않습니다.
+
+이 기능은 공통 Niri 패키지에 `modules/desktop/niri/cycle-column-alignment.patch`를 적용합니다. 최초 적용은 `ns` 후 로그아웃/로그인이 필요하며, `hms`만으로는 실행 중인 compositor가 교체되지 않습니다.
 
 ### 🛠️ Git TUI (GitUI)
 - **`Ctrl + h / l`**: 메인 탭 전환 (Home_env style)

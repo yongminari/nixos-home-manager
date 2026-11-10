@@ -105,7 +105,9 @@ binds {
     Mod+R { switch-preset-column-width; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
-    Mod+C { center-column; }
+    // IPC로 호출하여 Niri 교체 전 세션에서도 설정 파일을 읽을 수 있게 합니다.
+    Mod+C repeat=false hotkey-overlay-title="열 정렬: 가운데 → 왼쪽 → 오른쪽" { spawn "niri" "msg" "action" "cycle-column-alignment"; }
+    Mod+Shift+C hotkey-overlay-title="가운데 정렬" { center-column; }
 
     Mod+Minus { set-column-width "-10%"; }
     Mod+Equal { set-column-width "+10%"; }

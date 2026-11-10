@@ -1,0 +1,290 @@
+--- a/niri-ipc/src/lib.rs
++++ b/niri-ipc/src/lib.rs
+@@ -456,6 +456,8 @@
+     },
+     /// Center the focused column on the screen.
+     CenterColumn {},
++    /// Cycle the focused tiled column alignment: center, left, right.
++    CycleColumnAlignment {},
+     /// Center a window on the screen.
+     #[cfg_attr(
+         feature = "clap",
+--- a/niri-config/src/binds.rs
++++ b/niri-config/src/binds.rs
+@@ -209,6 +209,7 @@
+     ToggleColumnTabbedDisplay,
+     SetColumnDisplay(#[knuffel(argument, str)] ColumnDisplay),
+     CenterColumn,
++    CycleColumnAlignment,
+     CenterWindow,
+     #[knuffel(skip)]
+     CenterWindowById(u64),
+@@ -501,6 +502,7 @@
+             niri_ipc::Action::ToggleColumnTabbedDisplay {} => Self::ToggleColumnTabbedDisplay,
+             niri_ipc::Action::SetColumnDisplay { display } => Self::SetColumnDisplay(display),
+             niri_ipc::Action::CenterColumn {} => Self::CenterColumn,
++            niri_ipc::Action::CycleColumnAlignment {} => Self::CycleColumnAlignment,
+             niri_ipc::Action::CenterWindow { id: None } => Self::CenterWindow,
+             niri_ipc::Action::CenterWindow { id: Some(id) } => Self::CenterWindowById(id),
+             niri_ipc::Action::CenterVisibleColumns {} => Self::CenterVisibleColumns,
+--- a/src/input/mod.rs
++++ b/src/input/mod.rs
+@@ -1616,6 +1616,10 @@
+                 if let Some(window) = window {
+                     self.niri.layout.toggle_window_height(Some(&window), false);
+                 }
++            }
++            Action::CycleColumnAlignment => {
++                self.niri.layout.cycle_column_alignment();
++                self.niri.queue_redraw_all();
+             }
+             Action::CenterColumn => {
+                 self.niri.layout.center_column();
+--- a/src/layout/mod.rs
++++ b/src/layout/mod.rs
+@@ -2239,6 +2239,13 @@
+         workspace.set_column_display(display);
+     }
+
++    pub fn cycle_column_alignment(&mut self) {
++        let Some(workspace) = self.active_workspace_mut() else {
++            return;
++        };
++        workspace.cycle_column_alignment();
++    }
++
+     pub fn center_column(&mut self) {
+         let Some(workspace) = self.active_workspace_mut() else {
+             return;
+--- a/src/layout/workspace.rs
++++ b/src/layout/workspace.rs
+@@ -1149,6 +1149,13 @@
+         self.scrolling.set_column_display(display);
+     }
+
++    pub fn cycle_column_alignment(&mut self) {
++        if self.floating_is_active.get() {
++            return;
++        }
++        self.scrolling.cycle_column_alignment();
++    }
++
+     pub fn center_column(&mut self) {
+         if self.floating_is_active.get() {
+             self.floating.center_window(None);
+--- a/src/layout/scrolling.rs
++++ b/src/layout/scrolling.rs
+@@ -2194,6 +2194,44 @@
+             self.set_fullscreen(&window, false);
+             self.set_maximized(&window, false);
+         }
++    }
++
++    pub fn cycle_column_alignment(&mut self) {
++        let Some(col) = self.columns.get(self.active_column_idx) else {
++            return;
++        };
++
++        // Fullscreen and maximized columns have no free space to align within.
++        if !col.sizing_mode().is_normal() {
++            return;
++        }
++
++        let area = self.working_area;
++        let gap = self.options.layout.gaps;
++        let width = col.width();
++        let pixel = 1. / self.scale;
++        if area.size.w - width - 2. * gap <= 2. * pixel {
++            return;
++        }
++
++        let center = -(area.size.w - width) / 2. - area.loc.x;
++        let left = -area.loc.x - gap;
++        let right = -area.loc.x - area.size.w + gap + width;
++
++        // Use the animation target so rapid key presses still advance the cycle.
++        // An arbitrary position starts at center; no external state is needed.
++        let current = self.view_offset.target();
++        let next = if (current - center).abs() < pixel {
++            left
++        } else if (current - left).abs() < pixel {
++            right
++        } else {
++            center
++        };
++        self.animate_view_offset(self.active_column_idx, next);
++
++        let col = &mut self.columns[self.active_column_idx];
++        cancel_resize_for_column(&mut self.interactive_resize, col);
+     }
+
+     pub fn center_column(&mut self) {
+--- a/src/layout/tests.rs
++++ b/src/layout/tests.rs
+@@ -13,6 +13,7 @@
+
+ use super::*;
+
++mod alignment;
+ mod animations;
+ mod fullscreen;
+
+--- /dev/null
++++ b/src/layout/tests/alignment.rs
+@@ -0,0 +1,156 @@
++use super::*;
++
++fn setup(scale: f64, count: usize) -> Layout<TestWindow> {
++    let options = Options {
++        layout: niri_config::Layout {
++            gaps: 20.,
++            center_focused_column: CenterFocusedColumn::Always,
++            always_center_single_column: true,
++            struts: Struts {
++                left: FloatOrInt(40.),
++                right: FloatOrInt(60.),
++                ..Default::default()
++            },
++            ..Default::default()
++        },
++        ..Default::default()
++    };
++    let mut layout = check_ops_with_options(
++        options,
++        [Op::AddScaledOutput {
++            id: 1,
++            scale,
++            layout_config: None,
++        }],
++    );
++    for id in 1..=count {
++        check_ops_on_layout(
++            &mut layout,
++            [
++                Op::AddWindow {
++                    params: TestWindowParams::new(id),
++                },
++                Op::Communicate(id),
++            ],
++        );
++    }
++    check_ops_on_layout(&mut layout, [Op::CenterColumn, Op::CompleteAnimations]);
++    layout
++}
++
++#[test]
++fn alignment_cycle_preserves_tiling_and_handles_rapid_presses() {
++    for scale in [1., 1.25, 2.] {
++        for count in [1, 3] {
++            let mut layout = setup(scale, count);
++            let scrolling = layout.active_workspace().unwrap().scrolling();
++            let width = scrolling.tiles().last().unwrap().animated_tile_size().w;
++            let center = scrolling.view_offset().target();
++            let right = -(1280. / scale - 60.) + 20. + width;
++            // Do not finish animations between presses: the target must advance.
++            for expected in [-60., right, center, -60., right, center] {
++                layout.cycle_column_alignment();
++                let scrolling = layout.active_workspace().unwrap().scrolling();
++                assert!((scrolling.view_offset().target() - expected).abs() < 0.001);
++                assert_eq!(scrolling.columns().count(), count);
++                assert_eq!(scrolling.tiles().count(), count);
++                assert_eq!(layout.focus().unwrap().id(), &count);
++                layout.verify_invariants();
++            }
++            check_ops_on_layout(&mut layout, [Op::CompleteAnimations]);
++            let scrolling = layout.active_workspace().unwrap().scrolling();
++            assert!((scrolling.view_offset().current() - center).abs() < 0.001);
++        }
++    }
++}
++
++#[test]
++fn alignment_cycle_keeps_empty_floating_and_fullscreen_unchanged() {
++    let mut layout = setup(1., 0);
++    layout.cycle_column_alignment();
++    layout.verify_invariants();
++
++    let mut layout = setup(1., 1);
++    check_ops_on_layout(
++        &mut layout,
++        [
++            Op::FullscreenWindow(1),
++            Op::Communicate(1),
++            Op::CompleteAnimations,
++        ],
++    );
++    let before = layout
++        .active_workspace()
++        .unwrap()
++        .scrolling()
++        .view_offset()
++        .target();
++    layout.cycle_column_alignment();
++    assert_eq!(
++        layout
++            .active_workspace()
++            .unwrap()
++            .scrolling()
++            .view_offset()
++            .target(),
++        before
++    );
++    layout.verify_invariants();
++
++    let mut layout = setup(1., 1);
++    check_ops_on_layout(
++        &mut layout,
++        [
++            Op::ToggleWindowFloating { id: None },
++            Op::Communicate(1),
++            Op::CompleteAnimations,
++        ],
++    );
++    let before = layout
++        .active_workspace()
++        .unwrap()
++        .tiles_with_render_positions()
++        .map(|(_, pos, _)| pos)
++        .collect::<Vec<_>>();
++    layout.cycle_column_alignment();
++    let after = layout
++        .active_workspace()
++        .unwrap()
++        .tiles_with_render_positions()
++        .map(|(_, pos, _)| pos)
++        .collect::<Vec<_>>();
++    assert_eq!(after, before);
++    layout.verify_invariants();
++}
++
++#[test]
++fn alignment_cycle_leaves_full_width_and_maximized_columns_unchanged() {
++    for op in [
++        Op::MaximizeColumn,
++        Op::MaximizeWindowToEdges { id: None },
++        Op::SetColumnWidth(SizeChange::SetFixed(2000)),
++    ] {
++        let mut layout = setup(1., 1);
++        check_ops_on_layout(
++            &mut layout,
++            [op, Op::Communicate(1), Op::CompleteAnimations],
++        );
++        let before = layout
++            .active_workspace()
++            .unwrap()
++            .scrolling()
++            .view_offset()
++            .target();
++        layout.cycle_column_alignment();
++        assert_eq!(
++            layout
++                .active_workspace()
++                .unwrap()
++                .scrolling()
++                .view_offset()
++                .target(),
++            before
++        );
++        layout.verify_invariants();
++    }
++}

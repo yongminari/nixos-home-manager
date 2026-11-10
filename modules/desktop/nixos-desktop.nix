@@ -12,6 +12,14 @@
   ]);
 
   programs.niri.enable = true;
+  # NixOS 세션과 standalone Home Manager가 같은 정렬 동작을 사용합니다.
+  nixpkgs.overlays = [
+    (_final: prev: {
+      niri = prev.niri.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [ ./niri/cycle-column-alignment.patch ];
+      });
+    })
+  ];
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
