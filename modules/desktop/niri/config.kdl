@@ -32,38 +32,31 @@ window-rule {
     }
 }
 
-// 플로팅은 포커스가 없어도 얇은 윤곽과 그림자로 타일 창과 구분합니다.
+// 플로팅 뒤에 스모크 실버 판이 오른쪽 아래로 20px 비껴 겹친 느낌을 냅니다.
 window-rule {
     match is-floating=true
 
     border {
-        on
-        width 2
-        active-color "#cdd6f459"
-        inactive-color "#cdd6f459"
+        off
     }
 
     shadow {
         on
-        softness 40
-        spread 5
-        offset x=0 y=12
+        softness 0
+        spread 0
+        offset x=20 y=20
         draw-behind-window false
-        color "#00000066"
-        inactive-color "#00000066"
+        color "#78828e66"
+        inactive-color "#78828e66"
     }
 }
 
-// 실제 키보드 포커스를 받은 플로팅만 더 밝고 깊게 강조합니다.
+// 실제 키보드 포커스를 받은 플로팅은 뒤쪽 판을 조금 더 밝게 강조합니다.
 window-rule {
     match is-floating=true is-focused=true
 
-    border {
-        active-color "#cba6f7b3"
-    }
-
     shadow {
-        color "#00000090"
+        color "#9aa5b380"
     }
 }
 
