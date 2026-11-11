@@ -13,7 +13,7 @@ binds {
     Mod+Shift+E { spawn "wlogout"; }
 
     // 플로팅 관리
-    Mod+W { toggle-window-floating; }
+    Mod+W repeat=false hotkey-overlay-title="플로팅/타일링 전환 (10% 축소)" { spawn "niri-toggle-floating"; }
     Mod+Shift+Space hotkey-overlay-title="플로팅/타일링 포커스 전환" { switch-focus-between-floating-and-tiling; }
     Mod+Alt+Space { focus-floating; }
     Mod+Alt+Shift+Space { focus-tiling; }

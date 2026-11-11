@@ -14,6 +14,55 @@ let
     if currentHost.outputs == null then ""
     else currentHost.outputs.${side};
 
+  niri-toggle-floating = pkgs.writeShellApplication {
+    name = "niri-toggle-floating";
+    runtimeInputs = with pkgs; [ coreutils jq niri util-linux ];
+    text = ''
+      # 소켓별로 분리하여 Niri 재시작 후 재사용된 창 ID와 섞이지 않게 합니다.
+      : "''${XDG_RUNTIME_DIR:?}" "''${NIRI_SOCKET:?}"
+      umask 077
+      state_dir="$XDG_RUNTIME_DIR/niri-toggle-floating-''${NIRI_SOCKET##*/}"
+      mkdir -p "$state_dir"
+      exec 9>"$state_dir/lock"
+      flock 9
+
+      window=$(niri msg --json focused-window)
+      id=$(jq -r '.id // empty' <<< "$window")
+      if [ -z "$id" ]; then
+        exit 0
+      fi
+      saved_size="$state_dir/$id.json"
+
+      if jq -e '.is_floating' <<< "$window" >/dev/null; then
+        niri msg action move-window-to-tiling --id "$id"
+        # 처음부터 플로팅이었던 창에는 복원할 타일 크기가 없습니다.
+        if [ -f "$saved_size" ] && jq -e --argjson window "$window" \
+          '.pid == $window.pid' "$saved_size" >/dev/null; then
+          read -r width height < <(jq -r '.size | @tsv' "$saved_size")
+          niri msg action set-window-width --id "$id" "$width"
+          niri msg action set-window-height --id "$id" "$height"
+        fi
+        rm -f "$saved_size"
+        exit 0
+      fi
+
+      # 플로팅에서 수동으로 크기를 바꾸더라도 전환 직전 크기를 복원합니다.
+      jq '{pid, size: .layout.window_size}' <<< "$window" > "$saved_size.tmp"
+      mv "$saved_size.tmp" "$saved_size"
+
+      # %-지정은 화면 기준이므로 전환 직전 창의 논리 픽셀 크기로 계산합니다.
+      read -r width height < <(jq -r '
+        .layout.window_size | map((. * 0.9 | round) | if . < 1 then 1 else . end) | @tsv
+      ' <<< "$window")
+
+      # 크기 변경에는 공통 window-resize 스프링과 탄성 셰이더가 적용됩니다.
+      niri msg action move-window-to-floating --id "$id"
+      niri msg action set-window-width --id "$id" "$width"
+      niri msg action set-window-height --id "$id" "$height"
+      niri msg action center-window --id "$id"
+    '';
+  };
+
   niri-output-toggle = pkgs.writeShellApplication {
     name = "niri-output-toggle";
     runtimeInputs = with pkgs; [ jq libnotify niri ];
@@ -104,6 +153,7 @@ in
 
   home.packages = with pkgs; [
     niri
+    niri-toggle-floating
     niri-output-toggle
     xwayland-satellite
   ];
