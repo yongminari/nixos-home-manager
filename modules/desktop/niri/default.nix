@@ -59,6 +59,22 @@ let
       niri msg action move-window-to-floating --id "$id"
       niri msg action set-window-width --id "$id" "$width"
       niri msg action set-window-height --id "$id" "$height"
+
+      # 크기 요청은 비동기입니다. 첫 전환에서 이전 크기로 정렬하지 않도록
+      # 앱이 새 크기를 반영한 뒤 테두리를 포함한 실제 크기로 중앙 정렬합니다.
+      for ((attempt = 0; attempt < 100; attempt++)); do
+        current=$(niri msg --json windows | jq -c --argjson id "$id" \
+          'first(.[] | select(.id == $id)) // null')
+        if ! jq -e '.is_floating == true' <<< "$current" >/dev/null; then
+          exit 0
+        fi
+        if jq -e --argjson width "$width" --argjson height "$height" \
+          '.layout.window_size == [$width, $height]' <<< "$current" >/dev/null; then
+          break
+        fi
+        sleep 0.02
+      done
+      # 최소 크기 등으로 요청을 거부한 앱도 실제 크기를 기준으로 정렬합니다.
       niri msg action center-window --id "$id"
     '';
   };
