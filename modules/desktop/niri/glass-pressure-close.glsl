@@ -3,9 +3,10 @@
 // Jittered hexagonal Voronoi cells form a few dozen large glass prisms.
 // Each prism keeps the bent window texture and has actual shaded side faces.
 // Times are seconds; the Niri duration must match GLASS_DURATION.
-const float GLASS_DURATION = 1.2;
+const float GLASS_DURATION = 1.7;
 const float METEOR_START = 0.16;
-const float METEOR_IMPACT = 0.72;
+const float METEOR_IMPACT = 1.22;
+const float METEOR_STRAIGHT_START = METEOR_IMPACT - 0.12;
 const float GLASS_CRACK_START = (METEOR_IMPACT + 0.02) / GLASS_DURATION;
 const float GLASS_CRACK_END = (METEOR_IMPACT + 0.08) / GLASS_DURATION;
 const float GLASS_BREAK = (METEOR_IMPACT + 0.095) / GLASS_DURATION;
@@ -15,7 +16,9 @@ const float GLASS_CAMERA_DISTANCE = 1.8;
 const float GLASS_GRAVITY = 9.81 / 2.4;
 // Apparent diameter at contact, relative to the window's short side.
 const float METEOR_CONTACT_DIAMETER = 0.125;
-const float METEOR_APPROACH_POWER = 2.2;
+// Scale the exponent with flight time to preserve the original impact speed
+// (power / duration), while spending the extra 0.5 seconds on a slower approach.
+const float METEOR_APPROACH_POWER = 2.2 * (METEOR_IMPACT - METEOR_START) / 0.56;
 const float METEOR_SPIN_RATE = 17.0; // Ten times the original 1.7 rad/s.
 
 mat3 glass_meteor_rotation(float seconds) {
@@ -68,6 +71,19 @@ float glass_meteor_depth(float seconds, float pixel) {
     // without the previous sudden braking. Flight after impact is constant-speed.
     float projected = mix(start, r, pow(approach, METEOR_APPROACH_POWER));
     return glass_meteor_radius() * sqrt(1.0 + pow(GLASS_CAMERA_DISTANCE / projected, 2.0));
+}
+
+vec2 glass_meteor_offset(float seconds) {
+    // Tilt the rounded L by 25 degrees so its final leg also descends from
+    // the upper left, instead of approaching the axis horizontally.
+    // Overlap the two legs to round the corner without dipping below center.
+    // Quintic easing gives zero lateral velocity and acceleration at the join.
+    float t = clamp((seconds - METEOR_START) / (METEOR_STRAIGHT_START - METEOR_START), 0.0, 1.0);
+    vec2 travel = clamp(vec2((t - 0.30) / 0.70, t / 0.70), 0.0, 1.0);
+    vec2 eased = travel * travel * travel * (travel * (travel * 6.0 - 15.0) + 10.0);
+    vec2 offset = vec2(-0.38, -0.32) * (vec2(1.0) - eased);
+    return vec2(0.9063078 * offset.x - 0.4226183 * offset.y,
+                0.4226183 * offset.x + 0.9063078 * offset.y);
 }
 
 float glass_pressure(float seconds, float pixel) {
@@ -453,22 +469,23 @@ vec4 close_color(vec3 coords_geo, vec3 size_geo) {
     vec2 point = (coords_geo.xy - 0.5) * size / short_side;
     float seconds = p * GLASS_DURATION;
     float pixel = 1.0 / (short_side * max(niri_scale, 0.01));
+    vec2 meteor_point = point - glass_meteor_offset(seconds);
     vec3 refracted = coords_geo;
     float depth = glass_meteor_depth(seconds, pixel);
     float radius = glass_meteor_radius();
     if (seconds >= METEOR_START && depth > radius) {
         float projected_radius = GLASS_CAMERA_DISTANCE * radius / sqrt(depth * depth - radius * radius);
-        float q = length(point) / max(projected_radius, pixel);
+        float q = length(meteor_point) / max(projected_radius, pixel);
         float heat_band = smoothstep(1.0, 1.15, q) * (1.0 - smoothstep(1.5, 1.9, q))
                         * smoothstep(8.0, 40.0, projected_radius / pixel);
         // Refract the available window image in a thin, moving hot-air layer.
-        float angular = length(point) > pixel * 0.01 ? atan(point.y, point.x) : 0.0;
+        float angular = length(meteor_point) > pixel * 0.01 ? atan(meteor_point.y, meteor_point.x) : 0.0;
         float wave = sin(angular * 17.0 - seconds * 53.0 + q * 19.0);
-        vec2 offset = point / max(length(point), pixel) * (2.0 * pixel * heat_band * wave);
+        vec2 offset = meteor_point / max(length(meteor_point), pixel) * (2.0 * pixel * heat_band * wave);
         refracted.xy += offset * short_side / size;
     }
     vec4 pane = glass_scene(refracted, size_geo);
-    vec4 meteor = glass_meteor(point, seconds, pixel);
+    vec4 meteor = glass_meteor(meteor_point, seconds, pixel);
     // Before contact it shines through the transparent glass; after contact
     // it crosses in front, continuing all the way toward the camera.
     return seconds < METEOR_IMPACT ? pane + meteor * (1.0 - pane.a)

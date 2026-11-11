@@ -26,10 +26,12 @@ in {
     services.auto-cpufreq.settings = {
       charger = {
         governor = "performance";
+        platform_profile = "performance";
         turbo = "always";
       };
       battery = {
         governor = "powersave";
+        platform_profile = "balanced";
         turbo = "auto";
       };
     };

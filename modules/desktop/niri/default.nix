@@ -267,7 +267,7 @@ in
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
           ${if currentHost.windowAnimation == "glass-pressure" then ''
-            duration-ms 1200
+            duration-ms 1700
             curve "linear"
           '' else if currentHost.windowAnimation == "glacier" then ''
             duration-ms 1250
