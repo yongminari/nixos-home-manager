@@ -12,7 +12,6 @@
   };
 
   local.desktop = {
-    windowAnimation = "glass-pressure";
     scale = "1.0";
     isLaptop = false;
     outputs = {

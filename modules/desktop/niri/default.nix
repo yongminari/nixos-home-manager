@@ -163,7 +163,7 @@ in
   # 모든 장비에 공통 적용하며 호스트 설정에서 개별적으로 재정의할 수 있습니다.
   local.desktop = {
     workspaceWarp.enable = lib.mkDefault true;
-    windowAnimation = lib.mkDefault "black-hole";
+    windowAnimation = lib.mkDefault "glass-pressure";
     adaptiveGenieClose = lib.mkDefault false;
   };
 
