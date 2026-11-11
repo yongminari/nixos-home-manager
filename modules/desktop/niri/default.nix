@@ -200,7 +200,16 @@ in
       }
       ${lib.concatMapStringsSep "\n" (action: ''
         window-${action} {
-          ${if currentHost.windowAnimation == "black-hole" then ''
+          ${if currentHost.windowAnimation == "glass-pressure" then ''
+            duration-ms 1200
+            curve "linear"
+          '' else if currentHost.windowAnimation == "glacier" then ''
+            duration-ms 1250
+            curve "linear"
+          '' else if currentHost.windowAnimation == "ink" then ''
+            duration-ms 900
+            curve "linear"
+          '' else if currentHost.windowAnimation == "black-hole" then ''
             duration-ms 750
             curve "linear"
           '' else if currentHost.windowAnimation == "genie" then ''
@@ -208,8 +217,13 @@ in
             curve "linear"
           '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
           custom-shader r#"
-            ${if currentHost.windowAnimation == "black-hole" then
-              builtins.readFile ./black-hole-close.glsl
+            ${if currentHost.windowAnimation == "glass-pressure" then
+              builtins.readFile ./glass-pressure-close.glsl
+            else if currentHost.windowAnimation == "glacier" then
+              builtins.readFile ./glacier-close.glsl
+            else if builtins.elem currentHost.windowAnimation [ "black-hole" "ink" ] then
+              lib.optionalString (currentHost.windowAnimation == "ink") "#define INK_FLOW\n"
+              + builtins.readFile ./black-hole-close.glsl
             else if currentHost.windowAnimation == "genie" then ''
               ${builtins.readFile ./genie.glsl}
               vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {

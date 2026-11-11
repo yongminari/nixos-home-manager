@@ -4,6 +4,8 @@
 // pixel has a stable random friction class; no round particle sprites or sand shading.
 // Backtrace five flow classes instead of gathering large particle sprites.
 // This is a visual flow approximation, not a grain-collision CFD solver.
+// INK_FLOW uses one continuous, gently swirling sheet of window color instead
+// of the five independently moving pixel classes.
 
 float flow_hash(vec2 p) {
     p += vec2(niri_random_seed * 71.0, niri_random_seed * 113.0);
@@ -125,9 +127,19 @@ vec4 close_color(vec3 coords_geo, vec3 size_geo) {
     vec4 color = vec4(0.0);
     vec2 flow_point = flow_query(point, half_size, spread);
     float flow_radius = length(flow_point);
+#ifdef INK_FLOW
+    // Begin curling only once the rectangle has become a disk, so its outer
+    // corners do not rotate out of the original silhouette. The inner liquid
+    // turns farther than the outer liquid, stretching colors into ink ribbons.
+    float curl = 1.8 * smoothstep(0.42, 0.85, time)
+               * exp(-5.0 * flow_radius);
+    float c = cos(curl);
+    float s = sin(curl);
+    flow_point = mat2(c, -s, s, c) * flow_point;
+#endif
     float flow_angle = flow_radius > 0.000001
         ? atan(abs(flow_point.y), abs(flow_point.x)) : 0.0;
-    vec2 material_ray = flow_rectangle_ray(flow_angle, half_size) * sign(point);
+    vec2 material_ray = flow_rectangle_ray(flow_angle, half_size) * sign(flow_point);
     float material_scale_squared = dot(material_ray, material_ray);
     float query_time = time;
     float target_squared = flow_radius * flow_radius;
@@ -137,6 +149,20 @@ vec4 close_color(vec3 coords_geo, vec3 size_geo) {
         target_squared = flow_mouth * flow_mouth;
     }
     if (query_time >= 0.0 && radius <= sqrt(reach_squared) + pixel) {
+#ifdef INK_FLOW
+        // A single backtrace keeps neighboring pixels connected: no random
+        // class rejection, overlapping grains, or holes between flow classes.
+        float source_squared = flow_source_squared(target_squared, query_time, 1.0,
+            reach_squared, strength, material_scale_squared);
+        vec2 original_point = material_ray * sqrt(source_squared);
+        vec2 source = original_point / aspect + 0.5;
+        if (source.x >= 0.0 && source.x <= 1.0 && source.y >= 0.0 && source.y <= 1.0) {
+            float coverage = 1.0 - smoothstep(-1.0 / scale, 1.0 / scale,
+                flow_outline(original_point * short_side, size_geo.xy, corner));
+            color = texture2D(niri_tex, (niri_geo_to_tex * vec3(source, 1.0)).st)
+                  * coverage * collapse;
+        }
+#else
         for (int group = 0; group < 5; group++) {
             float friction = 0.85 + 0.075 * float(group);
             float source_squared = flow_source_squared(target_squared, query_time, friction,
@@ -159,6 +185,7 @@ vec4 close_color(vec3 coords_geo, vec3 size_geo) {
             sample_color *= coverage * collapse;
             color = sample_color + color * (1.0 - sample_color.a);
         }
+#endif
     }
 
     float shadow = (1.0 - smoothstep(max(0.0, horizon - pixel), horizon + pixel, radius))

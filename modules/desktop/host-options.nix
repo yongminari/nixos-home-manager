@@ -18,7 +18,7 @@
     };
     adaptiveGenieClose = lib.mkEnableOption "Predict the next focus direction for the Niri close shortcut";
     windowAnimation = lib.mkOption {
-      type = lib.types.enum [ "smoke" "genie" "black-hole" ];
+      type = lib.types.enum [ "smoke" "genie" "black-hole" "ink" "glacier" "glass-pressure" ];
       default = "smoke";
       description = "Niri window closing shader (windows open with the dust-explosion shader).";
     };
