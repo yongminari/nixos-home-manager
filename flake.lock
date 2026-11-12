@@ -133,7 +133,8 @@
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "zellij-rounded-bars": "zellij-rounded-bars"
       }
     },
     "sops-nix": {
@@ -153,6 +154,26 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "zellij-rounded-bars": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794474211,
+        "narHash": "sha256-/FFksAnqQRkIdUG40VpbP19UXIcH+FacGNm0vL1kXLA=",
+        "owner": "yongminari",
+        "repo": "zellij-rounded-bars",
+        "rev": "e7f5da7be82488b4461283c3c938e2a24da478bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yongminari",
+        "repo": "zellij-rounded-bars",
         "type": "github"
       }
     }

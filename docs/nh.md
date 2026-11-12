@@ -32,6 +32,21 @@ nh home switch .
 nh search <package-name>
 ```
 
+### Zellij 바 플러그인 업데이트
+
+```bash
+zellij-update
+```
+
+최신 정식 릴리스 정보를 가져오도록 `zellij-rounded-bars` Flake 입력만 갱신하고,
+현재 호스트에 `nh home switch`를 실행합니다. 버전이나 해시를 직접 수정할 필요가
+없으며, 배포된 WASM 파일을 내려받으므로 Zellij나 Rust 플러그인을 로컬에서
+컴파일하지 않습니다. 변경된 `flake.lock`은 저장소에 커밋할 수 있습니다.
+
+일반 `hms`는 잠금 파일에 기록된 버전을 사용합니다. 전체 `nix flake update`에도
+이 플러그인 입력의 갱신이 포함됩니다. 적용 후 새 Zellij 세션을 시작해야 하며,
+새 플러그인 경로에 대한 권한 확인이 다시 나타날 수 있습니다.
+
 ### 3. 시스템 청소 (Clean)
 오래된 빌드 세대(Generations)를 삭제하여 디스크 용량을 확보합니다.
 

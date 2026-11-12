@@ -129,6 +129,8 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 
 ---
 
+후속 구현 분리 계획과 데모 제작 항목은 [TODO](docs/TODO.md)에서 관리합니다.
+
 ## 🖥️ Desktop Quick Start
 
 ### ⌨️ Keybindings (Niri)

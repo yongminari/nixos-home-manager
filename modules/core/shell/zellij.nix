@@ -1,7 +1,7 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
-  roundedBars = import ./zellij-rounded-bars.nix { inherit pkgs; };
+  roundedBars = inputs.zellij-rounded-bars.packages.${pkgs.stdenv.hostPlatform.system}.prebuilt;
   mkZellijConfig = themeName: ''
     theme "${themeName}"
     // 시스템 기본쉘(Bash)을 무시하고 Zsh를 강제로 사용하도록 설정
@@ -14,8 +14,8 @@ let
     copy_on_select true
 
     plugins {
-      tab-bar location="file:${roundedBars}/tab-bar.wasm"
-      status-bar location="file:${roundedBars}/status-bar.wasm"
+      tab-bar location="file:${roundedBars}/rounded-tab-bar.wasm"
+      status-bar location="file:${roundedBars}/rounded-status-bar.wasm"
     }
 
     keybinds {
@@ -40,6 +40,18 @@ let
   '';
 in
 {
+  home.packages = [
+    (pkgs.writeShellApplication {
+      name = "zellij-update";
+      runtimeInputs = [ pkgs.nix config.programs.nh.package ];
+      text = ''
+        flake=${lib.escapeShellArg "${config.home.homeDirectory}/nixos-home-manager"}
+        nix flake update zellij-rounded-bars --flake "$flake"
+        nh home switch "$flake" "$@"
+      '';
+    })
+  ];
+
   programs.zellij = {
     enable = true;
     enableZshIntegration = false;
