@@ -73,7 +73,16 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
     // 픽셀 거리로 계산하므로 가로세로 비율이 달라도 구멍은 원형입니다.
     vec2 halfSize = max(size_geo.xy * 0.5, vec2(1.0));
     vec2 sink = vec2(0.5, 1.0);
-    vec2 radial = (coords_geo.xy - sink) * size_geo.xy;
+    // 위쪽에서는 왼쪽, 아래쪽에서는 오른쪽으로 휘었다가 흡입점으로 돌아옵니다.
+    // 시간을 따라 창을 흔들지 않고, 높이에 고정된 S자 경로를 따라 흘려보냅니다.
+    float pathY = clamp(coords_geo.y, 0.0, 1.0);
+    float bend = 0.24 * smoothstep(0.0, 0.40, p);
+    float bendOffset = -bend * sin(6.2831853 * pathY) * sin(3.14159265 * pathY);
+    float bendSlope = -bend * (6.2831853 * cos(6.2831853 * pathY) * sin(3.14159265 * pathY)
+                     + 3.14159265 * sin(6.2831853 * pathY) * cos(3.14159265 * pathY))
+                     * size_geo.x / max(size_geo.y, 1.0);
+    vec2 pathCoords = coords_geo.xy - vec2(bendOffset, 0.0);
+    vec2 radial = (pathCoords - sink) * size_geo.xy;
     if (radial.y > 0.0)
         return vec4(0.0);
     // 구멍에서 좌우 가장자리까지는 반 너비, 윗변까지는 전체 높이입니다.
@@ -164,7 +173,10 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
                           - paper_crumple(source - vec2(delta, 0.0))) / (2.0 * delta);
     float slopeY = 0.026 * (paper_crumple(source + vec2(0.0, delta))
                           - paper_crumple(source - vec2(0.0, delta))) / (2.0 * delta);
-    vec3 normal = normalize(vec3(-relief * slopeX - funnelSlope.x, -relief * slopeY - funnelSlope.y, 1.0));
+    // S자 경로의 기울기에 맞춰 표면 조명의 방향도 함께 굽힙니다.
+    vec2 normalSlope = relief * vec2(slopeX, slopeY) + funnelSlope;
+    normalSlope.y -= bendSlope * normalSlope.x;
+    vec3 normal = normalize(vec3(-normalSlope, 1.0));
     vec3 light = normalize(vec3(-0.45, -0.55, 1.0));
     // 원래 색을 기준으로 밝기만 완만하게 조절합니다. 최대 변화는 ±30% 이내입니다.
     float response = (dot(normal, light) - light.z) / light.z;
