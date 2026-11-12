@@ -74,9 +74,9 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
         return vec4(0.0);
 
     // 앞 35%는 구김이 깊어지는 정도에 맞춰 화면도 중심으로 모읍니다.
-    // 잠깐 유지한 뒤, 구겨진 화면을 기존 지니 좌표 변환으로 흡입합니다.
+    // 구김이 약 74% 진행됐을 때 흡입을 시작해 마지막 구김과 121ms 겹칩니다 (전체 1.1초).
     float crease = smoothstep(0.02, 0.35, p);
-    p = clamp((p - 0.43) / 0.57, 0.0, 1.0);
+    p = clamp((p - 0.24) / 0.76, 0.0, 1.0);
     // 창 최하단 가운데의 바늘구멍으로 가까운 표면부터 흡입합니다.
     // 픽셀 거리로 계산하므로 가로세로 비율이 달라도 구멍은 원형입니다.
     vec2 halfSize = max(size_geo.xy * 0.5, vec2(1.0));
