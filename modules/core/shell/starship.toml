@@ -1,24 +1,25 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Zellij의 Everforest에 맞춘 차분한 색상과 화살표 구분자.
+# Zellij의 Everforest에 맞춘 차분한 색상과 둥근 구분자.
 palette = "everforest"
 
 format = """
+[](fg:accent)\
 [  LOCAL ](fg:ink bg:accent)\
 $hostname\
-[](fg:accent bg:directory_bg)\
+[](fg:accent bg:directory_bg)\
 $directory\
-[](fg:directory_bg bg:git_bg)\
+[](fg:directory_bg bg:git_bg)\
 $git_branch\
 $git_status\
-[](fg:git_bg bg:runtime_bg)\
+[](fg:git_bg bg:runtime_bg)\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:runtime_bg bg:time_bg)\
+[](fg:runtime_bg bg:time_bg)\
 $time\
-[ ](fg:time_bg)\
+[ ](fg:time_bg)\
 \n$character"""
 
 [palettes.everforest]
