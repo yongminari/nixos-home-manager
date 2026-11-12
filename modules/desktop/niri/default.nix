@@ -81,8 +81,13 @@ let
 
   niri-output-toggle = pkgs.writeShellApplication {
     name = "niri-output-toggle";
-    runtimeInputs = with pkgs; [ jq libnotify niri ];
+    runtimeInputs = with pkgs; [ jq libnotify niri python3 util-linux ];
     text = ''
+      # 연속 입력으로 작업공간 이동과 출력 비활성화가 겹치지 않게 합니다.
+      : "''${XDG_RUNTIME_DIR:?}"
+      exec 9>"$XDG_RUNTIME_DIR/niri-output-toggle.lock"
+      flock 9
+
       side="''${1:-}"
 
       case "$side" in
@@ -143,10 +148,11 @@ let
           exit 1
         fi
 
-        focused=$(niri msg --json focused-output | jq -r '.name // empty')
-        if [ "$focused" = "$target_name" ]; then
-          niri msg action focus-monitor "$fallback_name"
+        if ! python3 ${./evacuate-output.py} "$target_name" "$fallback_name"; then
+          notify-send -u critical "모니터 전환" "창 이동을 완료하지 못해 모니터를 켜 둡니다."
+          exit 1
         fi
+        niri msg action focus-monitor "$fallback_name"
 
         niri msg output "$target_name" off
         notify-send -u low "모니터 전환" "$label 모니터를 비활성화했습니다."

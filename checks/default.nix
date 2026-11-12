@@ -44,6 +44,13 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  evacuate-output = pkgs.runCommand "evacuate-output" {
+    nativeBuildInputs = [ pkgs.python3 ];
+  } ''
+    python3 ${./evacuate-output.py} ${../modules/desktop/niri/evacuate-output.py}
+    touch "$out"
+  '';
+
   noctalia-wallpaper-sync = pkgs.runCommand "noctalia-wallpaper-sync" {
     nativeBuildInputs = [ pkgs.python3 ];
   } ''
