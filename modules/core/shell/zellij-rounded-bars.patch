@@ -1,0 +1,180 @@
+--- a/default-plugins/tab-bar/src/main.rs
++++ b/default-plugins/tab-bar/src/main.rs
+@@ -27,6 +27,7 @@
+
+ #[derive(Default, Debug)]
+ struct State {
++    bar_offset: usize,
+     tabs: Vec<TabInfo>,
+     active_tab_idx: usize,
+     mode_info: ModeInfo,
+@@ -48,12 +49,18 @@
+
+ impl ZellijPlugin for State {
+     fn load(&mut self, configuration: BTreeMap<String, String>) {
++        // File-loaded copies do not inherit the built-in plugins' permissions.
++        request_permission(&[
++            PermissionType::ReadApplicationState,
++            PermissionType::ChangeApplicationState,
++        ]);
+         self.hide_swap_layout_indication = configuration
+             .get("hide_swap_layout_indication")
+             .map(|s| s == "true")
+             .unwrap_or(false);
+-        set_selectable(false);
++        set_selectable(true);
+         subscribe(&[
++            EventType::PermissionRequestResult,
+             EventType::TabUpdate,
+             EventType::ModeUpdate,
+             EventType::Mouse,
+@@ -66,6 +73,10 @@
+     }
+
+     fn update(&mut self, event: Event) -> bool {
++        if matches!(event, Event::PermissionRequestResult(_)) {
++            set_selectable(false);
++            return true;
++        }
+         let mut should_render = false;
+         match event {
+             Event::InitialKeybinds(keybinds) => {
+@@ -134,6 +145,9 @@
+             },
+             Event::Mouse(me) => match me {
+                 Mouse::LeftClick(_, col) => {
++                    let Some(col) = col.checked_sub(self.bar_offset) else {
++                        return false;
++                    };
+                     if let Some((start, end)) = self.breadcrumb_range {
+                         if col >= start && col < end {
+                             focus_host_session();
+@@ -152,6 +166,9 @@
+                     }
+                 },
+                 Mouse::Hover(_, col) => {
++                    let Some(col) = col.checked_sub(self.bar_offset) else {
++                        return false;
++                    };
+                     let simplified_ui = self.mode_info.capabilities.arrow_fonts;
+                     let mut new_hovered_new_tab_button = false;
+                     let mut new_hovered_tab_idx = None;
+@@ -194,7 +211,27 @@
+         should_render
+     }
+
+-    fn render(&mut self, _rows: usize, cols: usize) {
++    fn render(&mut self, rows: usize, cols: usize) {
++        self.bar_offset = usize::from(rows == 1 && cols >= 4);
++        if self.bar_offset == 0 {
++            self.render_bar(rows, cols);
++            return;
++        }
++
++        // Reserve one cell on each side; keep the original layout and hit testing.
++        print!("\u{1b}[1;2H");
++        self.render_bar(rows, cols - 2);
++        let foreground = match self.mode_info.style.colors.text_unselected.background {
++            PaletteColor::Rgb((r, g, b)) => format!("\u{1b}[38;2;{};{};{}m", r, g, b),
++            PaletteColor::EightBit(color) => format!("\u{1b}[38;5;{}m", color),
++        };
++        // Reset the background so the outside of each cap matches the terminal.
++        print!("\u{1b}[0m{}\u{1b}[1;1H\u{1b}[1;{}H\u{1b}[0m", foreground, cols);
++    }
++}
++
++impl State {
++    fn render_bar(&mut self, _rows: usize, cols: usize) {
+         if self.tabs.is_empty() {
+             return;
+         }
+--- a/default-plugins/status-bar/src/main.rs
++++ b/default-plugins/status-bar/src/main.rs
+@@ -34,6 +34,7 @@
+
+ #[derive(Default)]
+ struct State {
++    bar_offset: usize,
+     tabs: Vec<TabInfo>,
+     tip_name: String,
+     mode_info: ModeInfo,
+@@ -231,14 +232,20 @@
+
+ impl ZellijPlugin for State {
+     fn load(&mut self, configuration: BTreeMap<String, String>) {
++        // File-loaded copies do not inherit the built-in plugins' permissions.
++        request_permission(&[
++            PermissionType::ReadApplicationState,
++            PermissionType::ChangeApplicationState,
++        ]);
+         // TODO: Should be able to choose whether to use the cache through config.
+         self.tip_name = get_cached_tip_name();
+         self.classic_ui = configuration
+             .get("classic")
+             .map(|c| c == "true")
+             .unwrap_or(false);
+-        set_selectable(false);
++        set_selectable(true);
+         subscribe(&[
++            EventType::PermissionRequestResult,
+             EventType::ModeUpdate,
+             EventType::TabUpdate,
+             EventType::PaneUpdate,
+@@ -251,6 +258,10 @@
+     }
+
+     fn update(&mut self, event: Event) -> bool {
++        if matches!(event, Event::PermissionRequestResult(_)) {
++            set_selectable(false);
++            return true;
++        }
+         let mut should_render = false;
+         match event {
+             Event::InitialKeybinds(keybinds) => {
+@@ -306,6 +317,9 @@
+             },
+             Event::Mouse(mouse_event) => match mouse_event {
+                 Mouse::LeftClick(_, col) => {
++                    let Some(col) = col.checked_sub(self.bar_offset) else {
++                        return false;
++                    };
+                     if col_in_range(self.new_pane_ribbon_range, col) {
+                         new_pane();
+                     } else if col_in_range(self.floating_ribbon_range, col) {
+@@ -313,6 +327,9 @@
+                     }
+                 },
+                 Mouse::Hover(_, col) => {
++                    let Some(col) = col.checked_sub(self.bar_offset) else {
++                        return false;
++                    };
+                     let new_pane_hovered = col_in_range(self.new_pane_ribbon_range, col);
+                     let floating_hovered =
+                         !new_pane_hovered && col_in_range(self.floating_ribbon_range, col);
+@@ -332,6 +349,26 @@
+     }
+
+     fn render(&mut self, rows: usize, cols: usize) {
++        self.bar_offset = usize::from(rows == 1 && cols >= 4);
++        if self.bar_offset == 0 {
++            self.render_bar(rows, cols);
++            return;
++        }
++
++        // Reserve one cell on each side; keep the original layout and hit testing.
++        print!("\u{1b}[1;2H");
++        self.render_bar(rows, cols - 2);
++        let foreground = match self.mode_info.style.colors.text_unselected.background {
++            PaletteColor::Rgb((r, g, b)) => format!("\u{1b}[38;2;{};{};{}m", r, g, b),
++            PaletteColor::EightBit(color) => format!("\u{1b}[38;5;{}m", color),
++        };
++        // Reset the background so the outside of each cap matches the terminal.
++        print!("\u{1b}[0m{}\u{1b}[1;1H\u{1b}[1;{}H\u{1b}[0m", foreground, cols);
++    }
++}
++
++impl State {
++    fn render_bar(&mut self, rows: usize, cols: usize) {
+         let supports_arrow_fonts = !self.mode_info.capabilities.arrow_fonts;
+         let separator = if supports_arrow_fonts {
+             ARROW_SEPARATOR

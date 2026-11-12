@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
+  roundedBars = import ./zellij-rounded-bars.nix { inherit pkgs; };
   mkZellijConfig = themeName: ''
     theme "${themeName}"
     // 시스템 기본쉘(Bash)을 무시하고 Zsh를 강제로 사용하도록 설정
@@ -11,6 +12,11 @@ let
     mirror_session_to_terminal_title true
     mouse_mode true
     copy_on_select true
+
+    plugins {
+      tab-bar location="file:${roundedBars}/tab-bar.wasm"
+      status-bar location="file:${roundedBars}/status-bar.wasm"
+    }
 
     keybinds {
       unbind "Ctrl g"
