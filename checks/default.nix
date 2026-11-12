@@ -44,6 +44,13 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  noctalia-wallpaper-sync = pkgs.runCommand "noctalia-wallpaper-sync" {
+    nativeBuildInputs = [ pkgs.python3 ];
+  } ''
+    python3 ${./noctalia-wallpaper-sync.py} ${../modules/services/noctalia-wallpaper-sync.py}
+    touch "$out"
+  '';
+
   monitor-idle-refresh = pkgs.runCommand "monitor-idle-refresh" {
     nativeBuildInputs = [ pkgs.python3 ];
   } ''

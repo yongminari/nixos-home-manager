@@ -3,6 +3,14 @@
 let
   lFramePreset = builtins.fromTOML (builtins.readFile ./noctalia/l-frame.toml);
 
+  wallpaperSync = pkgs.writeShellApplication {
+    name = "noctalia-wallpaper-sync";
+    runtimeInputs = [ pkgs.niri config.programs.noctalia.package pkgs.python3 ];
+    text = ''
+      exec python3 ${./noctalia-wallpaper-sync.py}
+    '';
+  };
+
   fetchWallhaven = pkgs.writeShellScriptBin "fetch-wallhaven" ''
     set -u
 
@@ -126,6 +134,22 @@ in
   home.packages = [
     fetchWallhaven
   ];
+
+  # 재활성화·재연결된 출력은 과거의 모니터별 경로 대신 현재 공통 배경을 사용합니다.
+  systemd.user.services.noctalia-wallpaper-sync = {
+    Unit = {
+      Description = "Sync newly active Niri outputs to the current Noctalia wallpaper";
+      After = [ "graphical-session.target" "noctalia.service" ];
+      PartOf = [ "graphical-session.target" "noctalia.service" ];
+      ConditionEnvironment = "NIRI_SOCKET";
+    };
+    Service = {
+      ExecStart = "${wallpaperSync}/bin/noctalia-wallpaper-sync";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "noctalia.service" ];
+  };
 
   # 주기적으로 검증된 검은 배경화면을 Wallhaven에서 수집하는 Systemd 타이머 등록
   systemd.user.services.fetch-wallhaven = {
