@@ -89,6 +89,6 @@ style = "fg:muted bg:time_bg"
 format = '[  $time ]($style)'
 
 [character]
-success_symbol = "[❯](accent)"
-error_symbol = "[❯](error)"
-vimcmd_symbol = "[❮](secondary)"
+success_symbol = "[\\)](accent)"
+error_symbol = "[\\)](error)"
+vimcmd_symbol = "[\\(](secondary)"

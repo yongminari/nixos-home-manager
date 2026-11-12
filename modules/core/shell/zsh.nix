@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.packages = [
@@ -33,7 +33,7 @@
 
     # [Zsh Initialization]
     # NOTE: 'initContent' is used as it is the modern/preferred option in this setup.
-    initContent = ''
+    initContent = lib.mkMerge [ (lib.mkOrder 1000 ''
       source ${./shell-common.sh}
 
       # [Completion Styling & Descriptions]
@@ -61,7 +61,10 @@
 
       # [zsh-patina Syntax Highlighting]
       eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"
-    '';
+    '') (lib.mkOrder 1500 ''
+      # Starship 초기화 이후 전체 프롬프트를 보관합니다.
+      source ${./starship-minute.zsh}
+    '') ];
 
     oh-my-zsh = {
       enable = true;
