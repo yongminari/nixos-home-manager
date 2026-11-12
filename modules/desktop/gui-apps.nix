@@ -11,7 +11,11 @@
 
   programs.sioyek = {
     enable = true;
-    config.move_screen_ratio = "1.0";
+    config = {
+      move_screen_ratio = "1.0";
+      page_separator_width = "4";
+      page_separator_color = "0.25 0.25 0.25";
+    };
     # Zathura 기본 키에 대응합니다. 차이점은 docs/sioyek-guide.md 참고.
     bindings = {
       move_down = [ "j" "<down>" ];
