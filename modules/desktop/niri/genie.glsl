@@ -58,6 +58,14 @@ float paper_crumple(vec2 point) {
     return plane + 0.90 * broad + 0.35 * broken * small - 0.35
            + density * wrinkles;
 }
+// S자 경로의 왼쪽 굴곡에서 50%, 오른쪽에서 20%, 출구에서 0% 폭을 남깁니다.
+float suction_path_width(float y) {
+    if (y < 0.30)
+        return mix(1.0, 0.50, smoothstep(0.0, 0.30, y));
+    if (y < 0.70)
+        return mix(0.50, 0.20, smoothstep(0.30, 0.70, y));
+    return mix(0.20, 0.0, smoothstep(0.70, 1.0, y));
+}
 vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
     float p = clamp(progress, 0.0, 1.0);
     if (p <= 0.0)
@@ -76,12 +84,18 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
     // 위쪽에서는 왼쪽, 아래쪽에서는 오른쪽으로 휘었다가 흡입점으로 돌아옵니다.
     // 시간을 따라 창을 흔들지 않고, 높이에 고정된 S자 경로를 따라 흘려보냅니다.
     float pathY = clamp(coords_geo.y, 0.0, 1.0);
-    float bend = 0.24 * smoothstep(0.0, 0.40, p);
+    float pathStrength = smoothstep(0.0, 0.40, p);
+    float bend = 0.24 * pathStrength;
+    float pathWidth = max(mix(1.0, suction_path_width(pathY), pathStrength), 0.0001);
+    float pathWidthSlope = pathStrength * (suction_path_width(pathY + 0.001)
+                         - suction_path_width(pathY - 0.001)) / 0.002;
     float bendOffset = -bend * sin(6.2831853 * pathY) * sin(3.14159265 * pathY);
     float bendSlope = -bend * (6.2831853 * cos(6.2831853 * pathY) * sin(3.14159265 * pathY)
                      + 3.14159265 * sin(6.2831853 * pathY) * cos(3.14159265 * pathY))
                      * size_geo.x / max(size_geo.y, 1.0);
-    vec2 pathCoords = coords_geo.xy - vec2(bendOffset, 0.0);
+    // 경로 중심을 기준으로 폭을 압축해 내용과 외곽이 함께 가늘어지게 합니다.
+    vec2 pathCoords = vec2(0.5 + (coords_geo.x - 0.5 - bendOffset) / pathWidth,
+                           coords_geo.y);
     vec2 radial = (pathCoords - sink) * size_geo.xy;
     if (radial.y > 0.0)
         return vec4(0.0);
@@ -120,7 +134,7 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
         * exponent * pow(max(r, 0.0001), exponent - 1.0)
         / (2.0 * max(sourceRadius, 0.0001) * outer), 0.0001);
     float angularStretch = max(sourceRadius / max(radialDistance, 0.0001), 1.0);
-    float width = 1.0 / angularStretch;
+    float width = pathWidth / angularStretch;
     float height = 1.0 / radialStretch;
     // 작은 흡입 구멍과 말린 가장자리의 경사를 기존 제한된 명암에 함께 반영합니다.
     float holeRadius = 2.0 * smoothstep(0.0, 0.12, p);
@@ -175,7 +189,9 @@ vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
                           - paper_crumple(source - vec2(0.0, delta))) / (2.0 * delta);
     // S자 경로의 기울기에 맞춰 표면 조명의 방향도 함께 굽힙니다.
     vec2 normalSlope = relief * vec2(slopeX, slopeY) + funnelSlope;
-    normalSlope.y -= bendSlope * normalSlope.x;
+    normalSlope.x /= pathWidth;
+    normalSlope.y -= (bendSlope + pathWidthSlope * (pathCoords.x - 0.5)
+                     * size_geo.x / max(size_geo.y, 1.0)) * normalSlope.x;
     vec3 normal = normalize(vec3(-normalSlope, 1.0));
     vec3 light = normalize(vec3(-0.45, -0.55, 1.0));
     // 원래 색을 기준으로 밝기만 완만하게 조절합니다. 최대 변화는 ±30% 이내입니다.
