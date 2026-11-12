@@ -9,18 +9,18 @@
     libreoffice
   ];
 
-  programs.zathura = {
+  programs.sioyek = {
     enable = true;
-    options = {
-      selection-clipboard = "clipboard";
-      recolor = "false"; # 기본 색상 유지 (필요시 true로 변경하여 다크모드 가능)
+    bindings = {
+      move_down_smooth = "j";
+      move_up_smooth = "k";
     };
   };
 
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+      "application/pdf" = [ "sioyek.desktop" ];
       "text/html" = [ "google-chrome.desktop" ];
       "x-scheme-handler/http" = [ "google-chrome.desktop" ];
       "x-scheme-handler/https" = [ "google-chrome.desktop" ];
