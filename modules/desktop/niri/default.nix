@@ -169,8 +169,9 @@ in
   # 모든 장비에 공통 적용하며 호스트 설정에서 개별적으로 재정의할 수 있습니다.
   local.desktop = {
     workspaceWarp.enable = lib.mkDefault true;
-    windowAnimation = lib.mkDefault "glass-pressure";
-    adaptiveGenieClose = lib.mkDefault false;
+    # 타일 창을 축소·중앙 이동한 뒤 다음 포커스 방향으로 지니 종료합니다.
+    windowAnimation = lib.mkDefault "genie";
+    adaptiveGenieClose = lib.mkDefault true;
   };
 
   home.packages = with pkgs; [
@@ -242,8 +243,8 @@ in
         ${workspaceAnimation}
       }
       window-resize {
-        // 지니 종료 전 축소가 목표 크기보다 작아지는 반동을 방지합니다.
-        spring damping-ratio=${if currentHost.adaptiveGenieClose then "1.0" else "0.5"} stiffness=180 epsilon=0.0001
+        // 닫기 효과 선택과 무관하게 리사이즈의 탄성 반동을 유지합니다.
+        spring damping-ratio=0.5 stiffness=180 epsilon=0.0001
         custom-shader r#"
           ${builtins.readFile ./elastic-resize.glsl}
         "#

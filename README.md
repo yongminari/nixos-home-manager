@@ -133,6 +133,11 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 
 ## 🖥️ Desktop Quick Start
 
+모든 호스트는 창 열기 먼지 효과, 방향별 종이 지니 닫기, 리사이즈 스프링,
+모니터 전환 ripple과 워크스페이스 배경 왜곡을 공통으로 사용합니다.
+`Super + Q`의 방향별 닫기는 타일 창을 축소·중앙 이동한 뒤 실행됩니다.
+호스트별 효과 변경은 `local.desktop` 옵션에서 재정의할 수 있습니다.
+
 ### ⌨️ Keybindings (Niri)
 | Shortcut | Action |
 | :--- | :--- |
