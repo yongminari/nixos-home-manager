@@ -65,8 +65,10 @@ def prepare_close(target):
         if current["layout"]["window_size"] == size or time.monotonic() >= deadline:
             break
         time.sleep(0.01)
-    # 최소 크기로 제한된 앱도 실제 크기로 정렬한 뒤 곧바로 종료합니다.
+    # 최소 크기로 제한된 앱도 실제 크기로 정렬합니다.
     niri("action", "center-window", "--id", window_id)
+    # 플로팅 전환을 먼저 보여준 뒤 종이 접기 애니메이션을 시작합니다.
+    time.sleep(0.24)
     return any(w["id"] == target["id"] and w.get("is_floating")
                for w in json.loads(niri("windows")))
 
@@ -130,7 +132,7 @@ def main():
             while time.monotonic() < deadline:
                 if not any(w["id"] == target["id"] for w in json.loads(niri("windows"))):
                     # 진행 중 애니메이션이 끝난 후 기본 방향을 복원합니다.
-                    time.sleep(0.85)
+                    time.sleep(1.2)
                     break
                 time.sleep(0.1)
         finally:

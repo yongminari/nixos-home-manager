@@ -285,7 +285,7 @@ in
             duration-ms 750
             curve "linear"
           '' else if currentHost.windowAnimation == "genie" then ''
-            duration-ms 750
+            duration-ms 1100
             curve "linear"
           '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
           custom-shader r#"
