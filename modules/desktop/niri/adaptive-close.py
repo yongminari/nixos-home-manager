@@ -1,4 +1,4 @@
-"""Mod+Q 전용: 다음 포커스 방향을 추정하고 창 ID를 고정해 닫습니다."""
+"""Mod+Q 전용: 타일 창을 축소·중앙 이동한 뒤 고정된 ID로 닫습니다."""
 import fcntl
 import json
 import os
@@ -43,6 +43,32 @@ def choose_side(windows, target):
 
 def niri(*args):
     return subprocess.check_output(["niri", "msg", "--json", *args], text=True, timeout=3)
+
+
+def prepare_close(target):
+    if target.get("is_floating"):
+        return True
+    window_id = str(target["id"])
+    # Mod+W와 같은 10% 축소입니다. 종료 경로에서는 토글하거나 포커스를 재조회하지 않습니다.
+    size = [max(1, int(value * 0.9 + 0.5))
+            for value in target["layout"]["window_size"]]
+    niri("action", "move-window-to-floating", "--id", window_id)
+    niri("action", "set-window-width", "--id", window_id, str(size[0]))
+    niri("action", "set-window-height", "--id", window_id, str(size[1]))
+    # 앱의 크기 반영만 짧게 기다립니다. 스프링이 끝날 때까지 기다리지 않습니다.
+    deadline = time.monotonic() + 0.12
+    while True:
+        current = next((w for w in json.loads(niri("windows"))
+                        if w["id"] == target["id"]), None)
+        if current is None or not current.get("is_floating"):
+            return False
+        if current["layout"]["window_size"] == size or time.monotonic() >= deadline:
+            break
+        time.sleep(0.01)
+    # 최소 크기로 제한된 앱도 실제 크기로 정렬한 뒤 곧바로 종료합니다.
+    niri("action", "center-window", "--id", window_id)
+    return any(w["id"] == target["id"] and w.get("is_floating")
+               for w in json.loads(niri("windows")))
 
 
 def atomic_write(path, text):
@@ -96,6 +122,8 @@ def main():
             result = events.get(timeout=3)
             if result["failed"]:
                 raise RuntimeError("Niri rejected the directional close config")
+            if not prepare_close(target):
+                return
             # 다른 창으로 포커스가 옮겨져도 최초 대상만 닫습니다.
             niri("action", "close-window", "--id", str(target["id"]))
             deadline = time.monotonic() + 5

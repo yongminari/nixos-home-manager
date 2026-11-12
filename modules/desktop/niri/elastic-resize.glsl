@@ -114,6 +114,9 @@ vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
     vec2 bend = max(1.0 - local_size / size, vec2(0.0));
     // 축소는 실제 렌더 크기에서 선행량만 빼서 픽셀 반올림에 의한 끝점 오차를 피합니다.
     bend = mix(max(-delta * center_lead / size, vec2(0.0)), bend, growing);
+    // 축소 중 중앙 윤곽도 최종 크기 안쪽으로 더 눌리지 않도록 제한합니다.
+    vec2 shrink_limit = max(1.0 - next_size / size, vec2(0.0));
+    bend = mix(min(bend, shrink_limit), bend, growing);
     // 단일 축의 중앙 선행 변형은 유지하고, 양 축이 함께 휘는 경우에만
     // 역변환 안정성을 위한 제한을 강화합니다.
     float coupled = smoothstep(0.0, 0.2, min(bend.x, bend.y));

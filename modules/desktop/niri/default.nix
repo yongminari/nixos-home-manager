@@ -242,8 +242,8 @@ in
         ${workspaceAnimation}
       }
       window-resize {
-        // 중앙 우선 변형을 전체 스프링 반동으로 연결합니다.
-        spring damping-ratio=0.5 stiffness=180 epsilon=0.0001
+        // 지니 종료 전 축소가 목표 크기보다 작아지는 반동을 방지합니다.
+        spring damping-ratio=${if currentHost.adaptiveGenieClose then "1.0" else "0.5"} stiffness=180 epsilon=0.0001
         custom-shader r#"
           ${builtins.readFile ./elastic-resize.glsl}
         "#

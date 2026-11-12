@@ -44,6 +44,13 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  adaptive-close = pkgs.runCommand "adaptive-close" {
+    nativeBuildInputs = [ pkgs.python3 ];
+  } ''
+    python3 ${./adaptive-close.py} ${../modules/desktop/niri/adaptive-close.py}
+    touch "$out"
+  '';
+
   evacuate-output = pkgs.runCommand "evacuate-output" {
     nativeBuildInputs = [ pkgs.python3 ];
   } ''
