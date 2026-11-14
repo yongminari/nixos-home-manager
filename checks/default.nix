@@ -44,6 +44,14 @@ builtins.listToAttrs (map (hostName: {
   name = "niri-${hostName}";
   value = niriCheck hostName;
 }) hostNames) // {
+  hypridle-brightness = pkgs.runCommand "hypridle-brightness" {
+    nativeBuildInputs = [ pkgs.python3 pkgs.bash pkgs.util-linux pkgs.shellcheck ];
+  } ''
+    shellcheck ${../modules/desktop/hypridle-brightness-state.sh}
+    python3 ${./hypridle-brightness.py} ${../modules/desktop/hypridle-brightness-state.sh}
+    touch "$out"
+  '';
+
   adaptive-close = pkgs.runCommand "adaptive-close" {
     nativeBuildInputs = [ pkgs.python3 ];
   } ''

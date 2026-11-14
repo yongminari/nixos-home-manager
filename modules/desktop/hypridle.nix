@@ -66,55 +66,8 @@ let
 
   brightness-state = pkgs.writeShellApplication {
     name = "hypridle-brightness-state";
-    runtimeInputs = with pkgs; [ brightnessctl coreutils ];
-    text = ''
-      action="''${1:-}"
-      runtime_dir="''${XDG_RUNTIME_DIR:-}"
-
-      if [[ -z "$runtime_dir" ]]; then
-        exit 0
-      fi
-
-      state_file="$runtime_dir/hypridle-brightness"
-
-      case "$action" in
-        dim)
-          current="$(brightnessctl --class=backlight get 2>/dev/null)" || exit 0
-          maximum="$(brightnessctl --class=backlight max 2>/dev/null)" || exit 0
-
-          if [[ ! "$current" =~ ^[0-9]+$ || ! "$maximum" =~ ^[0-9]+$ ]]; then
-            exit 0
-          fi
-
-          umask 077
-          printf '%s\n' "$current" > "$state_file"
-
-          target=$((maximum / 10))
-          if (( target < 1 )); then
-            target=1
-          fi
-
-          if (( current > target )); then
-            brightnessctl --quiet --class=backlight set "$target"
-          fi
-          ;;
-        restore)
-          if [[ ! -r "$state_file" ]]; then
-            exit 0
-          fi
-
-          read -r previous < "$state_file"
-          rm -f "$state_file"
-
-          if [[ "$previous" =~ ^[0-9]+$ ]]; then
-            brightnessctl --quiet --class=backlight set "$previous" || true
-          fi
-          ;;
-        *)
-          exit 2
-          ;;
-      esac
-    '';
+    runtimeInputs = with pkgs; [ brightnessctl coreutils util-linux ];
+    text = builtins.readFile ./hypridle-brightness-state.sh;
   };
 in
 {
@@ -128,6 +81,11 @@ in
   ];
   home.packages = lib.optional idleRefresh.enable niri-idle-refresh;
 
+  # Recover a pending dim operation after a configuration switch restarts hypridle.
+  systemd.user.services.hypridle.Service.ExecStartPre = lib.mkIf isLaptop [
+    "${brightness-state}/bin/hypridle-brightness-state restore"
+  ];
+
   services.hypridle = {
     enable = true;
     settings = {
@@ -135,7 +93,8 @@ in
         lock_cmd = "${niri-focus-saver}/bin/niri-focus-saver save || true; ${config.programs.noctalia.package}/bin/noctalia msg session lock";
         unlock_cmd = "${niri-focus-saver}/bin/niri-focus-saver restore";
         before_sleep_cmd = "loginctl lock-session";
-        after_sleep_cmd = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+        after_sleep_cmd = "${pkgs.niri}/bin/niri msg action power-on-monitors"
+          + lib.optionalString isLaptop "; ${brightness-state}/bin/hypridle-brightness-state restore";
       };
 
       listener = lib.optionals isLaptop [
