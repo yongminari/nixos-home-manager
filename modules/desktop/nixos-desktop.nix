@@ -22,8 +22,10 @@
   ];
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome pkgs.xdg-desktop-portal-gtk ];
     config.common.default = "*";
+    # Niri의 X11 앱에서 Nautilus 파일 선택 창이 충돌하므로 GTK를 사용합니다.
+    config.niri."org.freedesktop.impl.portal.FileChooser" = "gtk";
   };
 
   # --- [2. Input Method & Fonts] ---
