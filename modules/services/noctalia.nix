@@ -172,7 +172,7 @@ in
     };
     Timer = {
       OnActiveSec = "5sec";       # 타이머 활성화 후 첫 배경화면을 즉시 검색
-      OnUnitActiveSec = "30min"; # 이후 30분마다 실행
+      OnUnitActiveSec = "5min"; # 이후 5분마다 실행
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];
