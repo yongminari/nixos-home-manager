@@ -164,15 +164,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1794797203,
-        "narHash": "sha256-Wmv/6niCPc3PWnxTLiC6+igPocQeChtxMA40vFTh4fM=",
+        "lastModified": 1794842849,
+        "narHash": "sha256-ibByHbh54cx1BqYrx8zbekjyUaeuz4vnuiDUFx8WmSs=",
         "owner": "yongminari",
         "repo": "zellij-rounded-bars",
-        "rev": "4a67c992e36d965178038ee4cedf83551c94d3ec",
+        "rev": "456dfa032eebfc1a7b11370bc07ee8eec5531c0c",
         "type": "github"
       },
       "original": {
         "owner": "yongminari",
+        "ref": "v0.1.4",
         "repo": "zellij-rounded-bars",
         "type": "github"
       }

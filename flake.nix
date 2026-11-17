@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     zellij-rounded-bars = {
-      url = "github:yongminari/zellij-rounded-bars";
+      url = "github:yongminari/zellij-rounded-bars/v0.1.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
