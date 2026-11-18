@@ -6,6 +6,7 @@
       google-chrome.override { commandLineArgs = config.local.desktop.chromeArgs; })
     obsidian
     geeqie
+    loupe
     libreoffice
   ];
 
@@ -74,6 +75,11 @@
     enable = true;
     defaultApplications = {
       "application/pdf" = [ "sioyek.desktop" ];
+      "image/png" = [ "org.gnome.Loupe.desktop" ];
+      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
+      "image/webp" = [ "org.gnome.Loupe.desktop" ];
+      "image/gif" = [ "org.gnome.Loupe.desktop" ];
+      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
       "text/html" = [ "google-chrome.desktop" ];
       "x-scheme-handler/http" = [ "google-chrome.desktop" ];
       "x-scheme-handler/https" = [ "google-chrome.desktop" ];
