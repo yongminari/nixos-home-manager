@@ -248,6 +248,27 @@ in
         tint_intensity = 0.3;
       };
 
+      # 출력 크기에 맞춰 위치를 환산하고, 하단 로그인 패널 위에 큰 아날로그 시계를 표시합니다.
+      lockscreen_widgets = {
+        enabled = true;
+        widget_order = [ "analog_clock" ];
+        widget.analog_clock = {
+          type = "clock";
+          output = "";
+          cx = 960.0;
+          cy = 432.0;
+          placement_width = 1920.0;
+          placement_height = 1080.0;
+          box_width = 360.0;
+          box_height = 360.0;
+          settings = {
+            clock_style = "analog";
+            circle = true;
+            show_seconds = true;
+          };
+        };
+      };
+
       # 오버뷰 배경화면에도 아주 약한 블러만 적용합니다.
       backdrop = {
         enabled = true;
