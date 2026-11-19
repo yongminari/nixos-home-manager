@@ -53,7 +53,7 @@
         {
           # clean all re-executes this exact nh binary as root; allow its flags,
           # but not other nh subcommands or arbitrary executables.
-          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+${lib.escapeRegex "${pkgs.nh-unwrapped}/bin/nh"} clean all( .*)?$";
+          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+${lib.escapeRegex "${pkgs.nh}/bin/nh"} clean all( .*)?$";
           options = [ "NOPASSWD" ];
         }
       ];
