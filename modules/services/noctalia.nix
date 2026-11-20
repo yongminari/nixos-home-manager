@@ -17,28 +17,15 @@ let
     WALLPAPER_DIR="$HOME/Pictures/Wallpapers/Black"
     STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/fetch-wallhaven"
     HISTORY_FILE="$STATE_DIR/seen-ids"
+    APPLIED_FILE="$STATE_DIR/applied-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
-    API_URL="https://wallhaven.cc/api/v1/search?purity=100&colors=000000&sorting=random"
-    # 풍경과 지정한 걸그룹 이름 중 하나를 선택해 검색합니다.
-    SEARCH_TOPICS=(nature night sky aespa ive illit "le sserafim" newjeans rescene)
+    API_URL="https://wallhaven.cc/api/v1/search?purity=100&sorting=random"
+    # 어두운 풍경 사진 또는 장원영·카리나(유지민)·설윤·유나(신유나)·윈터를 검색합니다.
+    SEARCH_TOPICS=(dark "Jang Won-young" "Yu Ji-min" "Sullyoon (Nmixx)" "Shin Yu-na" "Winter (aespa)")
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
     mkdir -p "$WALLPAPER_DIR" "$STATE_DIR"
-    touch "$HISTORY_FILE"
-
-    # 기존에 받은 Wallhaven 파일도 이미 본 이미지로 간주합니다.
-    if [ ! -s "$HISTORY_FILE" ]; then
-      ${pkgs.findutils}/bin/find "$HOME/Pictures/Wallpapers" \
-        -maxdepth 2 \
-        -type f \
-        -printf '%f\n' \
-        | ${pkgs.gnused}/bin/sed -nE \
-          's/^wallhaven[-_]([[:alnum:]]+)\.(jpg|jpeg|png|webp)$/\1/p' \
-        | ${pkgs.coreutils}/bin/sort -u \
-        >> "$HISTORY_FILE"
-    fi
-
     # 타이머와 수동 단축키가 동시에 실행되어 같은 이미지를 처리하지 않도록 합니다.
     exec 9>"$STATE_DIR/lock"
     if ! ${pkgs.util-linux}/bin/flock -n 9; then
@@ -46,22 +33,36 @@ let
       exit 0
     fi
 
+    touch "$HISTORY_FILE"
+
+    # 기존에 받은 Wallhaven 파일도 이미 본 이미지로 간주합니다.
+    if [ ! -f "$APPLIED_FILE" ]; then
+      ${pkgs.findutils}/bin/find "$HOME/Pictures/Wallpapers" \
+        -maxdepth 2 \
+        -type f \
+        -printf '%f\n' \
+        | ${pkgs.gnused}/bin/sed -nE \
+          's/^wallhaven[-_]([[:alnum:]]+)\.(jpg|jpeg|png|webp)$/\1/p' \
+        | ${pkgs.coreutils}/bin/sort -u \
+        > "$APPLIED_FILE.tmp" && mv "$APPLIED_FILE.tmp" "$APPLIED_FILE" || exit 1
+    fi
+
     trap '${pkgs.coreutils}/bin/rm -f "$DOWNLOAD_FILE"' EXIT
 
     for _ in $(${pkgs.coreutils}/bin/seq 1 "$MAX_ATTEMPTS"); do
       TOPIC=$(printf '%s\n' "''${SEARCH_TOPICS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
-      # 풍경은 사진 태그를 필수로, 걸그룹/여성 아이돌은 여성 태그를 필수로 제한합니다.
       case "$TOPIC" in
-        nature|night|sky)
+        dark)
           CATEGORIES=100
-          QUERY="+photography +$TOPIC"
+          QUERY='+photography +landscape +dark -anime -illustration -"digital art" -"AI art"'
+          COLOR_ARGS=(--data-urlencode "colors=000000")
           ;;
         *)
           CATEGORIES=001
-          QUERY="+\"$TOPIC\" +women -men -boy -boys"
+          QUERY="+\"$TOPIC\""
+          COLOR_ARGS=()
           ;;
       esac
-      QUERY="$QUERY -anime -illustration -\"digital art\" -\"AI art\""
 
       RESPONSE=$(${pkgs.curl}/bin/curl \
         --fail \
@@ -70,6 +71,7 @@ let
         --show-error \
         --retry 3 \
         --get \
+        "''${COLOR_ARGS[@]}" \
         --data-urlencode "categories=$CATEGORIES" \
         --data-urlencode "q=$QUERY" \
         "$API_URL") || continue
@@ -77,8 +79,9 @@ let
       while IFS=$'\t' read -r IMAGE_ID IMAGE_URL; do
         [ -n "$IMAGE_ID" ] || continue
 
-        # 한 번 검사하거나 표시한 Wallhaven 이미지는 다시 사용하지 않습니다.
-        if ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; then
+        # 과거 밝기 검사에서 탈락한 인물 사진은 다시 선택할 수 있습니다.
+        if ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$APPLIED_FILE" ||
+           { [ "$TOPIC" = dark ] && ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; }; then
           continue
         fi
 
@@ -93,21 +96,23 @@ let
           continue
         fi
 
-        MEAN_LUMINANCE=$(${pkgs.imagemagick}/bin/magick \
-          "$DOWNLOAD_FILE" \
-          -colorspace Gray \
-          -resize 1x1 \
-          -format '%[fx:mean]' \
-          info:) || continue
+        if [ "$TOPIC" = dark ]; then
+          MEAN_LUMINANCE=$(${pkgs.imagemagick}/bin/magick \
+            "$DOWNLOAD_FILE" \
+            -colorspace Gray \
+            -resize 1x1 \
+            -format '%[fx:mean]' \
+            info:) || continue
 
-        # 밝아서 탈락한 후보도 기록하여 다음 실행에서 다시 받지 않습니다.
-        echo "$IMAGE_ID" >> "$HISTORY_FILE"
+          # 밝아서 탈락한 후보도 기록하여 다음 실행에서 다시 받지 않습니다.
+          echo "$IMAGE_ID" >> "$HISTORY_FILE"
 
-        if ! ${pkgs.gawk}/bin/awk \
-          -v luminance="$MEAN_LUMINANCE" \
-          -v maximum="$MAX_MEAN_LUMINANCE" \
-          'BEGIN { exit !(luminance <= maximum) }'; then
-          continue
+          if ! ${pkgs.gawk}/bin/awk \
+            -v luminance="$MEAN_LUMINANCE" \
+            -v maximum="$MAX_MEAN_LUMINANCE" \
+            'BEGIN { exit !(luminance <= maximum) }'; then
+            continue
+          fi
         fi
 
         FILENAME=$(${pkgs.coreutils}/bin/basename "$IMAGE_URL")
@@ -119,12 +124,13 @@ let
           echo "Failed to apply wallpaper: $FILEPATH" >&2
           exit 1
         fi
-        echo "Applied $FILEPATH (topic: $TOPIC, mean luminance: $MEAN_LUMINANCE)"
+        echo "$IMAGE_ID" >> "$APPLIED_FILE"
+        echo "Applied $FILEPATH (topic: $TOPIC)"
         exit 0
       done < <(${pkgs.jq}/bin/jq -r '.data[]? | [.id, .path] | @tsv' <<< "$RESPONSE")
     done
 
-    echo "No unseen black wallpaper was found; keeping the current wallpaper." >&2
+    echo "No unseen wallpaper was found; keeping the current wallpaper." >&2
   '';
 in
 {
@@ -151,7 +157,7 @@ in
     Install.WantedBy = [ "noctalia.service" ];
   };
 
-  # 주기적으로 검증된 검은 배경화면을 Wallhaven에서 수집하는 Systemd 타이머 등록
+  # 주기적으로 새 배경화면을 Wallhaven에서 수집하는 Systemd 타이머 등록
   systemd.user.services.fetch-wallhaven = {
     Unit = {
       Description = "Automatically fetch a new wallpaper from Wallhaven";
