@@ -2,7 +2,7 @@ side:
 ''
 animations {
   window-close {
-    duration-ms 1100
+    duration-ms 550
     curve "linear"
     custom-shader r#"
       ${builtins.readFile ./genie.glsl}

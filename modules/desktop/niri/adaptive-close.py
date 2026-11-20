@@ -67,10 +67,20 @@ def prepare_close(target):
         time.sleep(0.01)
     # 최소 크기로 제한된 앱도 실제 크기로 정렬합니다.
     niri("action", "center-window", "--id", window_id)
-    # 플로팅 전환을 먼저 보여준 뒤 종이 접기 애니메이션을 시작합니다.
-    time.sleep(0.24)
-    return any(w["id"] == target["id"] and w.get("is_floating")
-               for w in json.loads(niri("windows")))
+    return True
+
+
+def hand_off_focus(target):
+    windows = json.loads(niri("windows"))
+    current = next((w for w in windows if w["id"] == target["id"]), None)
+    if current is None or not current["is_floating"]:
+        return
+    if current["is_focused"] and any(
+        not w["is_floating"] and w["workspace_id"] == current["workspace_id"]
+        for w in windows
+    ):
+        niri("action", "focus-tiling")
+
 
 
 def atomic_write(path, text):
@@ -84,15 +94,39 @@ def atomic_write(path, text):
             os.unlink(name)
 
 
+def load_shader(path, content):
+    if path.exists() and path.read_text() == content:
+        return
+    events = queue.Queue()
+    reader = subprocess.Popen(["niri", "msg", "--json", "event-stream"], stdout=subprocess.PIPE, text=True)
+    def read_events():
+        for line in reader.stdout:
+            try:
+                event = json.loads(line)
+                if "ConfigLoaded" in event:
+                    events.put(event["ConfigLoaded"])
+            except ValueError:
+                pass
+    threading.Thread(target=read_events, daemon=True).start()
+    try:
+        events.get(timeout=3)
+        atomic_write(path, content)
+        niri("action", "load-config-file")
+        if events.get(timeout=3)["failed"]:
+            raise RuntimeError("Niri rejected the directional close config")
+    finally:
+        reader.terminate()
+        reader.wait(timeout=3)
+
+
 def main():
     template = Path(sys.argv[1]).read_text()
     path = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "niri/genie-close.kdl"
     runtime = Path(os.environ["XDG_RUNTIME_DIR"])
-    with (runtime / "niri-adaptive-close.lock").open("w") as lock:
-        try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            return
+    with (runtime / "niri-adaptive-close.lock").open("a") as gate, \
+            (runtime / "niri-close-animations.lock").open("a") as animations:
+        # 입력별로 대상 선택과 포커스 인계까지만 직렬화합니다.
+        fcntl.flock(gate, fcntl.LOCK_EX)
         windows = json.loads(niri("windows"))
         target = next((w for w in windows if w["is_focused"]), None)
         if target is None:
@@ -101,48 +135,41 @@ def main():
         if "--explain" in sys.argv[2:]:
             print(json.dumps({"window_id": target["id"], "direction": {-1.0: "left", 0.0: "center", 1.0: "right"}[side]}))
             return
-        events = queue.Queue()
-        reader = subprocess.Popen(["niri", "msg", "--json", "event-stream"], stdout=subprocess.PIPE, text=True)
-        def read_events():
-            for line in reader.stdout:
-                try:
-                    event = json.loads(line)
-                    if "ConfigLoaded" in event:
-                        events.put(event["ConfigLoaded"])
-                except ValueError:
-                    pass
-        threading.Thread(target=read_events, daemon=True).start()
-        changed = False
         try:
-            # 초기 ConfigLoaded와 변경 후 이벤트를 구분합니다.
-            events.get(timeout=3)
-            while not events.empty():
-                events.get_nowait()
-            changed = True
-            atomic_write(path, template.replace("@SIDE@", str(side)))
-            niri("action", "load-config-file")
-            result = events.get(timeout=3)
-            if result["failed"]:
-                raise RuntimeError("Niri rejected the directional close config")
+            fcntl.flock(animations, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            pass  # Niri의 닫기 셰이더는 전역이므로 겹치는 창은 첫 창의 방향을 사용합니다.
+        else:
+            load_shader(path, template.replace("@SIDE@", str(side)))
+        fcntl.flock(animations, fcntl.LOCK_SH)
+        try:
             if not prepare_close(target):
                 return
-            # 다른 창으로 포커스가 옮겨져도 최초 대상만 닫습니다.
+            hand_off_focus(target)
+            fcntl.flock(gate, fcntl.LOCK_UN)
+
+            if not target["is_floating"]:
+                time.sleep(0.12)
+            if not any(w["id"] == target["id"] and w["is_floating"]
+                       for w in json.loads(niri("windows"))):
+                return
             niri("action", "close-window", "--id", str(target["id"]))
             deadline = time.monotonic() + 5
             while time.monotonic() < deadline:
                 if not any(w["id"] == target["id"] for w in json.loads(niri("windows"))):
-                    # 진행 중 애니메이션이 끝난 후 기본 방향을 복원합니다.
-                    time.sleep(1.2)
+                    # 550ms 애니메이션이 끝난 뒤 공통 방향을 복원합니다.
+                    time.sleep(0.65)
                     break
                 time.sleep(0.1)
         finally:
+            fcntl.flock(gate, fcntl.LOCK_EX)
+            fcntl.flock(animations, fcntl.LOCK_UN)
             try:
-                if changed:
-                    atomic_write(path, template.replace("@SIDE@", "1.0"))
-                    niri("action", "load-config-file")
-            finally:
-                reader.terminate()
-                reader.wait(timeout=3)
+                fcntl.flock(animations, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                pass
+            else:
+                load_shader(path, template.replace("@SIDE@", "1.0"))
 
 
 if __name__ == "__main__":
