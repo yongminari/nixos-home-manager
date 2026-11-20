@@ -1,4 +1,4 @@
-{ pkgs, lib, username, ... }:
+{ config, pkgs, lib, username, ... }:
 
 {
   imports = [
@@ -33,27 +33,25 @@
     shell = pkgs.zsh; 
   };
 
-  # nh 4.4.2 invokes sudo env USER=... for local activation and clean all.
-  # Keep this in sync with NH_PRESERVE_ENV in system-utils.nix. Do not allow
-  # arbitrary env arguments: they could execute unrelated commands as root.
-  # Applying user-built NixOS configurations still grants full system control.
-  security.sudo.extraRules = [
+  # nh re-executes itself through sudo env. Match only the normal local
+  # activation payload and the environment set by system-utils.nix.
+  security.sudo.extraRules = let
+    nhCommand = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+${lib.escapeRegex "${pkgs.nh}/bin/nh"}";
+    systemPath = "/nix/store/[a-z0-9]{32}-nixos-system-${lib.escapeRegex config.networking.hostName}-[a-zA-Z0-9._+-]+";
+    activation = ''[{]"log_level":"info","op":[{]"NixosActivate":[{]"action":"(Switch|Boot)","switch_to_configuration":"${systemPath}/bin/switch-to-configuration","system":"${systemPath}","continue_on_activation_failure":false,"install_bootloader":false,"systemd_run":true,"nix_args":[[]][}][}][}]'';
+  in [
     {
       users = [ username ];
       runAs = "root";
       commands = [
         {
-          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+/nix/store/[a-z0-9]{32}-nixos-system-[^/ ]+/bin/switch-to-configuration (test|boot)$";
-          options = [ "NOPASSWD" ];
-        }
-        {
-          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+nix build --no-link --profile /nix/var/nix/profiles/system /nix/store/[a-z0-9]{32}-nixos-system-[^/ ]+$";
+          command = "${nhCommand} __privileged ${activation}$";
           options = [ "NOPASSWD" ];
         }
         {
           # clean all re-executes this exact nh binary as root; allow its flags,
           # but not other nh subcommands or arbitrary executables.
-          command = "${pkgs.coreutils}/bin/env ^(USER=${username} |NH_FLAKE=/home/${username}/nixos-home-manager |NH_PRESERVE_ENV=0 )+${lib.escapeRegex "${pkgs.nh}/bin/nh"} clean all( .*)?$";
+          command = "${nhCommand} clean all( .*)?$";
           options = [ "NOPASSWD" ];
         }
       ];
