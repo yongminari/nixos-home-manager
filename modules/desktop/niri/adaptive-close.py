@@ -148,8 +148,7 @@ def main():
             hand_off_focus(target)
             fcntl.flock(gate, fcntl.LOCK_UN)
 
-            if not target["is_floating"]:
-                time.sleep(0.12)
+            # floating 전환 애니메이션이 진행되는 동안 바로 닫기를 요청합니다.
             if not any(w["id"] == target["id"] and w["is_floating"]
                        for w in json.loads(niri("windows"))):
                 return
