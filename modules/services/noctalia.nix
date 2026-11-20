@@ -20,8 +20,10 @@ let
     APPLIED_FILE="$STATE_DIR/applied-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
     API_URL="https://wallhaven.cc/api/v1/search?purity=100&sorting=random"
-    # 어두운 풍경 사진 또는 장원영·카리나(유지민)·설윤·유나(신유나)·윈터를 검색합니다.
-    SEARCH_TOPICS=(dark "Jang Won-young" "Yu Ji-min" "Sullyoon (Nmixx)" "Shin Yu-na" "Winter (aespa)")
+    # 어두운 밤하늘·우주 사진 또는 여성 인물 키워드를 포함하는 K-pop 사진을 검색합니다.
+    SEARCH_TOPICS=(space k-pop)
+    SPACE_KEYWORDS=("night sky" "Milky Way" space galaxy nebula)
+    PEOPLE_KEYWORDS=(girl women "korean women" "korean girl")
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
@@ -52,15 +54,16 @@ let
     for _ in $(${pkgs.coreutils}/bin/seq 1 "$MAX_ATTEMPTS"); do
       TOPIC=$(printf '%s\n' "''${SEARCH_TOPICS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
       case "$TOPIC" in
-        dark)
+        space)
           CATEGORIES=100
-          QUERY='+photography +landscape +dark -anime -illustration -"digital art" -"AI art"'
-          COLOR_ARGS=(--data-urlencode "colors=000000")
+          SPACE_KEYWORD=$(printf '%s\n' "''${SPACE_KEYWORDS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
+          QUERY="+\"$SPACE_KEYWORD\" -animation -anime -illustration -\"digital art\" -\"AI art\""
           ;;
-        *)
+        k-pop)
           CATEGORIES=001
-          QUERY="+\"$TOPIC\""
-          COLOR_ARGS=()
+          # 각 시도에서 하나를 선택하여 네 키워드를 모두 요구하는 AND 검색을 피합니다.
+          PEOPLE_KEYWORD=$(printf '%s\n' "''${PEOPLE_KEYWORDS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
+          QUERY="+k-pop +\"$PEOPLE_KEYWORD\" -animation -anime"
           ;;
       esac
 
@@ -71,8 +74,8 @@ let
         --show-error \
         --retry 3 \
         --get \
-        "''${COLOR_ARGS[@]}" \
         --data-urlencode "categories=$CATEGORIES" \
+        --data-urlencode "atleast=2560x1440" \
         --data-urlencode "q=$QUERY" \
         "$API_URL") || continue
 
@@ -81,7 +84,7 @@ let
 
         # 과거 밝기 검사에서 탈락한 인물 사진은 다시 선택할 수 있습니다.
         if ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$APPLIED_FILE" ||
-           { [ "$TOPIC" = dark ] && ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; }; then
+           { [ "$TOPIC" = space ] && ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; }; then
           continue
         fi
 
@@ -96,7 +99,7 @@ let
           continue
         fi
 
-        if [ "$TOPIC" = dark ]; then
+        if [ "$TOPIC" = space ]; then
           MEAN_LUMINANCE=$(${pkgs.imagemagick}/bin/magick \
             "$DOWNLOAD_FILE" \
             -colorspace Gray \
