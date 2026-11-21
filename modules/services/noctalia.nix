@@ -23,6 +23,10 @@ let
     }
   ) config.local.desktop.lockDisplays;
 
+  migrateLockWidgets = pkgs.writeShellScript "migrate-noctalia-lock-widgets" ''
+    exec ${pkgs.python3.withPackages (p: [ p.tomlkit ])}/bin/python3 ${./noctalia/migrate-lock-widgets.py} ${lib.escapeShellArgs (builtins.attrNames lockWidgets)}
+  '';
+
   wallpaperSync = pkgs.writeShellApplication {
     name = "noctalia-wallpaper-sync";
     runtimeInputs = [ pkgs.niri config.programs.noctalia.package pkgs.python3 ];
@@ -214,6 +218,8 @@ in
       WantedBy = [ "graphical-session.target" ];
     };
   };
+
+  systemd.user.services.noctalia.Service.ExecStartPre = [ "${migrateLockWidgets}" ];
 
   programs.noctalia = {
     enable = true;
