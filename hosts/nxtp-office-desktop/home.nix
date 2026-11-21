@@ -1,4 +1,4 @@
-{ ... }:
+{ config, lib, ... }:
 
 {
   # 컨트롤센터·런처 등 바 이외 Noctalia UI의 호스트별 배율입니다.
@@ -18,6 +18,9 @@
       left = "DP-2";
       right = "DP-3";
     };
+    # 두 모니터 모두 배율 1의 QHD 출력입니다.
+    lockDisplays = lib.mapAttrs (_: output: { inherit output; width = 2560; height = 1440; })
+      config.local.desktop.outputs;
     # 모니터 좌우 배치 변경: DP-2(왼쪽), DP-3(오른쪽)
     # 깜빡임 이슈 해결을 위해 주사율을 120Hz로 하향 조정
     extraConfig = ''

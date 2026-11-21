@@ -38,6 +38,11 @@
     };
     scale = "1.0";
     isLaptop = false;
+    # Noctalia의 Wayland 모델명과 1.25배 배율 기준 논리 해상도입니다.
+    lockDisplays = {
+      left = { output = "40LGD5KGM"; width = 4096; height = 1728; };
+      right = { output = "SAMSUNG"; width = 3072; height = 1728; };
+    };
     outputs = {
       left = "Hexium Ltd. 40LGD5KGM 0000000000000";
       right = "Samsung Electric Company SAMSUNG Unknown";

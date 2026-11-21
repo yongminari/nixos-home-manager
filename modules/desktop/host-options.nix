@@ -31,6 +31,17 @@
       default = "1.0";
       description = "Default Niri output scale.";
     };
+    lockDisplays = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          output = lib.mkOption { type = lib.types.str; };
+          width = lib.mkOption { type = lib.types.ints.positive; };
+          height = lib.mkOption { type = lib.types.ints.positive; };
+        };
+      });
+      default = { main = { output = ""; width = 1920; height = 1080; }; };
+      description = "Noctalia monitor selectors and logical dimensions for lock screen widgets.";
+    };
     outputs = lib.mkOption {
       type = lib.types.nullOr (lib.types.submodule {
         options = {
