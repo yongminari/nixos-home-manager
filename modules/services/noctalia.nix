@@ -120,7 +120,7 @@ let
 
         FILENAME=$(${pkgs.coreutils}/bin/basename "$IMAGE_URL")
         FILEPATH="$WALLPAPER_DIR/$FILENAME"
-        ${pkgs.coreutils}/bin/mv "$DOWNLOAD_FILE" "$FILEPATH"
+        ${pkgs.coreutils}/bin/mv "$DOWNLOAD_FILE" "$FILEPATH" || exit 1
 
         # 검증을 통과한 새 이미지만 현재 실행 중인 Noctalia에 적용합니다.
         if ! ${config.programs.noctalia.package}/bin/noctalia msg wallpaper-set "$FILEPATH"; then
@@ -128,6 +128,13 @@ let
           exit 1
         fi
         echo "$IMAGE_ID" >> "$APPLIED_FILE"
+        # 1.5초 배경 전환이 끝난 후 현재 이미지 외의 자동 다운로드 파일을 정리합니다.
+        # 기본 배경, 사용자 파일, 다른 하위 폴더 및 심볼릭 링크는 보존합니다.
+        ${pkgs.coreutils}/bin/sleep 2
+        ${pkgs.findutils}/bin/find "$HOME/Pictures/Wallpapers" "$WALLPAPER_DIR" \
+          -maxdepth 1 -regextype posix-extended -type f \
+          -regex '.*/wallhaven[-_][[:alnum:]]+\.(jpg|jpeg|png|webp)' \
+          ! -path "$FILEPATH" -delete
         echo "Applied $FILEPATH (topic: $TOPIC)"
         exit 0
       done < <(${pkgs.jq}/bin/jq -r '.data[]? | [.id, .path] | @tsv' <<< "$RESPONSE")
@@ -181,7 +188,7 @@ in
     };
     Timer = {
       OnActiveSec = "5sec";       # 타이머 활성화 후 첫 배경화면을 즉시 검색
-      OnUnitActiveSec = "5min"; # 이후 5분마다 실행
+      OnUnitActiveSec = "15min"; # 이후 15분마다 실행
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];
