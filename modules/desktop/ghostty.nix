@@ -29,6 +29,7 @@
       background-opacity = 1.0;
 
       # [Process & Shutdown Tune]
+      confirm-close-surface = false;
       # 마지막 창이 닫히면 Ghostty 본체를 종료합니다. 자식 scope 종료 정책은 아래에서 별도로 관리합니다.
       quit-after-last-window-closed = true;
 
