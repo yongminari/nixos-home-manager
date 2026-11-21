@@ -1,7 +1,27 @@
-{ inputs, pkgs, config, ... }:
+{ inputs, pkgs, lib, config, ... }:
 
 let
   lFramePreset = builtins.fromTOML (builtins.readFile ./noctalia/l-frame.toml);
+
+  # 시각과 날짜를 별도의 기본 시계로 배치해 긴 날짜가 시간 숫자를 줄이지 않게 합니다.
+  lockWidgets = lib.concatMapAttrs (name: display:
+    let
+      clock = format: y: width: height: {
+        type = "clock";
+        output = display.output;
+        placement_width = display.width;
+        placement_height = display.height;
+        cx = display.width * 0.5;
+        cy = display.height * y;
+        box_width = display.width * width;
+        box_height = display.height * height;
+        settings = { inherit format; clock_style = "digital"; center_text = true; };
+      };
+    in {
+      "time_${name}" = clock "{:%H:%M:%S}" 0.36 0.90 0.44;
+      "date_${name}" = clock "{:%Y-%m-%d}" 0.66 0.68 0.14;
+    }
+  ) config.local.desktop.lockDisplays;
 
   wallpaperSync = pkgs.writeShellApplication {
     name = "noctalia-wallpaper-sync";
@@ -201,7 +221,7 @@ in
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ./noctalia/lockscreen-glass-blocks.patch ];
     });
-    
+
     # 기본 설정 (배경화면과 독립적인 Catppuccin 테마)
     settings = {
       # Noctalia Shell의 설정 인터페이스(GUI)를 통해 변경한 내용을 
@@ -257,32 +277,18 @@ in
         };
       };
 
-      # 잠금 직전의 화면을 캡처하고 유리 블록의 굴절과 줄눈을 적용합니다. 블러는 작은 글자를 흐립니다.
+      # 잠금 직전 화면에 유리 블록 효과와 틴트를 적용합니다.
       lockscreen = {
         blurred_desktop = true;
         blur_intensity = 0.2;
         tint_intensity = 0.3;
       };
 
-      # 출력 크기에 맞춰 위치를 환산하고, 하단 로그인 패널 위에 큰 아날로그 시계를 표시합니다.
+      # 로그인 패널 위에 디지털 시각과 날짜를 표시합니다.
       lockscreen_widgets = {
         enabled = true;
-        widget_order = [ "analog_clock" ];
-        widget.analog_clock = {
-          type = "clock";
-          output = "";
-          cx = 960.0;
-          cy = 432.0;
-          placement_width = 1920.0;
-          placement_height = 1080.0;
-          box_width = 360.0;
-          box_height = 360.0;
-          settings = {
-            clock_style = "analog";
-            circle = true;
-            show_seconds = true;
-          };
-        };
+        widget_order = builtins.attrNames lockWidgets;
+        widget = lockWidgets;
       };
 
       # 오버뷰 배경화면에도 아주 약한 블러만 적용합니다.
