@@ -1,5 +1,15 @@
 { pkgs, ... }:
 
+let
+  copyFiles = pkgs.writeShellApplication {
+    name = "yazi-copy-files";
+    runtimeInputs = [ pkgs.python3 pkgs.wl-clipboard ];
+    text = ''
+      python3 -c 'import pathlib, sys; sys.stdout.write("".join(pathlib.Path(p).absolute().as_uri() + "\r\n" for p in sys.argv[1:]))' "$@" |
+        wl-copy --type text/uri-list
+    '';
+  };
+in
 {
   # Yazi (Terminal File Manager)
   programs.yazi = {
@@ -8,6 +18,15 @@
     enableBashIntegration = true;
     enableNushellIntegration = true;
     shellWrapperName = "y";
+
+    # GUI 파일 관리자에 붙여넣을 수 있도록 파일 URI와 Yazi 내부 yank를 함께 저장합니다.
+    keymap.mgr.prepend_keymap = [
+      {
+        on = "y";
+        run = [ "shell --block -- ${copyFiles}/bin/yazi-copy-files %s" "yank" ];
+        desc = "Copy files to system clipboard and yank";
+      }
+    ];
 
     settings = {
       mgr = {

@@ -8,6 +8,7 @@
     geeqie
     loupe
     libreoffice
+    spotify
   ];
 
   programs.sioyek = {
