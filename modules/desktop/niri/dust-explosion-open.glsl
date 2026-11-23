@@ -52,23 +52,8 @@ vec4 open_color(vec3 coords_geo, vec3 size_geo) {
         float arrive = u * u * (3.0 - 2.0 * u);
         spring_scale = 1.0 + arrival_speed * duration * carry + overshoot * arrive;
     }
-    if (time >= first_peak) {
-        // Three rebounds: each opposite extremum has half the prior amplitude.
-        // Each half-cycle lasts 72% of the previous one as the motion settles.
-        // Invert the geometric duration sum while keeping six turns before 1.0.
-        float rebound_time = clamp((time - first_peak) / (1.0 - first_peak), 0.0, 1.0);
-        float duration_ratio = 0.72;
-        float phase = log(1.0 - rebound_time * (1.0 - pow(duration_ratio, 6.0)))
-                    / log(duration_ratio);
-        phase = clamp(phase, 0.0, 6.0);
-        float segment = min(floor(phase), 5.0);
-        float amplitude = overshoot * pow(0.5, segment)
-                        * (mod(segment, 2.0) < 1.0 ? 1.0 : -1.0);
-        float next_amplitude = segment < 5.0 ? -0.5 * amplitude : 0.0;
-        // Stop smoothly at every turn, even as the intervals become shorter.
-        float blend = 0.5 - 0.5 * cos(3.14159265 * (phase - segment));
-        spring_scale = 1.0 + mix(amplitude, next_amplitude, blend);
-    }
+    if (time >= first_peak)
+        spring_scale = 1.0 + opening_rebound(time, first_peak, overshoot);
 
     // Bow the four side centers outward and inward, with quieter corners.
     // Use window-relative directions so wide and tall windows behave alike.

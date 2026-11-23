@@ -230,7 +230,7 @@ in
       }
     ''}
 
-    // 창은 위에서 본 먼지 폭발로 나타나고, 닫힐 때는 호스트별 효과를 사용합니다.
+    // 창마다 열기는 먼지 폭발 또는 CRT, 닫기는 지니 또는 CRT를 무작위로 선택합니다.
     animations {
       // 이동 애니메이션의 속도감을 통일합니다.
       workspace-switch {
@@ -268,7 +268,17 @@ in
         duration-ms 1000
         curve "linear"
         custom-shader r#"
-          ${builtins.readFile ./dust-explosion-open.glsl}
+          ${builtins.readFile ./opening-rebound.glsl}
+          ${lib.replaceStrings [ "vec4 open_color(" ] [ "vec4 dust_open_color(" ]
+            (builtins.readFile ./dust-explosion-open.glsl)}
+          ${builtins.readFile ./crt.glsl}
+          ${builtins.readFile ./crt-open.glsl}
+          vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+            // Niri supplies one random seed per opening animation.
+            if (niri_random_seed < 0.5)
+              return dust_open_color(coords_geo, size_geo);
+            return crt_open_color(coords_geo, size_geo);
+          }
         "#
       }
       ${lib.concatMapStringsSep "\n" (action: ''
@@ -299,9 +309,12 @@ in
               + builtins.readFile ./black-hole-close.glsl
             else if currentHost.windowAnimation == "genie" then ''
               ${builtins.readFile ./genie.glsl}
+              ${builtins.readFile ./crt.glsl}
               vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {
-                  return genie_color(coords_geo, size_geo,
-                      niri_clamped_progress, 1.0);
+                  if (niri_random_seed < 0.5)
+                      return genie_color(coords_geo, size_geo, niri_clamped_progress, 1.0);
+                  return crt_color(coords_geo, size_geo,
+                      1.0 - crt_progress(niri_clamped_progress * 1.375));
               }
             '' else builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
           "#
