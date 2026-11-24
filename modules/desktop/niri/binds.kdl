@@ -132,8 +132,9 @@ binds {
     Ctrl+Mod+XF86TouchpadToggle { spawn "sh" "-c" "~/.config/niri/toggle-touchpad.sh"; }
     Mod+F5 { spawn "sh" "-c" "~/.config/niri/toggle-touchpad.sh"; }
 
-    // 스크린샷 (grim + slurp + swappy)
+    // 스크린샷
     Print { spawn "sh" "-c" "grim - | swappy -f -"; }
+    Alt+Print { screenshot-window; }
     Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
 
     // Wallhaven 무작위 배경화면 가져오기
