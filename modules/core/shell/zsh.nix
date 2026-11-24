@@ -63,7 +63,7 @@
       eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"
     '') (lib.mkOrder 1500 ''
       # Starship 초기화 이후 전체 프롬프트를 보관합니다.
-      source ${./starship-minute.zsh}
+      source ${./starship-transient.zsh}
     '') ];
 
     oh-my-zsh = {
