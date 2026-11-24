@@ -1,0 +1,53 @@
+--- a/src/app/application_services.cpp
++++ b/src/app/application_services.cpp
+@@ -915,6 +915,8 @@
+   m_screenCorners.onOutputChange();
+   m_hotCorners.onOutputChange();
+   m_lockScreen.onOutputChange();
++  // A waking output may only now have a lock surface to attach its widgets to.
++  m_lockscreenWidgetsController.syncLockSurfaces();
+   m_idleGraceOverlay.onOutputChange();
+   m_idleInhibitor.onOutputChange();
+   m_overviewLauncherCapture.onOutputChange();
+--- a/src/shell/lockscreen/lockscreen_widgets_controller.h
++++ b/src/shell/lockscreen/lockscreen_widgets_controller.h
+@@ -44,6 +44,7 @@
+   void registerIpc(IpcService& ipc);
+   void onLockStateChanged();
+   void onOutputChange();
++  void syncLockSurfaces();
+   void onSecondTick();
+   // True when a visible widget renders a value that changes every second.
+   bool wantsSecondTicks() const;
+--- a/src/shell/lockscreen/lockscreen_widgets_controller.cpp
++++ b/src/shell/lockscreen/lockscreen_widgets_controller.cpp
+@@ -155,7 +155,14 @@
+   }
+   if (isEditing()) {
+     m_editor->onOutputChange();
+-  } else if (m_host != nullptr) {
++  } else {
++    // Detach widgets while disappearing surfaces are still alive.
++    syncLockSurfaces();
++  }
++}
++
++void LockscreenWidgetsController::syncLockSurfaces() {
++  if (m_host != nullptr && m_lockScreen != nullptr && !isEditing()) {
+     m_host->onOutputChange(*m_lockScreen);
+   }
+ }
+--- a/src/shell/lockscreen/lockscreen_widgets_host.cpp
++++ b/src/shell/lockscreen/lockscreen_widgets_host.cpp
+@@ -202,9 +202,8 @@
+ 
+     if (widgetDefinitionChanged) {
+       detachFromSurface(*existing);
+-      std::erase_if(m_instances, [this, &state](std::unique_ptr<WidgetInstance>& instance) {
+-        detachFromSurface(*instance);
+-        return instance->state.id == state.id;
++      std::erase_if(m_instances, [existing](const std::unique_ptr<WidgetInstance>& instance) {
++        return instance.get() == existing;
+       });
+       createInstance(state, *surface, *output);
+       continue;
