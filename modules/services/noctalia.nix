@@ -224,11 +224,7 @@ in
   programs.noctalia = {
     enable = true;
     systemd.enable = true;
-    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [
-        ./noctalia/lockscreen-glass-blocks.patch
-      ];
-    });
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     # 기본 설정 (배경화면과 독립적인 Catppuccin 테마)
     settings = {
@@ -285,7 +281,7 @@ in
         };
       };
 
-      # 잠금 직전 화면에 유리 블록 효과와 틴트를 적용합니다.
+      # 잠금 직전 화면에 흐림 효과와 틴트를 적용합니다.
       lockscreen = {
         blurred_desktop = true;
         blur_intensity = 0.2;
