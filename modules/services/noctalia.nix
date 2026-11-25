@@ -44,10 +44,8 @@ let
     APPLIED_FILE="$STATE_DIR/applied-ids"
     DOWNLOAD_FILE="$STATE_DIR/candidate.download"
     API_URL="https://wallhaven.cc/api/v1/search?purity=100&sorting=random"
-    # 어두운 밤하늘·우주 사진 또는 여성 인물 키워드를 포함하는 K-pop 사진을 검색합니다.
-    SEARCH_TOPICS=(space k-pop)
-    SPACE_KEYWORDS=("night sky" "Milky Way" space galaxy nebula)
-    PEOPLE_KEYWORDS=(girl women "korean women" "korean girl")
+    SPACE_KEYWORDS=(space galaxy "black hole" nebula "Milky Way")
+    EXCLUDED_TAGS='-animation -anime -cartoon -illustration -"digital art" -"AI art" -people -person -portrait -women -woman -men -man -girl -boy -astronaut -cosplay -silhouette'
     MAX_MEAN_LUMINANCE="0.28"
     MAX_ATTEMPTS=5
 
@@ -76,20 +74,8 @@ let
     trap '${pkgs.coreutils}/bin/rm -f "$DOWNLOAD_FILE"' EXIT
 
     for _ in $(${pkgs.coreutils}/bin/seq 1 "$MAX_ATTEMPTS"); do
-      TOPIC=$(printf '%s\n' "''${SEARCH_TOPICS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
-      case "$TOPIC" in
-        space)
-          CATEGORIES=100
-          SPACE_KEYWORD=$(printf '%s\n' "''${SPACE_KEYWORDS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
-          QUERY="+\"$SPACE_KEYWORD\" -animation -anime -illustration -\"digital art\" -\"AI art\""
-          ;;
-        k-pop)
-          CATEGORIES=001
-          # 각 시도에서 하나를 선택하여 네 키워드를 모두 요구하는 AND 검색을 피합니다.
-          PEOPLE_KEYWORD=$(printf '%s\n' "''${PEOPLE_KEYWORDS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
-          QUERY="+k-pop +\"$PEOPLE_KEYWORD\" -animation -anime"
-          ;;
-      esac
+      TOPIC=$(printf '%s\n' "''${SPACE_KEYWORDS[@]}" | ${pkgs.coreutils}/bin/shuf -n 1)
+      QUERY="+\"$TOPIC\" $EXCLUDED_TAGS"
 
       RESPONSE=$(${pkgs.curl}/bin/curl \
         --fail \
@@ -98,7 +84,7 @@ let
         --show-error \
         --retry 3 \
         --get \
-        --data-urlencode "categories=$CATEGORIES" \
+        --data-urlencode "categories=100" \
         --data-urlencode "atleast=2560x1440" \
         --data-urlencode "q=$QUERY" \
         "$API_URL") || continue
@@ -106,9 +92,8 @@ let
       while IFS=$'\t' read -r IMAGE_ID IMAGE_URL; do
         [ -n "$IMAGE_ID" ] || continue
 
-        # 과거 밝기 검사에서 탈락한 인물 사진은 다시 선택할 수 있습니다.
         if ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$APPLIED_FILE" ||
-           { [ "$TOPIC" = space ] && ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; }; then
+           ${pkgs.gnugrep}/bin/grep -Fqx "$IMAGE_ID" "$HISTORY_FILE"; then
           continue
         fi
 
@@ -123,23 +108,21 @@ let
           continue
         fi
 
-        if [ "$TOPIC" = space ]; then
-          MEAN_LUMINANCE=$(${pkgs.imagemagick}/bin/magick \
-            "$DOWNLOAD_FILE" \
-            -colorspace Gray \
-            -resize 1x1 \
-            -format '%[fx:mean]' \
-            info:) || continue
+        MEAN_LUMINANCE=$(${pkgs.imagemagick}/bin/magick \
+          "$DOWNLOAD_FILE" \
+          -colorspace Gray \
+          -resize 1x1 \
+          -format '%[fx:mean]' \
+          info:) || continue
 
-          # 밝아서 탈락한 후보도 기록하여 다음 실행에서 다시 받지 않습니다.
-          echo "$IMAGE_ID" >> "$HISTORY_FILE"
+        # 밝아서 탈락한 후보도 기록하여 다음 실행에서 다시 받지 않습니다.
+        echo "$IMAGE_ID" >> "$HISTORY_FILE"
 
-          if ! ${pkgs.gawk}/bin/awk \
-            -v luminance="$MEAN_LUMINANCE" \
-            -v maximum="$MAX_MEAN_LUMINANCE" \
-            'BEGIN { exit !(luminance <= maximum) }'; then
-            continue
-          fi
+        if ! ${pkgs.gawk}/bin/awk \
+          -v luminance="$MEAN_LUMINANCE" \
+          -v maximum="$MAX_MEAN_LUMINANCE" \
+          'BEGIN { exit !(luminance <= maximum) }'; then
+          continue
         fi
 
         FILENAME=$(${pkgs.coreutils}/bin/basename "$IMAGE_URL")
