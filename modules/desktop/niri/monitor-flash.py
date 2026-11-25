@@ -232,12 +232,13 @@ class WindowLifecycleTracker:
 class MonitorFlash(Gtk.Application):
     duration_us = DURATION_US
 
-    def __init__(self, effect, preview=None, demo=False):
+    def __init__(self, effect, preview=None, demo=False, *, track_focus=True,
+                 window_open=False, window_close=False):
         super().__init__(application_id="local.niri.MonitorFlash", flags=Gio.ApplicationFlags.NON_UNIQUE)
-        self.tracker = FocusTracker()
-        self.window_tracker = WindowLifecycleTracker()
-        self.window_open_enabled = os.environ.get("NIRI_WINDOW_OPEN_EFFECT", "1") == "1"
-        self.window_close_enabled = os.environ.get("NIRI_WINDOW_CLOSE_EFFECT", "1") == "1"
+        self.focus_tracker = FocusTracker() if track_focus else None
+        self.window_tracker = WindowLifecycleTracker() if window_open or window_close else None
+        self.window_open_enabled = window_open
+        self.window_close_enabled = window_close
         self.window = None
         self.reader = None
         self.failed = False
@@ -306,8 +307,8 @@ class MonitorFlash(Gtk.Application):
             self.reader.wait(timeout=2)
 
     def handle_event(self, event):
-        output = self.tracker.update(event)
-        window_output = self.window_tracker.update(event)
+        output = self.focus_tracker.update(event) if self.focus_tracker is not None else None
+        window_output = self.window_tracker.update(event) if self.window_tracker is not None else None
         if window_output is not None and "WindowClosed" in event:
             if self.window_close_enabled:
                 self.flash(window_output, "screen-ripple", reverse=True)
@@ -441,6 +442,10 @@ if __name__ == "__main__":
             args.preview = output["name"]
         except (subprocess.CalledProcessError, ValueError, KeyError, TypeError) as error:
             parser.exit(1, f"현재 모니터를 확인할 수 없습니다: {error}\n")
-    app = MonitorFlash(args.effect, args.preview, args.demo)
+    app = MonitorFlash(
+        args.effect, args.preview, args.demo,
+        window_open=os.environ.get("NIRI_WINDOW_OPEN_EFFECT", "1") == "1",
+        window_close=os.environ.get("NIRI_WINDOW_CLOSE_EFFECT", "1") == "1",
+    )
     status = app.run([sys.argv[0]])
     sys.exit(1 if app.failed else status)

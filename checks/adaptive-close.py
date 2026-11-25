@@ -1,7 +1,6 @@
 import importlib.util
 import json
 import os
-from pathlib import Path
 import sys
 import tempfile
 import threading
@@ -82,14 +81,14 @@ class PrepareCloseTest(unittest.TestCase):
 
 
 class OverlappingCloseTest(unittest.TestCase):
-    def test_second_close_runs_before_first_animation_finishes(self):
+    def test_second_close_can_finish_while_first_request_is_pending(self):
         windows = [
             {"id": i, "workspace_id": 1, "is_focused": i == 1, "is_floating": False}
             for i in (1, 2)
         ]
         closed = []
-        first_animating = threading.Event()
-        finish_animation = threading.Event()
+        first_closing = threading.Event()
+        finish_first = threading.Event()
 
         def ipc(*args):
             if args == ("windows",):
@@ -100,6 +99,9 @@ class OverlappingCloseTest(unittest.TestCase):
             else:
                 self.assertEqual(args[:3], ("action", "close-window", "--id"))
                 window_id = int(args[3])
+                if window_id == 1:
+                    first_closing.set()
+                    self.assertTrue(finish_first.wait(5))
                 closed.append(window_id)
                 windows.remove(next(w for w in windows if w["id"] == window_id))
 
@@ -107,30 +109,19 @@ class OverlappingCloseTest(unittest.TestCase):
             next(w for w in windows if w["id"] == target["id"])["is_floating"] = True
             return True
 
-        def sleep(seconds):
-            if seconds == 0.65 and not first_animating.is_set():
-                first_animating.set()
-                self.assertTrue(finish_animation.wait(5))
-
         with tempfile.TemporaryDirectory() as tmp:
-            template = Path(tmp) / "template"
-            template.write_text("@SIDE@")
-            with patch.dict(os.environ, XDG_RUNTIME_DIR=tmp, XDG_CONFIG_HOME=tmp), \
-                    patch.object(sys, "argv", ["close", str(template)]), \
+            with patch.dict(os.environ, XDG_RUNTIME_DIR=tmp), \
                     patch.object(module, "niri", side_effect=ipc), \
-                    patch.object(module, "prepare_close", side_effect=prepare), \
-                    patch.object(module.time, "sleep", side_effect=sleep), \
-                    patch.object(module, "load_shader") as shader, ThreadPoolExecutor(2) as pool:
+                    patch.object(module, "prepare_close", side_effect=prepare), ThreadPoolExecutor(2) as pool:
                 first = pool.submit(module.main)
                 try:
-                    self.assertTrue(first_animating.wait(3))
+                    self.assertTrue(first_closing.wait(3))
                     pool.submit(module.main).result(timeout=3)
-                    self.assertEqual(closed, [1, 2])
-                    self.assertEqual(shader.call_count, 1)
+                    self.assertEqual(closed, [2])
                 finally:
-                    finish_animation.set()
+                    finish_first.set()
                 first.result(timeout=3)
-                self.assertEqual(shader.call_count, 2)
+                self.assertEqual(closed, [2, 1])
 
 
 unittest.main()

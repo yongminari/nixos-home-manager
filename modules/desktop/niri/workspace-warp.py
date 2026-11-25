@@ -10,7 +10,7 @@ import threading
 
 import cairo
 from monitor_flash import (
-    ImageEffectArea, FocusTracker, MonitorFlash, Gdk, Gio, GLib, Gtk, LayerShell,
+    ImageEffectArea, MonitorFlash, Gdk, Gio, GLib, Gtk, LayerShell,
 )
 
 DURATION_US = 950_000
@@ -95,12 +95,11 @@ class WorkspaceTracker:
 
 class WorkspaceWarp(MonitorFlash):
     def __init__(self, preview=None, direction=(0, -1), effect="warp"):
-        super().__init__(effect, preview=preview)
+        ripple_enabled = os.environ.get("NIRI_WALLPAPER_RIPPLE", "1") == "1"
+        super().__init__(effect, preview=preview, track_focus=ripple_enabled and preview is None)
         self.set_application_id("local.niri.WorkspaceWarp")
         self.tracker = WorkspaceTracker()
-        self.focus_tracker = FocusTracker()
         self.warp_enabled = os.environ.get("NIRI_WORKSPACE_WARP", "1") == "1"
-        self.ripple_enabled = os.environ.get("NIRI_WALLPAPER_RIPPLE", "1") == "1"
         self.direction = direction
         self.warp_surfaces = {}
         self.wallpapers = {}
@@ -187,11 +186,11 @@ class WorkspaceWarp(MonitorFlash):
         return GLib.SOURCE_REMOVE
 
     def handle_event(self, event):
-        output = self.focus_tracker.update(event)
+        output = self.focus_tracker.update(event) if self.focus_tracker is not None else None
         transition = self.tracker.update(event)
         if "WorkspacesChanged" in event and self.warp_enabled:
             self.refresh_wallpapers()
-        if output is not None and self.ripple_enabled and not self.tracker.overview:
+        if output is not None and not self.tracker.overview:
             self.flash(output, "ripple")
         elif transition is not None and self.warp_enabled:
             output, self.direction = transition

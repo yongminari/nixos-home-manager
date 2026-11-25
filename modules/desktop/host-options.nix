@@ -16,7 +16,7 @@
       default = 900;
       description = "Idle time in seconds before powering off monitors; null disables automatic monitor power-off.";
     };
-    adaptiveGenieClose = lib.mkEnableOption "Predict the next focus direction for the Niri close shortcut";
+    adaptiveGenieClose = lib.mkEnableOption "Float the target window and hand off focus before closing it";
     windowAnimation = lib.mkOption {
       type = lib.types.enum [ "smoke" "genie" "black-hole" "ink" "glacier" "glass-pressure" ];
       default = "smoke";

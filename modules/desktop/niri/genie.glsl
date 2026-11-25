@@ -66,7 +66,7 @@ float suction_path_width(float y) {
         return mix(0.50, 0.20, smoothstep(0.30, 0.70, y));
     return mix(0.20, 0.0, smoothstep(0.70, 1.0, y));
 }
-vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress, float side) {
+vec4 genie_color(vec3 coords_geo, vec3 size_geo, float progress) {
     float p = clamp(progress, 0.0, 1.0);
     if (p <= 0.0)
         return texture2D(niri_tex, (niri_geo_to_tex * coords_geo).st);

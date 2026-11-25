@@ -169,7 +169,7 @@ in
   # 모든 장비에 공통 적용하며 호스트 설정에서 개별적으로 재정의할 수 있습니다.
   local.desktop = {
     workspaceWarp.enable = lib.mkDefault true;
-    # 타일 창을 축소·중앙 이동한 뒤 다음 포커스 방향으로 지니 종료합니다.
+    # 타일 창을 축소·중앙 이동한 뒤 포커스를 넘기고 원래 창을 닫습니다.
     windowAnimation = lib.mkDefault "genie";
     adaptiveGenieClose = lib.mkDefault true;
   };
@@ -281,50 +281,45 @@ in
           }
         "#
       }
-      ${lib.concatMapStringsSep "\n" (action: ''
-        window-${action} {
-          ${if currentHost.windowAnimation == "glass-pressure" then ''
-            duration-ms 1100
-            curve "linear"
-          '' else if currentHost.windowAnimation == "glacier" then ''
-            duration-ms 1250
-            curve "linear"
-          '' else if currentHost.windowAnimation == "ink" then ''
-            duration-ms 900
-            curve "linear"
-          '' else if currentHost.windowAnimation == "black-hole" then ''
-            duration-ms 750
-            curve "linear"
-          '' else if currentHost.windowAnimation == "genie" then ''
-            duration-ms 550
-            curve "linear"
-          '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
-          custom-shader r#"
-            ${if currentHost.windowAnimation == "glass-pressure" then
-              builtins.readFile ./glass-pressure-close.glsl
-            else if currentHost.windowAnimation == "glacier" then
-              builtins.readFile ./glacier-close.glsl
-            else if builtins.elem currentHost.windowAnimation [ "black-hole" "ink" ] then
-              lib.optionalString (currentHost.windowAnimation == "ink") "#define INK_FLOW\n"
-              + builtins.readFile ./black-hole-close.glsl
-            else if currentHost.windowAnimation == "genie" then ''
-              ${builtins.readFile ./genie.glsl}
-              ${builtins.readFile ./crt.glsl}
-              vec4 ${action}_color(vec3 coords_geo, vec3 size_geo) {
-                  if (niri_random_seed < 0.5)
-                      return genie_color(coords_geo, size_geo, niri_clamped_progress, 1.0);
-                  return crt_color(coords_geo, size_geo,
-                      1.0 - crt_progress(niri_clamped_progress * 1.375));
-              }
-            '' else builtins.readFile "${inputs.niri-shaders}/smoke/${action}.glsl"}
-          "#
-        }
-      '') (if currentHost.adaptiveGenieClose then [ ] else [ "close" ])}
+      window-close {
+        ${if currentHost.windowAnimation == "glass-pressure" then ''
+          duration-ms 1100
+          curve "linear"
+        '' else if currentHost.windowAnimation == "glacier" then ''
+          duration-ms 1250
+          curve "linear"
+        '' else if currentHost.windowAnimation == "ink" then ''
+          duration-ms 900
+          curve "linear"
+        '' else if currentHost.windowAnimation == "black-hole" then ''
+          duration-ms 750
+          curve "linear"
+        '' else if currentHost.windowAnimation == "genie" then ''
+          duration-ms 550
+          curve "linear"
+        '' else builtins.readFile "${inputs.niri-shaders}/smoke/config"}
+        custom-shader r#"
+          ${if currentHost.windowAnimation == "glass-pressure" then
+            builtins.readFile ./glass-pressure-close.glsl
+          else if currentHost.windowAnimation == "glacier" then
+            builtins.readFile ./glacier-close.glsl
+          else if builtins.elem currentHost.windowAnimation [ "black-hole" "ink" ] then
+            lib.optionalString (currentHost.windowAnimation == "ink") "#define INK_FLOW\n"
+            + builtins.readFile ./black-hole-close.glsl
+          else if currentHost.windowAnimation == "genie" then ''
+            ${builtins.readFile ./genie.glsl}
+            ${builtins.readFile ./crt.glsl}
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                if (niri_random_seed < 0.5)
+                    return genie_color(coords_geo, size_geo, niri_clamped_progress);
+                return crt_color(coords_geo, size_geo,
+                    1.0 - crt_progress(niri_clamped_progress * 1.375));
+            }
+          '' else builtins.readFile "${inputs.niri-shaders}/smoke/close.glsl"}
+        "#
+      }
     }
-    ${lib.optionalString currentHost.adaptiveGenieClose ''
-    include "genie-close.kdl"
-    ''}
-    
+
     input {
         keyboard {
             xkb { layout "us"; }
