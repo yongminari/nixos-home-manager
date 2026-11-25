@@ -60,7 +60,6 @@
 
   # --- [4. System Services & Utilities] ---
   hardware.enableAllFirmware = true; 
-  hardware.enableRedistributableFirmware = true; 
 
   services.openssh = {
     enable = true;

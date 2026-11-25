@@ -2,8 +2,7 @@
 
 {
   home.packages = with pkgs; [
-    (if config.local.desktop.chromeArgs == [] then google-chrome else
-      google-chrome.override { commandLineArgs = config.local.desktop.chromeArgs; })
+    (google-chrome.override { commandLineArgs = config.local.desktop.chromeArgs; })
     obsidian
     geeqie
     loupe

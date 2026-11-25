@@ -9,7 +9,6 @@ let
     default_layout "default"
     pane_frames true
     simplified_ui false
-    mirror_session_to_terminal_title true
     mouse_mode true
     copy_on_select true
 

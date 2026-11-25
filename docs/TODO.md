@@ -30,7 +30,7 @@
 
 ## 모듈별 미사용 코드 점검
 
-각 체크박스는 해당 파일과 그 파일에서 연결하는 스크립트·설정의 점검 완료를 뜻합니다. 삭제 여부는 별도로 결정합니다. Niri부터 시작하며, 다음 파일과 직전 회차의 근거는 [HANDOFF](../HANDOFF.md#모듈별-미사용-코드-점검)에서 확인합니다.
+각 체크박스는 해당 파일과 그 파일에서 연결하는 스크립트·설정의 점검 완료를 뜻합니다. 삭제 여부는 별도로 결정합니다. 52개 파일 점검을 완료했습니다. 회차별 근거는 [HANDOFF](../HANDOFF.md#모듈별-미사용-코드-점검)에서 확인합니다.
 
 - 각 회차에는 한 파일에서 후보를 찾고 저장소 전체에서 호출 경로를 확인합니다. 단축키, systemd, 수동 CLI, 동적으로 읽는 파일과 테스트도 포함합니다.
 - 호스트 조건이 있으면 세 호스트의 최종 설정을 비교합니다. 현재 비활성인 선택 기능과 플러그인 분리용 셰이더는 보존합니다.
@@ -56,61 +56,61 @@
 
 - [x] [modules/core/shell/bash.nix](../modules/core/shell/bash.nix)
 - [x] [modules/core/shell/nushell.nix](../modules/core/shell/nushell.nix)
-- [ ] [modules/core/shell/utils.nix](../modules/core/shell/utils.nix)
-- [ ] [modules/core/shell/welcome.nix](../modules/core/shell/welcome.nix)
-- [ ] [modules/core/shell/yazi.nix](../modules/core/shell/yazi.nix)
-- [ ] [modules/core/shell/zellij.nix](../modules/core/shell/zellij.nix)
-- [ ] [modules/core/shell/zsh.nix](../modules/core/shell/zsh.nix)
+- [x] [modules/core/shell/utils.nix](../modules/core/shell/utils.nix)
+- [x] [modules/core/shell/welcome.nix](../modules/core/shell/welcome.nix)
+- [x] [modules/core/shell/yazi.nix](../modules/core/shell/yazi.nix)
+- [x] [modules/core/shell/zellij.nix](../modules/core/shell/zellij.nix)
+- [x] [modules/core/shell/zsh.nix](../modules/core/shell/zsh.nix)
 
 ### 개발 도구
 
-- [ ] [modules/dev/codex.nix](../modules/dev/codex.nix)
-- [ ] [modules/dev/containers.nix](../modules/dev/containers.nix)
-- [ ] [modules/dev/dev-tools.nix](../modules/dev/dev-tools.nix)
-- [ ] [modules/dev/git.nix](../modules/dev/git.nix)
-- [ ] [modules/dev/neovim.nix](../modules/dev/neovim.nix)
+- [x] [modules/dev/codex.nix](../modules/dev/codex.nix)
+- [x] [modules/dev/containers.nix](../modules/dev/containers.nix)
+- [x] [modules/dev/dev-tools.nix](../modules/dev/dev-tools.nix)
+- [x] [modules/dev/git.nix](../modules/dev/git.nix)
+- [x] [modules/dev/neovim.nix](../modules/dev/neovim.nix)
 
 ### 데스크톱
 
-- [ ] [modules/desktop/ghostty.nix](../modules/desktop/ghostty.nix)
-- [ ] [modules/desktop/gui-apps.nix](../modules/desktop/gui-apps.nix)
-- [ ] [modules/desktop/host-options.nix](../modules/desktop/host-options.nix)
-- [ ] [modules/desktop/hypridle.nix](../modules/desktop/hypridle.nix)
-- [ ] [modules/desktop/idle-blur.nix](../modules/desktop/idle-blur.nix)
-- [ ] [modules/desktop/kitty.nix](../modules/desktop/kitty.nix)
-- [ ] [modules/desktop/nixos-desktop.nix](../modules/desktop/nixos-desktop.nix)
-- [ ] [modules/desktop/swappy.nix](../modules/desktop/swappy.nix)
+- [x] [modules/desktop/ghostty.nix](../modules/desktop/ghostty.nix)
+- [x] [modules/desktop/gui-apps.nix](../modules/desktop/gui-apps.nix)
+- [x] [modules/desktop/host-options.nix](../modules/desktop/host-options.nix)
+- [x] [modules/desktop/hypridle.nix](../modules/desktop/hypridle.nix)
+- [x] [modules/desktop/idle-blur.nix](../modules/desktop/idle-blur.nix)
+- [x] [modules/desktop/kitty.nix](../modules/desktop/kitty.nix)
+- [x] [modules/desktop/nixos-desktop.nix](../modules/desktop/nixos-desktop.nix)
+- [x] [modules/desktop/swappy.nix](../modules/desktop/swappy.nix)
 
 ### 시스템 공통
 
-- [ ] [modules/core/company-ca.nix](../modules/core/company-ca.nix)
-- [ ] [modules/core/containers.nix](../modules/core/containers.nix)
-- [ ] [modules/core/dbus.nix](../modules/core/dbus.nix)
-- [ ] [modules/core/fonts.nix](../modules/core/fonts.nix)
-- [ ] [modules/core/nixos-base.nix](../modules/core/nixos-base.nix)
-- [ ] [modules/core/sops.nix](../modules/core/sops.nix)
-- [ ] [modules/core/system-utils.nix](../modules/core/system-utils.nix)
-- [ ] [modules/core/theme.nix](../modules/core/theme.nix)
+- [x] [modules/core/company-ca.nix](../modules/core/company-ca.nix)
+- [x] [modules/core/containers.nix](../modules/core/containers.nix)
+- [x] [modules/core/dbus.nix](../modules/core/dbus.nix)
+- [x] [modules/core/fonts.nix](../modules/core/fonts.nix)
+- [x] [modules/core/nixos-base.nix](../modules/core/nixos-base.nix)
+- [x] [modules/core/sops.nix](../modules/core/sops.nix)
+- [x] [modules/core/system-utils.nix](../modules/core/system-utils.nix)
+- [x] [modules/core/theme.nix](../modules/core/theme.nix)
 
 ### 하드웨어
 
-- [ ] [modules/hardware/printing.nix](../modules/hardware/printing.nix)
-- [ ] [modules/hardware/samsung-galaxy-book.nix](../modules/hardware/samsung-galaxy-book.nix)
+- [x] [modules/hardware/printing.nix](../modules/hardware/printing.nix)
+- [x] [modules/hardware/samsung-galaxy-book.nix](../modules/hardware/samsung-galaxy-book.nix)
 
 ### 호스트별 설정
 
-- [ ] [hosts/ai-x1-pro/configuration.nix](../hosts/ai-x1-pro/configuration.nix)
-- [ ] [hosts/ai-x1-pro/hardware-configuration.nix](../hosts/ai-x1-pro/hardware-configuration.nix)
-- [ ] [hosts/ai-x1-pro/home.nix](../hosts/ai-x1-pro/home.nix)
-- [ ] [hosts/galaxy-book/configuration.nix](../hosts/galaxy-book/configuration.nix)
-- [ ] [hosts/galaxy-book/hardware-configuration.nix](../hosts/galaxy-book/hardware-configuration.nix)
-- [ ] [hosts/galaxy-book/home.nix](../hosts/galaxy-book/home.nix)
-- [ ] [hosts/nxtp-office-desktop/configuration.nix](../hosts/nxtp-office-desktop/configuration.nix)
-- [ ] [hosts/nxtp-office-desktop/hardware-configuration.nix](../hosts/nxtp-office-desktop/hardware-configuration.nix)
-- [ ] [hosts/nxtp-office-desktop/home.nix](../hosts/nxtp-office-desktop/home.nix)
+- [x] [hosts/ai-x1-pro/configuration.nix](../hosts/ai-x1-pro/configuration.nix)
+- [x] [hosts/ai-x1-pro/hardware-configuration.nix](../hosts/ai-x1-pro/hardware-configuration.nix)
+- [x] [hosts/ai-x1-pro/home.nix](../hosts/ai-x1-pro/home.nix)
+- [x] [hosts/galaxy-book/configuration.nix](../hosts/galaxy-book/configuration.nix)
+- [x] [hosts/galaxy-book/hardware-configuration.nix](../hosts/galaxy-book/hardware-configuration.nix)
+- [x] [hosts/galaxy-book/home.nix](../hosts/galaxy-book/home.nix)
+- [x] [hosts/nxtp-office-desktop/configuration.nix](../hosts/nxtp-office-desktop/configuration.nix)
+- [x] [hosts/nxtp-office-desktop/hardware-configuration.nix](../hosts/nxtp-office-desktop/hardware-configuration.nix)
+- [x] [hosts/nxtp-office-desktop/home.nix](../hosts/nxtp-office-desktop/home.nix)
 
 ### 진입점과 검증
 
-- [ ] [checks/default.nix](../checks/default.nix)
-- [ ] [flake.nix](../flake.nix)
-- [ ] [home.nix](../home.nix)
+- [x] [checks/default.nix](../checks/default.nix)
+- [x] [flake.nix](../flake.nix)
+- [x] [home.nix](../home.nix)

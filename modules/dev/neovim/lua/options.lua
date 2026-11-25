@@ -1,7 +1,5 @@
 local utils = require('utils')
 
--- 테마 설정용
-local theme_style = utils.is_remote and "day" or "moon"
 local is_transparent = not utils.is_remote or utils.is_ghostty or utils.is_multiplexer
 
 -- [기본 옵션]
@@ -42,6 +40,5 @@ vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
 
 return {
-  theme_style = theme_style,
   is_transparent = is_transparent,
 }

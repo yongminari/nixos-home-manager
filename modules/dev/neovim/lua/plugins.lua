@@ -164,9 +164,9 @@ safe_require("obsidian", function(obsidian)
       },
       legacy_commands = false,
     })
+    vim.keymap.set("n", "<leader>on", "<cmd>Obsidian new<cr>")
+    vim.keymap.set("n", "<leader>os", "<cmd>Obsidian search<cr>")
   end
-  vim.keymap.set("n", "<leader>on", "<cmd>Obsidian new<cr>")
-  vim.keymap.set("n", "<leader>os", "<cmd>Obsidian search<cr>")
 end)
 
 -- [LSP & 자동완성]
@@ -236,7 +236,6 @@ end
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(event)
     local client = vim.lsp.get_client_by_id(event.data.client_id)
-    local opts = { buffer = event.buf }
 
     -- [LSP 키매핑]
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = event.buf, desc = "Go to Definition" })

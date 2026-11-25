@@ -24,11 +24,11 @@
       ZSH_AUTOSUGGEST_USE_ASYNC = "1";
       ZSH_AUTOSUGGEST_MANUAL_REBIND = "1";
       ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE = "20";
-      ZSH_DISABLE_COMPFIX = "true"; # Distrobox/Nix 권한 경고 방지
     };
 
     envExtra = ''
-      export ZSH_DISABLE_COMPFIX="true" 
+      # Distrobox/Nix 권한 경고 방지
+      export ZSH_DISABLE_COMPFIX="true"
     '';
 
     # [Zsh Initialization]

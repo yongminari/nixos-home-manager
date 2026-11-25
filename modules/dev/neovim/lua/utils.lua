@@ -11,7 +11,6 @@ local is_ghostty = os.getenv("TERM_PROGRAM") == "Ghostty" or os.getenv("TERM") =
 
 return {
   safe_require = safe_require,
-  is_ssh = is_ssh,
   is_remote = is_ssh,
   is_multiplexer = is_multiplexer,
   is_ghostty = is_ghostty,

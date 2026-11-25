@@ -155,7 +155,8 @@ Nixpkgs의 Distrobox 패키지는 `/nix`도 자동으로 마운트하므로 Home
 
 ### 🛠️ Git TUI (GitUI)
 - **`Ctrl + h / l`**: 메인 탭 전환 (Home_env style)
-- **`Shift + U`**: 스테이징 해제 (Reset item)
+- 작업 트리 목록에서 **`Shift + U`**를 누르면 선택한 항목의 변경을 폐기하는 절차가 열립니다.
+- 스테이징 목록에서 선택한 항목을 해제하려면 **`Enter`**를 누릅니다.
 - **`?`**: 도움말 열기
 
 ### 🇰🇷 한글 입력 (Fcitx5)
