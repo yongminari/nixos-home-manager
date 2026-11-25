@@ -38,7 +38,7 @@ in
   '';
 
   # Codex가 저장하는 모델/MCP 설정을 보존하며 공통 설정만 병합합니다.
-  home.activation.codexSettings = lib.hm.dag.entryAfter [ "writeBoundary" "codexTelegram" ] ''
+  home.activation.codexSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run ${python}/bin/python3 ${../../scripts/configure-codex.py} \
       --config ${lib.escapeShellArg "${config.home.homeDirectory}/.codex/config.toml"} \
       --settings ${settings}

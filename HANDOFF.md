@@ -6,7 +6,12 @@
 
 전체 목록과 진행 상태는 [TODO](docs/TODO.md#모듈별-미사용-코드-점검)에 기록합니다.
 
-**다음 회차**는 [codex-telegram-secrets.nix](modules/services/codex-telegram-secrets.nix)입니다. 비밀의 선언과 서비스 소비 경로를 대조합니다.
+**다음 회차**는 [tailscale.nix](modules/services/tailscale.nix)입니다. 호스트별 활성화 조건과 생성되는 서비스·설정을 대조합니다.
+
+### 2026-11-25 · Codex Telegram 완료 알림 제거
+
+- 사용하지 않는 공통 알림 모듈, 비밀 선언, 전용 스크립트와 설정 가이드를 제거했습니다. 이전 구현과 보류한 양방향 연동 구상은 Git 커밋 `8e070e4`에서 확인할 수 있습니다.
+- 세 호스트의 NixOS·Home Manager 최종 설정을 평가했습니다. nxtp-office-desktop은 시스템·홈 빌드와 `hms` 적용을 마쳤고, 실제 Codex 설정에서 Telegram 훅이 없고 터미널 알림이 켜져 있음을 확인했습니다. 시스템 적용(`ns`)은 sudo 암호 입력이 필요해 대기 중입니다.
 
 ### 2026-11-25 · Noctalia
 

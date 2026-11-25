@@ -47,8 +47,8 @@
 ### 서비스
 
 - [x] [modules/services/noctalia.nix](../modules/services/noctalia.nix)
-- [ ] [modules/services/codex-telegram-secrets.nix](../modules/services/codex-telegram-secrets.nix)
-- [ ] [modules/services/codex-telegram.nix](../modules/services/codex-telegram.nix)
+- [x] `modules/services/codex-telegram-secrets.nix` 점검 후 제거
+- [x] `modules/services/codex-telegram.nix` 점검 후 제거
 - [ ] [modules/services/tailscale.nix](../modules/services/tailscale.nix)
 - [ ] [modules/services/wireguard-client.nix](../modules/services/wireguard-client.nix)
 
