@@ -32,20 +32,6 @@ if is_ssh; then
   export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
 fi
 
-# [Dynamic Aliases]
-function try_alias() {
-    local alias_name=$1
-    local command_name=$2
-    shift 2
-    if command -v "$command_name" &>/dev/null; then
-        alias "$alias_name"="$command_name $*"
-    fi
-}
-try_alias ls eza
-try_alias ll eza -l --icons --git -a
-try_alias lt eza --tree --level=2 --icons --git
-try_alias cat bat
-
 # [SSH Wrapper]
 # Ghostty 또는 Kitty 사용 시 terminfo 자동 주입 시도 (중첩 SSH 및 Zellij/Tmux 멀티플렉서 환경은 제외)
 function ssh() {

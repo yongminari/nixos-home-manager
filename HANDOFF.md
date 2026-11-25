@@ -6,12 +6,34 @@
 
 전체 목록과 진행 상태는 [TODO](docs/TODO.md#모듈별-미사용-코드-점검)에 기록합니다.
 
-**다음 회차**는 [tailscale.nix](modules/services/tailscale.nix)입니다. 호스트별 활성화 조건과 생성되는 서비스·설정을 대조합니다.
+**다음 회차**는 [utils.nix](modules/core/shell/utils.nix)입니다. 공통 별칭과 SSH·프롬프트·완성 도구의 셸별 연동을 점검합니다.
+
+### 2026-11-25 · Nushell
+
+- 세 호스트의 통합·독립 Home Manager 구성에서 같은 `config.nu`를 생성하며 현재 PC의 설치본과 일치합니다. `env.nu`는 Home Manager 세션 변수를 불러오는 첫 줄을 제외한 내용이 같습니다.
+- Nushell 전용 `ll`·`lt`·`cat`·`g`·`v` 선언을 제거하고 [공통 별칭](modules/core/shell/utils.nix#L4)을 사용합니다. 세 호스트의 통합·독립 Home Manager 설정에서 별칭을 검증했습니다. nxtp-office-desktop에서 홈 빌드 및 적용 후 Bash·Zsh·Nushell로 다섯 명령의 실제 출력을 비교했고, Bash·Zsh의 `ls`는 eza, Nushell의 `ls`는 내장 테이블임을 확인했습니다. 수동 Carapace 완성 함수는 fzf가 이전 완성 함수로 보관해 호출합니다.
+- Nushell 0.116.1에서 `ssh -p 2222 host`가 연결 전에 실패하던 문제를 수정했습니다. 공통 `ssh`를 `def --wrapped`로 선언해 SSH 옵션을 전달합니다. 생성된 설정에서 포트·키 파일·점프 호스트 옵션, Ghostty·Kitty·멀티플렉서·원격 SSH 분기, `zellij-ssh`와 인자 없는 호출을 포함한 모의 시험 7건이 통과했습니다. nxtp-office-desktop에서 홈 빌드와 `hms` 적용을 마쳤습니다.
+
+### 2026-11-25 · Bash
+
+- 세 호스트의 통합·독립 Home Manager 설정은 같은 `.bashrc`를 생성하며, 현재 기기에 설치된 파일도 일치합니다. 생성된 파일은 맨 앞에서 비대화형 셸을 반환시키므로 [환영 메시지](modules/core/shell/bash.nix#L11) 앞의 `[[ $- == *i* ]]`는 중복 조건입니다.
+- 설치된 `.bashrc`를 별도 Bash에서 읽고 모의 명령으로 확인했습니다. 대화형에서는 공통 SSH·Zellij 함수가 정의되고 환영 명령이 한 번 호출됩니다. `fnm`이 PATH에 있으면 Bash용 초기화를 실행하고, 없으면 건너뜁니다. 비대화형에서는 모두 건너뜁니다. 세 호스트 모두 `welcome-msg`를 설치하며 `fnm`은 시스템·홈 패키지에 직접 선언하지 않아 선택 분기로 보존합니다.
+- 후속 정리에서 Bash·Zsh 공유 스크립트의 `try_alias`와 네 호출을 제거했습니다. Bash의 `lt`도 기존 Zsh·Nushell처럼 `--long`이 포함된 상세 트리를 표시합니다.
+
+### 2026-11-25 · WireGuard 클라이언트
+
+- galaxy-book·ai-x1-pro의 최종 NixOS 설정에 수동 시작용 `wg-quick-wg0.service`가 생성됩니다. 부팅 시 시작 대상은 비어 있고, wg-quick은 두 sops 키 파일과 인터페이스·피어 설정을 사용합니다. 모듈에서 삭제할 항목은 없습니다.
+- 세 호스트의 통합·독립 Home Manager 설정에서 Zsh 별칭을 확인했습니다. nxtp-office-desktop에도 별칭은 있으나 대상 유닛과 WireGuard 비밀 선언은 없고, 실제 장치에서도 유닛이 없음을 확인했습니다. [운영 문서](docs/secrets-guide.md#-wireguard-vpn-제어)에 실제 systemctl 명령과 사용 호스트를 반영했습니다. VPN 연결 상태는 변경하지 않았습니다.
+
+### 2026-11-25 · Tailscale
+
+- 세 호스트 모두 `enable = true`로 CLI를 설치하고 부팅 시 `tailscaled.service`를 시작합니다. `openFirewall = true`는 세 호스트의 방화벽에 직접 연결용 UDP 41641을 허용합니다. 두 옵션 모두 사용하므로 삭제 후보가 없습니다.
+- nxtp-office-desktop에서 서비스 실행, `tailscale status`의 로컬 노드 온라인 상태, UDP 41641 소켓을 확인했습니다. 다른 두 호스트는 저장소의 최종 설정을 평가했습니다.
 
 ### 2026-11-25 · Codex Telegram 완료 알림 제거
 
 - 사용하지 않는 공통 알림 모듈, 비밀 선언, 전용 스크립트와 설정 가이드를 제거했습니다. 이전 구현과 보류한 양방향 연동 구상은 Git 커밋 `8e070e4`에서 확인할 수 있습니다.
-- 세 호스트의 NixOS·Home Manager 최종 설정을 평가했습니다. nxtp-office-desktop은 시스템·홈 빌드와 `hms` 적용을 마쳤고, 실제 Codex 설정에서 Telegram 훅이 없고 터미널 알림이 켜져 있음을 확인했습니다. 시스템 적용(`ns`)은 sudo 암호 입력이 필요해 대기 중입니다.
+- 세 호스트의 NixOS·Home Manager 최종 설정을 평가했습니다. nxtp-office-desktop은 시스템·홈 빌드와 `hms` 적용을 마쳤고, 실제 Codex 설정에서 Telegram 훅이 없고 터미널 알림이 켜져 있음을 확인했습니다. 후속 점검에서 `/run/current-system`이 제거 후 빌드한 시스템 경로와 일치함을 확인했습니다.
 
 ### 2026-11-25 · Noctalia
 

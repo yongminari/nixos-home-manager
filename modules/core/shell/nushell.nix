@@ -50,7 +50,7 @@
       ^welcome-msg
 
       # [SSH Wrapper]
-      def --env ssh [...args] {
+      def --wrapped ssh [...args: string] {
         let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
         let in_multiplexer = (not ($env | get -o ZELLIJ | is-empty)) or (not ($env | get -o TMUX | is-empty))
         let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
@@ -84,27 +84,6 @@
           ^zellij ...$args
         }
       }
-
-      # [Dynamic Aliases for Nushell]
-      let has_eza = (which eza | is-empty | not $in)
-      
-      if $has_eza {
-        # 'ls'는 Nushell의 기본 명령(Table 반환)을 유지하고, 
-        # eza 기능은 ll, lt 등을 통해 제공합니다.
-        alias ll = eza -l --icons --git -a
-        alias lt = eza --tree --level=2 --icons --git
-      } else {
-        alias ll = ls -a
-      }
-
-      if (which bat | is-empty | not $in) {
-        alias cat = bat
-      }
     '';
-
-    shellAliases = {
-      g  = "git";
-      v  = "nvim";
-    };
   };
 }

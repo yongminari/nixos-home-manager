@@ -30,10 +30,11 @@ nix-shell -p sops --run "sops -e -i secrets/secrets.yaml"
 기존의 자동 접속 방식에서 **수동 토글 방식**으로 변경되었습니다.
 
 ### 터미널 명령어 (Alias)
-편리한 사용을 위해 다음 단축 명령어가 등록되어 있습니다:
-*   `vpn-on`: VPN 연결 시작 (`wg-quick up wg0`)
-*   `vpn-off`: VPN 연결 해제 (`wg-quick down wg0`)
-*   `vpn-stat`: 현재 VPN 연결 상태 및 트래픽 확인 (`wg`)
+세 호스트의 Zsh에 공통으로 등록되며, `vpn-on`과 `vpn-off`의 대상 서비스는 `galaxy-book`과 `ai-x1-pro`에 있습니다.
+
+*   `vpn-on` — VPN 연결 시작 (`sudo systemctl start wg-quick-wg0`)
+*   `vpn-off` — VPN 연결 해제 (`sudo systemctl stop wg-quick-wg0`)
+*   `vpn-stat` — 현재 WireGuard 상태 및 트래픽 확인 (`sudo wg`)
 
 ### 설정 특징
 *   **부팅 시 자동 시작 방지**: `autostart = false` 설정으로 부팅 시에는 꺼져 있습니다.

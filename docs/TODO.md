@@ -49,13 +49,13 @@
 - [x] [modules/services/noctalia.nix](../modules/services/noctalia.nix)
 - [x] `modules/services/codex-telegram-secrets.nix` 점검 후 제거
 - [x] `modules/services/codex-telegram.nix` 점검 후 제거
-- [ ] [modules/services/tailscale.nix](../modules/services/tailscale.nix)
-- [ ] [modules/services/wireguard-client.nix](../modules/services/wireguard-client.nix)
+- [x] [modules/services/tailscale.nix](../modules/services/tailscale.nix)
+- [x] [modules/services/wireguard-client.nix](../modules/services/wireguard-client.nix)
 
 ### 셸
 
-- [ ] [modules/core/shell/bash.nix](../modules/core/shell/bash.nix)
-- [ ] [modules/core/shell/nushell.nix](../modules/core/shell/nushell.nix)
+- [x] [modules/core/shell/bash.nix](../modules/core/shell/bash.nix)
+- [x] [modules/core/shell/nushell.nix](../modules/core/shell/nushell.nix)
 - [ ] [modules/core/shell/utils.nix](../modules/core/shell/utils.nix)
 - [ ] [modules/core/shell/welcome.nix](../modules/core/shell/welcome.nix)
 - [ ] [modules/core/shell/yazi.nix](../modules/core/shell/yazi.nix)
