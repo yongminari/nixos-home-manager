@@ -227,7 +227,6 @@ in
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [
         ./noctalia/lockscreen-glass-blocks.patch
-        ./noctalia/lockscreen-widget-outputs.patch
       ];
     });
 
