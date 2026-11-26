@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
+
+let
+  smi = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi";
+  gpu = "00000000:C5:00.0";
+in
 
 {
   imports = [ 
@@ -58,6 +63,28 @@
       nvidiaBusId = "PCI:197:0:0";
     };
   };
+
+  # 5K 120Hz 창 전환용 하한. 2145MHz는 이 RTX 2070 SUPER의 최대 그래픽 클럭입니다.
+  systemd.services.nvidia-desktop-clock-floor = {
+    description = "Apply the NVIDIA desktop graphics clock floor";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${smi} -i ${gpu} -lgc 900,2145";
+      ExecStop = "${smi} -i ${gpu} -rgc";
+    };
+  };
+
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (subject.user == ${builtins.toJSON username} &&
+          action.id == "org.freedesktop.systemd1.manage-units" &&
+          action.lookup("unit") == "nvidia-desktop-clock-floor.service" &&
+          ["start", "stop"].indexOf(action.lookup("verb")) >= 0) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 
   # Docker/Podman 컨테이너 내부 GPU 가속 지원
   hardware.nvidia-container-toolkit.enable = true;

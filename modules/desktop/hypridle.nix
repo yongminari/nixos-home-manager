@@ -1,13 +1,17 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, osConfig, pkgs, ... }:
 
 let
   isLaptop = config.local.desktop.isLaptop;
   idleRefresh = config.local.desktop.monitorIdleRefresh;
+  clockFloor = osConfig.systemd.services ? nvidia-desktop-clock-floor;
+  clockUnit = "nvidia-desktop-clock-floor.service";
+  systemctl = "${pkgs.systemd}/bin/systemctl";
   offTimeout = config.local.desktop.monitorOffTimeout;
   niri-idle-refresh = pkgs.writeShellScriptBin "niri-idle-refresh" ''
     exec ${pkgs.python3}/bin/python3 ${./monitor-idle-refresh.py} \
       --niri ${pkgs.niri}/bin/niri \
       --target ${lib.escapeShellArg idleRefresh.output} \
+      ${lib.optionalString clockFloor "--clock-systemctl ${systemctl} --clock-unit ${clockUnit}"} \
       ${lib.optionalString idleRefresh.blur "--systemctl ${pkgs.systemd}/bin/systemctl"} "$@"
   '';
   refreshCommand = "${niri-idle-refresh}/bin/niri-idle-refresh";
@@ -82,9 +86,12 @@ in
   home.packages = lib.optional idleRefresh.enable niri-idle-refresh;
 
   # Recover a pending dim operation after a configuration switch restarts hypridle.
-  systemd.user.services.hypridle.Service.ExecStartPre = lib.mkIf isLaptop [
-    "${brightness-state}/bin/hypridle-brightness-state restore"
-  ];
+  systemd.user.services.hypridle.Service = {
+    ExecStartPre = lib.mkIf (isLaptop || clockFloor) (lib.optionals isLaptop [
+      "${brightness-state}/bin/hypridle-brightness-state restore"
+    ] ++ lib.optional clockFloor "-${refreshCommand} resume");
+    ExecStopPost = lib.mkIf clockFloor [ "-${systemctl} --no-ask-password stop ${clockUnit}" ];
+  };
 
   services.hypridle = {
     enable = true;

@@ -11,7 +11,8 @@ import time
 
 
 class IdleRefresh:
-    def __init__(self, runtime, session, target, niri, wake_delay=6, systemctl=None):
+    def __init__(self, runtime, session, target, niri, wake_delay=6, systemctl=None,
+                 clock_systemctl=None, clock_unit=None):
         self.directory = Path(runtime) / "niri-idle-refresh"
         self.directory.mkdir(mode=0o700, exist_ok=True)
         self.state_path = self.directory / "state.json"
@@ -19,6 +20,8 @@ class IdleRefresh:
         self.target = target
         self.niri = niri
         self.wake_delay = wake_delay
+        self.clock_systemctl = clock_systemctl
+        self.clock_unit = clock_unit
         self.systemctl = systemctl
 
     @contextmanager
@@ -75,6 +78,15 @@ class IdleRefresh:
             except (subprocess.SubprocessError, OSError) as error:
                 print(f"idle-refresh: blur unavailable: {error}", flush=True)
 
+    def clock_floor(self, active):
+        if self.clock_systemctl and self.clock_unit:
+            try:
+                subprocess.run([self.clock_systemctl, "--no-ask-password",
+                                "start" if active else "stop", self.clock_unit],
+                               check=True, timeout=5)
+            except (subprocess.SubprocessError, OSError) as error:
+                print(f"idle-refresh: clock floor unavailable: {error}", flush=True)
+
     def prepare(self):
         with self.locked():
             if self.read() is not None:
@@ -98,6 +110,7 @@ class IdleRefresh:
             self.write(state)
             if original != low:
                 self.set_mode(output, low)
+            self.clock_floor(False)
             self.blur(True)
             print("idle-refresh: prepared", self.mode_name(low), flush=True)
 
@@ -118,6 +131,7 @@ class IdleRefresh:
 
     def resume(self):
         with self.locked():
+            self.clock_floor(True)
             self.blur(False)
             state = self.read()
             if state is None:
@@ -158,6 +172,8 @@ def main():
     parser.add_argument("--niri", required=True)
     parser.add_argument("--target", required=True)
     parser.add_argument("--systemctl")
+    parser.add_argument("--clock-systemctl")
+    parser.add_argument("--clock-unit")
     parser.add_argument("action", choices=("prepare", "off", "resume"))
     args = parser.parse_args()
     runtime = os.environ.get("XDG_RUNTIME_DIR")
@@ -165,7 +181,8 @@ def main():
     if not runtime or not session:
         return
     os.umask(0o077)
-    controller = IdleRefresh(runtime, session, args.target, args.niri, systemctl=args.systemctl)
+    controller = IdleRefresh(runtime, session, args.target, args.niri, systemctl=args.systemctl,
+                             clock_systemctl=args.clock_systemctl, clock_unit=args.clock_unit)
     getattr(controller, args.action)()
 
 

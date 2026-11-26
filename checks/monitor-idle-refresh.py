@@ -117,6 +117,23 @@ class RefreshTest(unittest.TestCase):
         self.assertEqual(events, ["blur-on", "power-off-monitors", "blur-off",
                                   "power-on-monitors", "blur-off"])
 
+    def test_clock_floor_tracks_idle_and_returns_before_dpms_wake(self):
+        self.controller.clock_systemctl = "systemctl"
+        self.controller.clock_unit = "nvidia-desktop-clock-floor.service"
+        with patch.object(module.subprocess, "run",
+                          side_effect=lambda cmd, **kw: self.calls.append(tuple(cmd))):
+            self.controller.prepare()
+            self.controller.off()
+            self.controller.resume()
+        self.assertEqual(self.calls, [
+            ("output", "DP-10", "mode", "5120x2160@60.000"),
+            ("systemctl", "--no-ask-password", "stop", self.controller.clock_unit),
+            ("action", "power-off-monitors"),
+            ("systemctl", "--no-ask-password", "start", self.controller.clock_unit),
+            ("action", "power-on-monitors"),
+            ("output", "DP-10", "mode", "5120x2160@120.000"),
+        ])
+
     def test_blur_failure_does_not_prevent_wake(self):
         self.controller.systemctl = "systemctl"
         with patch.object(module.subprocess, "run", side_effect=OSError("unavailable")):
