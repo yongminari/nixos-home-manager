@@ -70,7 +70,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${smi} -i ${gpu} -lgc 900,2145";
+      ExecStart = "${smi} -i ${gpu} -lgc 1500,2145";
       ExecStop = "${smi} -i ${gpu} -rgc";
     };
   };
