@@ -37,6 +37,16 @@
     };
   };
 
+  # 사무실 Wi-Fi에서 사용하는 신도리코 복합기
+  hardware.printers.ensurePrinters = [
+    {
+      name = "SINDOH_D321";
+      description = "SINDOH D321";
+      deviceUri = "ipp://172.30.2.220/ipp";
+      model = "everywhere";
+    }
+  ];
+
   # --- [1. NVIDIA 그래픽 드라이버 설정] ---
   services.xserver.videoDrivers = [ "nvidia" ];
 
